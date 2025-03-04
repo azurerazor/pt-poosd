@@ -1,0 +1,22 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Compiled binary addons (https://nodejs.org/api/addons.html)
+build/Release
+
+# Dependency directories
+**/node_modules/
+
+# TypeScript cache
+**/*.tsbuildinfo
+
+# Optional npm cache directory
+**/.npm
+
+# dotenv environment variable files
+**/.env
+
+# macos bullshit
+**/.DS_Store
