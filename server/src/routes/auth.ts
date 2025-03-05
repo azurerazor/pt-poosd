@@ -1,21 +1,22 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../models/user.js';
-import { Router, Request, Response } from 'express';
+import { Request, Response } from 'express';
 
 require('dotenv').config();
 const AUTH_KEY = process.env.AUTH_KEY;
 
-// Acquires a signed JWT token for the given user ID
+/**
+ * Acquires a signed JWT token for a user
+ */
 function acquireToken(username: string): string {
     return jwt.sign({ username }, AUTH_KEY, { expiresIn: '3d' });
 }
 
-// Set up the router
-const router = Router();
-
-// Registers a new user
-router.post('/register', async (req: Request, res: Response, next: () => void) => {
+/**
+ * Registers a new user
+ */
+export async function register(req: Request, res: Response, next: () => void) {
     try {
         // Validate the request
         const { email, username, password } = req.body;
@@ -59,10 +60,12 @@ router.post('/register', async (req: Request, res: Response, next: () => void) =
             .status(500)
             .json({ message: "Internal server error" });
     }
-});
+}
 
-// Logs a user in
-router.post('/login', async (req: Request, res: Response, next: () => void) => {
+/**
+ * Logs a user in
+ */
+export async function login(req: Request, res: Response, next: () => void) {
     try {
         const { username, password } = req.body;
         if (!username || !password) {
@@ -105,14 +108,14 @@ router.post('/login', async (req: Request, res: Response, next: () => void) => {
             .status(500)
             .json({ message: "Internal server error" });
     }
-});
+}
 
-// Logs a user out
-router.post('/logout', (req: Request, res: Response) => {
+/**
+ * Logs a user out
+ */
+export async function logout(req: Request, res: Response) {
     res.clearCookie('token');
     res
         .status(200)
         .json({ message: "User successfully logged out" });
-});
-
-export default router;
+}

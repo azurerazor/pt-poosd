@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 import express from 'express';
 import cors from 'cors';
+
+import { register, login, logout } from './routes/auth.js';
 import stats from './routes/stats.js';
 import game from './routes/game.js';
 
@@ -16,9 +18,15 @@ mongoose
 
 // Set up the Express app
 const app = express();
-
 app.use(cors());
 app.use(express.json());
+
+// Auth routes
+app.post('/register', register);
+app.post('/login', login);
+app.post('/logout', logout);
+
+// Protected routes
 app.use('/stats', stats);
 app.use('/game', game);
 
