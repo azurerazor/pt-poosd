@@ -1,12 +1,7 @@
 import express from 'express';
-import db from '../db/connection.js';
+import { Router, Request, Response } from 'express';
 
-const router = express.Router();
-
-router.get('/', async (req, res) => {
-    let collection = db.collection('users');
-    let users = await collection.find({}).toArray();
-    res.json(users).status(200);
-});
+// Set up the Express router
+const router = Router();
 
 export default router;

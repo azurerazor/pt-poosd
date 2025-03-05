@@ -16,6 +16,8 @@
     "typescript": "^5.8.2"
   },
   "dependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.9",
     "@types/mongoose": "^5.11.96",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.7",
