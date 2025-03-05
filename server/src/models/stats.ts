@@ -2,6 +2,15 @@ import mongoose from 'mongoose';
 
 export const statsSchema = new mongoose.Schema({
     /**
+     * The username of the user associated with this stat block
+     */
+    user: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+
+    /**
      * Total number of games played
      */
     gamesPlayed: {
