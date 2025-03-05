@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import express from 'express';
 import cors from 'cors';
-import users from './routes/users.js';
+import stats from './routes/stats.js';
 import game from './routes/game.js';
 
 // Constants (duh)
@@ -19,7 +19,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use('/users', users);
+app.use('/stats', stats);
 app.use('/game', game);
 
 // Do the thing
