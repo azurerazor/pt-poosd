@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import express from 'express';
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
 
 import { register, login, logout } from './routes/auth.js';
@@ -20,6 +21,7 @@ mongoose
 // Set up the Express app
 const app = express();
 app.use(cors());
+app.use(cookieParser());
 app.use(express.json());
 
 // Auth routes

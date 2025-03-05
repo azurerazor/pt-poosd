@@ -8,6 +8,17 @@ import { Router, Request, Response } from 'express';
 const router = Router();
 router.use(requireAuth);
 
+/**
+ * Removes fields from a stat block that should not be exposed to the client
+ */
+function statsToJson(stats: any): any {
+    let json: { [P in keyof typeof stats]?: typeof stats[P]; } = stats.toJSON();
+    delete json.user;
+    delete json._id;
+    delete json.__v;
+    return json;
+}
+
 // Fetches stats for a given username (or the currently authenticated user, if omitted)
 router.get('/:forUser?', async (req: Request, res: Response) => {
     // Fetch stats for the user
@@ -20,10 +31,10 @@ router.get('/:forUser?', async (req: Request, res: Response) => {
         const user = await User.findOne({ username: forUser });
         if (user) {
             // Creating the stat block record should initialize to defaults (zeroes)
-            const newStats = await Stats.create({ username: forUser });
+            const newStats = await Stats.create({ user: forUser });
             res
                 .status(200)
-                .json(newStats.toJSON());
+                .json(statsToJson(newStats));
             return;
         }
 
@@ -34,16 +45,10 @@ router.get('/:forUser?', async (req: Request, res: Response) => {
         return;
     }
 
-    // Remove object ID and redundant user field
-    const data = stats.toJSON();
-    let json: { [P in keyof typeof data]?: typeof data[P]; } = data;
-    delete json._id;
-    delete json.user;
-
     // Respond
     res
         .status(200)
-        .json(json);
+        .json(statsToJson(stats));
 });
 
 export default router;
