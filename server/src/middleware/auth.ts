@@ -5,8 +5,15 @@ import { Request, Response } from 'express';
 require('dotenv').config();
 const AUTH_KEY = process.env.AUTH_KEY;
 
-// Middleware to check for user authentication
-function requireAuth(req: Request & { user: string }, res: Response, next: () => void) {
+/**
+ * Type representing a request with a username provided
+ */
+export type AuthorizedRequest = Request & { user: string };
+
+/**
+ * Middleware that requires a user to be authenticated and provides their username to route handlers
+ */
+export function requireAuth(req: AuthorizedRequest, res: Response, next: () => void) {
     // Check for the token
     const token = req.cookies.token;
     if (!token) {
@@ -41,5 +48,3 @@ function requireAuth(req: Request & { user: string }, res: Response, next: () =>
         next();
     });
 }
-
-export default requireAuth;

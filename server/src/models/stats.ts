@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { all_roles } from '../game/roles';
 
 export const statsSchema = new mongoose.Schema({
     /**
@@ -18,7 +19,7 @@ export const statsSchema = new mongoose.Schema({
         required: true,
         default: 0,
     },
-    
+
     /**
      * Total number of games won
      */
@@ -27,7 +28,7 @@ export const statsSchema = new mongoose.Schema({
         required: true,
         default: 0,
     },
-    
+
     /**
      * Number of games played as each role
      */
@@ -83,6 +84,15 @@ export const statsSchema = new mongoose.Schema({
         required: true,
         default: 0,
     },
+});
+
+// Before serializing, set per-role stats to 0 if they don't exist
+statsSchema.pre('save', async function () {
+    for (let role of all_roles) {
+        const name = role.name;
+        if (!this.gamesPlayedAs.has(name)) this.gamesPlayedAs.set(name, 0);
+        if (!this.gamesWonAs.has(name)) this.gamesWonAs.set(name, 0);
+    }
 });
 
 const Stats = mongoose.model('Stats', statsSchema);
