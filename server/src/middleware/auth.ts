@@ -3,17 +3,12 @@ import User from '../models/user.js';
 import { Request, Response } from 'express';
 
 require('dotenv').config();
-const AUTH_KEY = process.env.AUTH_KEY;
-
-/**
- * Type representing a request with a username provided
- */
-export type AuthorizedRequest = Request & { user: string };
+const AUTH_KEY = process.env.AUTH_KEY!;
 
 /**
  * Middleware that requires a user to be authenticated and provides their username to route handlers
  */
-export function requireAuth(req: AuthorizedRequest, res: Response, next: () => void) {
+export function requireAuth(req: Request, res: Response, next: () => void) {
     // Check for the token
     const token = req.cookies.token;
     if (!token) {
@@ -24,7 +19,7 @@ export function requireAuth(req: AuthorizedRequest, res: Response, next: () => v
     }
 
     // Check authenticity
-    jwt.verify(token, AUTH_KEY, async (err, data) => {
+    jwt.verify(token, AUTH_KEY, async (err: any, data: any) => {
         if (err) {
             res
                 .status(401)
@@ -44,7 +39,7 @@ export function requireAuth(req: AuthorizedRequest, res: Response, next: () => v
         const guy = (typeof user);
 
         // All good
-        req.user = user.username;
+        res.locals.user = user.username;
         next();
     });
 }

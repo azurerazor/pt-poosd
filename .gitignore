@@ -20,3 +20,6 @@ build/Release
 
 # macos bullshit
 **/.DS_Store
+
+# build output
+**/dist/

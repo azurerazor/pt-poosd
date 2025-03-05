@@ -1,5 +1,5 @@
 import express from 'express';
-import { AuthorizedRequest, requireAuth } from '../middleware/auth.js';
+import { requireAuth } from '../middleware/auth.js';
 import { Router, Request, Response } from 'express';
 
 // Set up the Express router

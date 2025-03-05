@@ -7,12 +7,13 @@ import stats from './routes/stats.js';
 import game from './routes/game.js';
 
 // Constants (duh)
-const PORT = process.env.PORT || 5050;
-const MONGO_URL = process.env.MONGO_URL;
+require('dotenv').config();
+const PORT = process.env.PORT!;
+const MONGO_URI = process.env.MONGO_URI!;
 
 // Connect to the MongoDB Atlas database
 mongoose
-    .connect(MONGO_URL)
+    .connect(MONGO_URI)
     .then(() => { console.log("Connected to MongoDB Atlas") })
     .catch((err) => { console.error(err) });
 

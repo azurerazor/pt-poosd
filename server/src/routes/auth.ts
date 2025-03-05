@@ -4,7 +4,7 @@ import User from '../models/user.js';
 import { Request, Response } from 'express';
 
 require('dotenv').config();
-const AUTH_KEY = process.env.AUTH_KEY;
+const AUTH_KEY = process.env.AUTH_KEY!;
 
 /**
  * Acquires a signed JWT token for a user

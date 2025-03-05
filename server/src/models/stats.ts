@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { all_roles } from '../game/roles';
+import { all_roles } from '../game/roles.js';
 
 export const statsSchema = new mongoose.Schema({
     /**

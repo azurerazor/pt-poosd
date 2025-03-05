@@ -1,7 +1,7 @@
 import express from 'express';
 import Stats from '../models/stats.js';
 import User from '../models/user.js';
-import { AuthorizedRequest, requireAuth } from '../middleware/auth.js';
+import { requireAuth } from '../middleware/auth.js';
 import { Router, Request, Response } from 'express';
 
 // Set up the Express router
@@ -9,9 +9,9 @@ const router = Router();
 router.use(requireAuth);
 
 // Fetches stats for a given username (or the currently authenticated user, if omitted)
-router.get('/:forUser?', async (req: AuthorizedRequest, res: Response) => {
+router.get('/:forUser?', async (req: Request, res: Response) => {
     // Fetch stats for the user
-    const forUser = req.params.forUser || req.user;
+    const forUser = req.params.forUser ?? res.locals.user;
     const stats = await Stats.findOne({ username: req.params.forUser });
 
     // Check if the stat block exists
@@ -35,7 +35,8 @@ router.get('/:forUser?', async (req: AuthorizedRequest, res: Response) => {
     }
 
     // Remove object ID and redundant user field
-    let json = stats.toJSON();
+    const data = stats.toJSON();
+    let json: { [P in keyof typeof data]?: typeof data[P]; } = data;
     delete json._id;
     delete json.user;
 
