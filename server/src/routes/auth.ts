@@ -7,8 +7,8 @@ require('dotenv').config();
 const AUTH_KEY = process.env.AUTH_KEY;
 
 // Acquires a signed JWT token for the given user ID
-function acquireToken(id: string): string {
-    return jwt.sign({ id }, AUTH_KEY, { expiresIn: '3d' });
+function acquireToken(username: string): string {
+    return jwt.sign({ username }, AUTH_KEY, { expiresIn: '3d' });
 }
 
 // Set up the router
@@ -44,7 +44,7 @@ router.post('/register', async (req: Request, res: Response, next: () => void) =
 
         // Create the new user and authenticate
         const user = await User.create({ email, username, password });
-        const token = acquireToken(user._id.toString());
+        const token = acquireToken(username);
         res.cookie('token', token, { httpOnly: false });
 
         // Respond (duh)
@@ -91,7 +91,7 @@ router.post('/login', async (req: Request, res: Response, next: () => void) => {
         }
 
         // Authenticate
-        const token = acquireToken(user._id.toString());
+        const token = acquireToken(username);
         res.cookie('token', token, { httpOnly: false });
 
         // Respond
