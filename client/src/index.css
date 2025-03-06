@@ -1,4 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Bona+Nova+SC:ital,wght@0,400;0,700;1,400&display=swap');
 @import 'tailwindcss';
+
 @plugin '@tailwindcss/forms';
 @plugin 'daisyui';
 
@@ -12,9 +14,9 @@
     --color-base-300: oklch(80% 0.015 58.071);
     --color-base-content: oklch(35% 0.0181 61.42);
 
-    --color-primary: oklch(75% 0.12 70.08);
+    --color-primary: oklch(80% 0.14 70.08);
     --color-primary-content: oklch(98% 0.003 247.858);
-    --color-accent: oklch(32% 0.012 34.298);
+    --color-accent: oklch(0.4 0.07 34.18);
     --color-accent-content: oklch(85% 0.1 70.08);
     --color-secondary: oklch(33.27% 0.0249 284.3);
     --color-secondary-content: oklch(75% 0.12 70.08);
@@ -39,6 +41,65 @@
     --noise: 1;
 }
 
+
 .validator-hint {
     margin-top: 0 !important;
+}
+
+.serif {
+    font-family: 'Bona Nova SC', serif;
+}
+
+.deco {
+    --c: var(--color-base-content);
+    --bg: var(--color-base-100);
+    --w: 2px;
+    --o1: 8px;
+    --o2: 6px;
+    /* --o1: 14px;
+    --o2: 7px; */
+
+    box-shadow: none !important;
+    border-radius: 0 !important;
+
+    box-sizing: border-box;
+    display: inline-block;
+    height: auto;
+    border: var(--o1) solid transparent;
+    outline: var(--w) solid var(--c);
+    outline-offset: calc(-1*var(--o2));
+    background:
+        conic-gradient(from 90deg at var(--w) var(--w), transparent 25%, var(--c) 0) 0 0/calc(100% - var(--w)) calc(100% - var(--w)) padding-box border-box;
+    transition: all .1s;
+}
+
+.deco .btn-deco {
+    cursor: pointer;
+    border: var(--w) solid var(--c);
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+
+    box-shadow: 0 5px 5px rgba(0, 0, 0 1);
+}
+
+.bg-paper {
+    background-image: url('./assets/paper.jpg');
+    background-size: cover;
+    background-position: center;
+    background-blend-mode: darken;
+}
+
+.bg-paper-darker {
+    background: url('./assets/paper_darker.jpg') no-repeat center center;
+}
+
+.deco-primary {
+    --c: var(--color-primary);
+}
+
+.deco-accent {
+    --c: var(--color-accent);
+}
+
+.deco-secondary {
+    --c: var(--color-secondary);
 }
