@@ -1,14 +1,12 @@
-import { PropsWithChildren } from "react";
+import { PropsWithChildren } from 'react';
 
-interface Props extends PropsWithChildren {
-    value: string;
-}
+interface Props extends PropsWithChildren { value: string; }
 
 const Submit: React.FC<Props> = ({ value }) => {
     return (
         <span className="btn w-2/3 mt-4 h-auto p-0 deco deco-accent">
             <input
-                type="submit"
+                type='submit'
                 value={value}
                 className="btn-deco p-1 w-full h-full text-lg serif font-semibold text-accent bg-paper-darker"
             />

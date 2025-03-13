@@ -7,21 +7,22 @@ interface Props {
     validatorHint: string;
     placeholder?: string;
     value?: string;
+    onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const InputText: React.FC<Props> = ({ name, label, minLength, maxLength, pattern, validatorHint, placeholder = '', value = '' }) => {
+const InputText: React.FC<Props> = ({ name, label, minLength, maxLength, pattern, validatorHint, placeholder = '', value = '', onChange = (_) => {} }) => {
     return (
         <>
             <label
                 htmlFor={name}
-                className='label w-full text-base-content'
+                className="label w-full text-base-content"
             >
                 {label}
             </label>
 
             <input
                 type='text'
-                className='input validator w-full text-base-content'
+                className="input validator w-full text-base-content"
                 required
                 minlength={minLength}
                 maxlength={maxLength}
@@ -31,6 +32,8 @@ const InputText: React.FC<Props> = ({ name, label, minLength, maxLength, pattern
                 name={name}
                 placeholder={placeholder}
                 defaultValue={value}
+
+                onChange={onChange}
             />
 
             <p className="validator-hint hidden w-full">
