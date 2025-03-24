@@ -1,11 +1,11 @@
-import mongoose from 'mongoose';
-import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import express from 'express';
+import mongoose from 'mongoose';
 
-import { register, login, logout } from './routes/auth.js';
-import stats from './routes/stats.js';
+import { login, logout, register } from './routes/auth.js';
 import game from './routes/game.js';
+import stats from './routes/stats.js';
 
 // Constants (duh)
 require('dotenv').config();
@@ -20,7 +20,7 @@ mongoose
 
 // Set up the Express app
 const app = express();
-app.use(cors());
+app.use(cors()); // TODO: https://stackoverflow.com/a/69988063 ?
 app.use(cookieParser());
 app.use(express.json());
 

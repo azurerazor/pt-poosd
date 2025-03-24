@@ -1,7 +1,7 @@
 import Axios from 'axios';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { getAPIRoute } from '../../util/api';
+import { API_URL } from '../../util/api';
 import FormCard from '../forms/FormCard';
 import InputEmail from '../forms/InputEmail';
 import InputPassword from '../forms/InputPassword';
@@ -12,12 +12,12 @@ import Link from '../misc/RouteLink';
 export default function Signup() {
     const navigate = useNavigate();
 
-    const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
     function handleSignup(event: React.FormEvent<HTMLFormElement>) {
-        Axios.post(getAPIRoute('register'), {
+        Axios.post(`${API_URL}/api/register`, {
             email,
             username,
             password

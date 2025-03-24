@@ -1,7 +1,7 @@
 import Axios from 'axios';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { getAPIRoute } from '../../util/api';
+import { API_URL } from '../../util/api';
 import FormCard from '../forms/FormCard';
 import InputPassword from '../forms/InputPassword';
 import InputTextRegex from '../forms/InputTextRegex';
@@ -15,7 +15,7 @@ export default function Login() {
     const [password, setPassword] = useState('');
 
     function handleLogin(event: React.FormEvent<HTMLFormElement>) {
-        Axios.post(getAPIRoute('login'), {
+        Axios.post(`${API_URL}/api/login`, {
             username,
             password
         }).then(_ => {
