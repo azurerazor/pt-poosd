@@ -36,8 +36,6 @@ export function requireAuth(req: Request, res: Response, next: () => void) {
             return;
         }
 
-        const guy = (typeof user);
-
         // All good
         res.locals.user = user.username;
         next();

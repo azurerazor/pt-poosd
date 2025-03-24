@@ -44,7 +44,7 @@ export async function register(req: Request, res: Response, next: () => void) {
         }
 
         // Create the new user and authenticate
-        const user = await User.create({ email, username, password });
+        await User.create({ email, username, password });
         const token = acquireToken(username);
         res.cookie('token', token, { httpOnly: false });
 
@@ -113,7 +113,7 @@ export async function login(req: Request, res: Response, next: () => void) {
 /**
  * Logs a user out
  */
-export async function logout(req: Request, res: Response) {
+export async function logout(_: Request, res: Response) {
     res.clearCookie('token');
     res
         .status(200)

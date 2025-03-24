@@ -16,7 +16,7 @@ const MONGO_URI = process.env.MONGO_URI!;
 mongoose
     .connect(MONGO_URI)
     .then(() => { console.log("Connected to MongoDB Atlas") })
-    .catch((err) => { console.error(err) });
+    .catch(err => { console.error(err) });
 
 // Set up the Express app
 const app = express();
@@ -25,13 +25,13 @@ app.use(cookieParser());
 app.use(express.json());
 
 // Auth routes
-app.post('/register', register);
-app.post('/login', login);
-app.post('/logout', logout);
+app.post('/api/register', register);
+app.post('/api/login', login);
+app.post('/api/logout', logout);
 
 // Protected routes
-app.use('/stats', stats);
-app.use('/game', game);
+app.use('/api/stats', stats);
+app.use('/api/game', game);
 
 // Do the thing
 app.listen(PORT, () => {

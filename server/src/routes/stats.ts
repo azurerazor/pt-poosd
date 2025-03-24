@@ -1,8 +1,7 @@
-import express from 'express';
+import { Request, Response, Router } from 'express';
+import { requireAuth } from '../middleware/auth.js';
 import Stats from '../models/stats.js';
 import User from '../models/user.js';
-import { requireAuth } from '../middleware/auth.js';
-import { Router, Request, Response } from 'express';
 
 // Set up the Express router
 const router = Router();

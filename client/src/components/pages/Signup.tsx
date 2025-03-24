@@ -1,6 +1,7 @@
 import Axios from 'axios';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
+import { getAPIRoute } from '../../util/api';
 import FormCard from '../forms/FormCard';
 import InputEmail from '../forms/InputEmail';
 import InputPassword from '../forms/InputPassword';
@@ -16,19 +17,14 @@ export default function Signup() {
     const [password, setPassword] = useState('');
 
     function handleSignup(event: React.FormEvent<HTMLFormElement>) {
-        Axios.post('http://localhost:5050/register', {
+        Axios.post(getAPIRoute('register'), {
             email,
             username,
             password
-        }).then((response) => {
-            // if (response.status != 201) {
-            //     let data: any = response.data;
-            //     alert("Signup failed: " + data.message);
-            //     return;
-            // }
+        }).then(_ => {
             alert("Signup successful!");
             navigate('/login');
-        }).catch((err) => {
+        }).catch(err => {
             console.error(err);
             alert("Signup failed: " + err.response.data.message);
         });

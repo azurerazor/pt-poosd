@@ -1,26 +1,27 @@
 import Axios from 'axios';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
+import { getAPIRoute } from '../../util/api';
 import FormCard from '../forms/FormCard';
 import InputPassword from '../forms/InputPassword';
 import InputTextRegex from '../forms/InputTextRegex';
 import Submit from '../forms/Submit';
 import Link from '../misc/RouteLink';
 
-export default function Signup() {
+export default function Login() {
     const navigate = useNavigate();
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    function handleSignup(event: React.FormEvent<HTMLFormElement>) {
-        Axios.post('http://localhost:5050/login', {
+    function handleLogin(event: React.FormEvent<HTMLFormElement>) {
+        Axios.post(getAPIRoute('login'), {
             username,
             password
-        }).then((response) => {
+        }).then(_ => {
             alert("Successfully logged in!");
             navigate('/dashboard');
-        }).catch((err) => {
+        }).catch(err => {
             console.error(err);
             alert("Login failed: " + err.response.data.message);
         });
@@ -31,7 +32,7 @@ export default function Signup() {
         <div className="hero-content w-full text-center m-auto flex-col h-screen">
             <h1 className="text-5xl font-bold flex-row mb-8">Escavalon</h1>
             <FormCard>
-                <form onSubmit={handleSignup}>
+                <form onSubmit={handleLogin}>
                     <h2 className="text-3xl font-bold">Log in</h2>
                     <p className="text-base-content mb-4">
                         Don't have an account? <Link to='/signup'>Sign up here</Link>
