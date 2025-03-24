@@ -6,7 +6,7 @@ interface Props {
     onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const InputPassword: React.FC<Props> = ({ name, label, placeholder = '', value = '', onChange = (_) => {} }) => {
+const InputPassword: React.FC<Props> = ({ name, label, placeholder = '', value = '', onChange = (_) => { } }) => {
     return (
         <>
             <label
@@ -19,6 +19,7 @@ const InputPassword: React.FC<Props> = ({ name, label, placeholder = '', value =
             <input
                 type="password"
                 className="input validator w-full text-base-content"
+                // @ts-expect-error
                 minlength="8"
                 required
 

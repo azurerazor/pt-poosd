@@ -24,6 +24,7 @@ const InputText: React.FC<Props> = ({ name, label, minLength, maxLength, pattern
                 type='text'
                 className="input validator w-full text-base-content"
                 required
+                // @ts-expect-error
                 minlength={minLength}
                 maxlength={maxLength}
                 pattern={pattern}
