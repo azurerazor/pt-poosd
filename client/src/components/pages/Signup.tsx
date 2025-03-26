@@ -45,7 +45,7 @@ export default function Signup() {
                         label='Username'
                         minLength={3}
                         maxLength={16}
-                        pattern="[A-Za-z0-9]+(?:[-_]*[A-Za-z0-9]+)*[A-Za-z0-9]+"
+                        pattern="[A-Za-z0-9]+(?:[\-_]*[A-Za-z0-9]+)*[A-Za-z0-9]+"
                         validatorHint="3-16 letters, numbers, underscores or hyphens"
                         placeholder="super-cool-username"
 
