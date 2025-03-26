@@ -1,4 +1,4 @@
-name: Build client + server
+name: build
 on: [ push ]
 jobs:
     build-client:

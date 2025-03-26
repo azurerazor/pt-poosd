@@ -1,9 +1,8 @@
-name: Deploy application
+name: deploy
 on:
+    workflow_dispatch:
     workflow_run:
-        workflows: [ "Build client + server" ]
-        branches:
-            - main
+        workflows: [ "build" ]
         types:
             - completed
 
