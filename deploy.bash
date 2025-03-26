@@ -21,4 +21,4 @@ cp -r server/ /var/
 
 # Restart the server process
 cd /var/server
-pm2 start
+pm2 start avalon
