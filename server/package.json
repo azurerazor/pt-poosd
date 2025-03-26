@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "main": "dist/app.js",
     "scripts": {
-        "build": "tsc",
+        "build": "tsc --build",
         "start": "node dist/app.js",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
