@@ -21,6 +21,10 @@ jobs:
                 ssh-private-key: |
                     ${{ secrets.CAMELOT_PRIVATE_KEY }}
 
+            - name: Register known host key
+              run: |
+                ssh-keyscan -t ed25519 45.55.60.192 >> ~/.ssh/known_hosts
+
             - name: Configure git
               run: |
                 git config --global user.name "enwask"
