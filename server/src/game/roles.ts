@@ -13,7 +13,7 @@ export enum Roles {
     MINION_OF_MORDRED = 8,
     MORGANA = 16,
     MORDRED = 32,
-    ASSASIN = 64,
+    ASSASSIN = 64,
     OBERON = 128,
 
     GOOD = 1 | 2 | 4,
@@ -134,10 +134,10 @@ export const mordred = new Role(
     Roles.EVIL & ~Roles.OBERON
 );
 
-export const assasin = new Role(
-    Roles.ASSASIN,
+export const assassin = new Role(
+    Roles.ASSASSIN,
     Alignment.EVIL,
-    "Assasin",
+    "Assassin",
     "A servant of Mordred. Knows the other evil players (except Oberon). Can assassinate Merlin at the end of the game.",
     Roles.EVIL & ~Roles.OBERON
 );
@@ -158,7 +158,7 @@ export const all_roles: Role[] = [
     minion,
     morgana,
     mordred,
-    assasin,
+    assassin,
     oberon
 ];
 
