@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from 'react-router'
 import Login from './pages/Login'
 import NotFound from './pages/NotFound'
 import Signup from './pages/Signup'
+import Dashboard from './pages/Dashboard'
 import Lobby from './pages/Lobby'
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
                 <Route path='/' Component={Signup} />
                 <Route path='/signup' Component={Signup} />
                 <Route path='/login' Component={Login} />
+                <Route path='/dashboard' Component={Dashboard} />
                 <Route path="/lobby/*" Component={Lobby} />
 
                 {/* 404 */}
