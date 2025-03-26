@@ -14,7 +14,7 @@ export default function Dashboard() {
         Axios.post(`${API_URL}/api/logout`, {
         }).then(_ => {
             alert("Successfully logged out!");
-            navigate('/dashboard');
+            navigate('/');
         }).catch(err => {
             console.error(err);
             alert("Logout failed: " + err.response.data.message);
