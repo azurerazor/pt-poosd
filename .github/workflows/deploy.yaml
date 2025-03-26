@@ -15,22 +15,14 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v4
 
-            - name: Set up SSH agent
-              uses: webfactory/ssh-agent@v0.9.1
+            - name: Pull through SSH
+              uses: appleboy/ssh-action@v1
               with:
-                ssh-private-key: |
-                    ${{ secrets.CAMELOT_PRIVATE_KEY }}
-
-            - name: Register known host key
-              run: |
-                ssh-keyscan -t ed25519 45.55.60.192 >> ~/.ssh/known_hosts
-
-            - name: Configure git
-              run: |
-                git config --global user.name "enwask"
-                git config --global user.email "enwask@ucf.edu"
-                git remote add camelot root@45.55.60.192:pt-poosd
-
-            - name: Deploy to DigitalOcean
-              run: |
-                git push camelot
+                host: 45.55.60.192
+                username: root
+                key: ${{ secrets.CAMELOT_PRIVATE_KEY }}
+                port: 22
+                script: |
+                    cd pt-poosd
+                    git pull
+                    ./deploy.bash
