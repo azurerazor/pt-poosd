@@ -22,8 +22,8 @@ export default function Dashboard() {
     };
 
     return (
-        <div className="hero-content w-full text-center m-auto flex-col h-screen">
-            <h1 className="text-5xl font-bold flex-row mb-8">Escavalon</h1>
+        <div className="hero-content w-full text-center m-auto flex-col gap-0 h-screen">
+            <h1 className="text-5xl font-bold flex-row mb-12">Escavalon</h1>
             <h2 className="text-3xl font-bold">Welcome, {username || 'User'}!</h2>
             <div className="justify-center">
                 <InputText 
@@ -34,11 +34,11 @@ export default function Dashboard() {
                 />
             </div>
 
-            <RouteButton to="NotFound">
+            <RouteButton to={`/lobby/${gameCode}`}>
                 Join A Game
             </RouteButton>
-            <hr className="flex mt-4 border-t-2 bg-paper-darker w-1/20 mx-auto" />
-            <RouteButton to="NotFound">
+            <hr className="flex mt-4 border-t-2 bg-paper-darker w-2/20 mx-auto" />
+            <RouteButton to={`/lobby/${gameCode}`}>
                 Make A Game
             </RouteButton>
             
