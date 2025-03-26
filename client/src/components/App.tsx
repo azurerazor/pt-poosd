@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from 'react-router'
 import Login from './pages/Login'
 import NotFound from './pages/NotFound'
 import Signup from './pages/Signup'
+import Dashboard from './pages/Dashboard'
 
 function App() {
     return (
@@ -11,6 +12,7 @@ function App() {
                 <Route path='/' Component={Signup} />
                 <Route path='/signup' Component={Signup} />
                 <Route path='/login' Component={Login} />
+                <Route path='/dashboard' Component={Dashboard} />
 
                 {/* 404 */}
                 <Route path='/*' Component={NotFound} />
