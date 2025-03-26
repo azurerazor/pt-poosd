@@ -33,4 +33,4 @@ jobs:
 
             - name: Deploy to DigitalOcean
               run: |
-                git push camelot main
+                git push camelot
