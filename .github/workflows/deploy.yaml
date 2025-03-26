@@ -1,0 +1,33 @@
+name: Deploy application
+on:
+    workflow_run:
+        workflows: [ "Build client + server" ]
+        branches:
+            - main
+        types:
+            - completed
+
+jobs:
+    deploy:
+        name: Deploy
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Set up SSH agent
+              uses: webfactory/ssh-agent@v0.9.1
+              with:
+                ssh-private-key: |
+                    ${{ secrets.CAMELOT_PRIVATE_KEY }}
+
+            - name: Configure git
+              run: |
+                git config --global user.name "enwask"
+                git config --global user.email "enwask@ucf.edu"
+                git remote add camelot root@45.55.60.192:pt-poosd
+
+            - name: Deploy to DigitalOcean
+              run: |
+                git push camelot main
