@@ -1,31 +1,17 @@
 import React from "react";
-import {
-    Avatar,
-    Button,
-    Card,
-    HStack,
-    Stack,
-    Strong,
-    Text,
-} from "@chakra-ui/react";
 
 const PlayerProfile: React.FC = () => {
     return (
-        <Card.Root className="w-full">
-            <Card.Body>
-                <HStack gap="3">
-                    <Avatar.Root>
-                        <Avatar.Image src="https://images.unsplash.com/photo-1511806754518-53bada35f930" />
-                        <Avatar.Fallback name="Username" />
-                    </Avatar.Root>
-                    <Stack gap="0">
-                        <Text fontWeight="semibold" textStyle="sm">
-                            Username
-                        </Text>
-                    </Stack>
-                </HStack>
-            </Card.Body>
-        </Card.Root>
+        <div className="card card-border bg-base-100 w-96">
+            <div className="p-4 flex gap-4">
+                <div className="avatar">
+                    <div className="ring-primary ring-offset-base-100 w-14 rounded-full ring ring-offset-2">
+                        <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                    </div>
+                </div>
+                <h2 className="card-title">Username</h2>
+            </div>
+        </div>
     )
 }
 

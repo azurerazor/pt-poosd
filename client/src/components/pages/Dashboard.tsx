@@ -29,7 +29,8 @@ export default function Dashboard() {
                 <InputText 
                     name="Game Code"
                     placeholder="Game Code"
-                    onChange={(event) => setGameCode(event.target.vale)}
+                    label=''
+                    onChange={(event) => setGameCode(event.target.value)}
                 />
             </div>
 
