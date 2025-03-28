@@ -1,13 +1,27 @@
-import React from "react";
+import { useState } from "react";
 
-const FaceCard: React.FC = () => {
+interface Props {
+    img: string;
+    status: boolean;
+}
+
+const FaceCard: React.FC<Props> = ({ img, status = true }) => {
+  const [isGrayScale, setIsGrayScale] = useState(status);
+
+  const handleClick = () => {
+    setIsGrayScale((prevStatus) => !prevStatus);
+  }
+
+  let grayScaleVal = isGrayScale ? 100 : 0;
+  let grayScale = `grayscale(${grayScaleVal}%)`;
+
   return (
-    <div className="card bg-base-100 w-60 shadow-sm">
+    <div className="card bg-base-100 w-60 shadow-sm" onClick={handleClick} >
         <figure>
             <img
-                src="https://assets.dized.app/project/1d4f013b-38de-4a55-bf81-f8390b8c4407/en-US/eb51938ff9a3aaa135a6ae051260d1ab/ed963445-6c3d-4c46-b22c-85f17fb3c60e-d41d8cd98f00b204e9800998ecf8427e.png"
+                src={img}
                 alt="Shoes"
-                style={{objectFit: 'cover', maxHeight: 300}}
+                style={{ objectFit: 'cover', maxHeight: 300, filter: grayScale }}
                 width="100%"
             />
         </figure>
