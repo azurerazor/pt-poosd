@@ -1,6 +1,6 @@
 // import 'dart:convert';
-import 'game.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile/escavalon_material.dart';
 // import 'package:http/http.dart' as http;
 
 class LoginPage extends StatelessWidget {
@@ -14,7 +14,7 @@ class LoginPage extends StatelessWidget {
           title: Text("Login"),
         ),
         body: Container(
-          padding: EdgeInsets.all(40.0),
+          padding: EdgeInsets.all(16.0),
           child: _LoginForm()
         )
     );
@@ -98,7 +98,11 @@ class _LoginFormState extends State<_LoginForm> {
                 },
               ),
 
-              OutlinedButton(
+              SizedBox(height: 20,),
+
+
+              EscavalonButton(
+                text: "Login",
                 onPressed: () {
                   if (_formKey.currentState!.validate() == false) return;
 
@@ -112,19 +116,13 @@ class _LoginFormState extends State<_LoginForm> {
                           child: const Text("OK"),
                           onPressed: () {
                             Navigator.pop(context);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => GamePage()
-                              )
-                            );
+                            Navigator.pop(context);
                           },
                         ),
                       ]
-                    ));
-
+                    )
+                  );
                 }, 
-                child: const Text('Login')
               ),
             ],
           )

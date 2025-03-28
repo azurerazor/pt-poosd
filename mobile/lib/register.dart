@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+
+import 'escavalon_material.dart';
 import 'login.dart';
 
 import 'package:flutter/material.dart';
@@ -39,7 +41,7 @@ class _RegisterFormState extends State<_RegisterForm> {
 
   final RegExp checkUsername = RegExp(r'^[A-Za-z0-9]+(?:[-_]*[A-Za-z0-9]+)*[A-Za-z0-9]+$');
 
-  // Future<http.Response>? _futureResponse;
+  Future<String>? _registerResponse;
 
   @override
   Widget build(BuildContext context) {
@@ -126,20 +128,25 @@ class _RegisterFormState extends State<_RegisterForm> {
                 },
               ),
 
-              OutlinedButton(
+              EscavalonButton(
+                text: 'Register', 
                 onPressed: () {
                   if (_formKey.currentState!.validate() == false) return;
+
+                  _registerResponse = tryRegister(username!, email!, password!);
 
                   showDialog(
                     context: context, 
                     builder: (context) => AlertDialog(
                       title: const Text("Register"),
-                      content: Text("successfully registered with username: $username, email: $email, password: $password"),
+                      content: buildFutureBuilder(),
                       actions: <Widget>[
                         TextButton(
                           child: const Text("OK"),
                           onPressed: () {
                             Navigator.pop(context);
+                            Navigator.pop(context);
+                            
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -150,23 +157,37 @@ class _RegisterFormState extends State<_RegisterForm> {
                         ),
                       ]
                     ));
-                  
-                  
-                }, 
-                child: const Text('Register')
+                },
               ),
+
+              
             ],
           )
         ),
       )
     );
   }
+
+  FutureBuilder<String> buildFutureBuilder() {
+    return FutureBuilder<String>(
+      future: _registerResponse,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else {
+          // Registered successfully!
+          return Text('Registered successfully!');
+        }
+      },
+    );
+  }
 }
 
-
-Future<Message> createMessage(String username, String email, String password) async {
+Future<String> tryRegister(String username, String email, String password) async {
   final response = await http.post(
-    Uri.parse('https://example.com/api/register'),
+    Uri.parse('http://45.55.60.192:5050/api/register'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
@@ -177,22 +198,9 @@ Future<Message> createMessage(String username, String email, String password) as
     }),
   );
 
-  if (response.statusCode == 200) {
-    return Message.fromJson(jsonDecode(response.body));
+  if (response.statusCode == 201) {
+    return "Registered successfully!";
   } else {
     throw Exception('Failed to create message.');
   }
 } 
-
-class Message {
-  final String message;
-  const Message({
-    required this.message,
-  });
-
-  factory Message.fromJson(Map<String, dynamic> json) {
-    return Message(
-      message: json['message'] as String,
-    );
-  }
-}
