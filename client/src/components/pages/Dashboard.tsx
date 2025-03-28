@@ -1,9 +1,8 @@
 import Axios from 'axios';
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router';
+import { useNavigate } from 'react-router';
 import { API_URL } from '../../util/api';
 import InputText from '../forms/InputText';
-import RouteButton from '../misc/RouteButton';
 
 export default function Dashboard() {
     const navigate = useNavigate();
