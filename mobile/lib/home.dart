@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'escavalon_material.dart';
 import 'game.dart';
 import 'login.dart';
 import 'register.dart';
+
+final Uri _url = Uri.parse('http://45.55.60.192/');
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -73,12 +76,7 @@ class _HomeContentState extends State<_HomeContent> {
         EscavalonButton(
           text: 'Open Web App', 
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => GamePage()
-              )
-            );
+            _lauchWebApp();
           }
         ),
 
@@ -130,5 +128,13 @@ class _HomeContentState extends State<_HomeContent> {
 
       ],
     );
+  }
+}
+
+// launches the web app in the default browser
+// currently forces user to login into web app even if they are logged in on mobile
+Future<void> _lauchWebApp() async {
+  if (!await launchUrl(_url)) {
+    throw Exception('Failed to launch $_url');
   }
 }
