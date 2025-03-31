@@ -1,14 +1,29 @@
 import 'package:flutter/material.dart';
 
-// class EscavalonCard extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     // TODO: implement build
-//     throw UnimplementedError();
-//   }
+class EscavalonCard extends StatelessWidget {
+  final Widget child;
 
-  
-// }
+  const EscavalonCard({
+    super.key,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+        width: double.infinity,
+        child: Card(
+          shape: BeveledRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),  
+          child: Container(
+            padding: const EdgeInsets.all(16.0),
+            child: child,
+          ),
+        )
+    );
+  }
+}
 
 class EscavalonButton extends StatelessWidget {
   final String text;

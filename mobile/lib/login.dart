@@ -1,11 +1,9 @@
-// import 'dart:convert';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:mobile/escavalon_material.dart';
-// import 'package:mobile/home.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -51,62 +49,69 @@ class _LoginFormState extends State<_LoginForm> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              TextFormField(
-                decoration: const InputDecoration(
-                  icon: Icon(Icons.person),
-                  hintText: "super-cool-username",
-                  labelText: "Username"
-                ),
-                onChanged: (String? value) {
-                  setState(() {
-                    username = value;
-                  });                },
+              EscavalonCard(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    // username     
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        icon: Icon(Icons.person),
+                        hintText: "cool-username",
+                        labelText: "Username"
+                      ),
+                      onChanged: (String? value) {
+                        setState(() {
+                          username = value;
+                        });                },
 
-                autovalidateMode: AutovalidateMode.onUnfocus,
+                      autovalidateMode: AutovalidateMode.onUnfocus,
 
-                validator: (String? value) {
-                  if (
-                    value == null || 
-                    value.length < 3 ||
-                    value.length > 16 || 
-                    !checkUsername.hasMatch(value)
-                  ) {
-                    return usernameRequirements;
-                  } else {
-                    return null;
-                  }
-                },
-              ),
+                      validator: (String? value) {
+                        if (
+                          value == null || 
+                          value.length < 3 ||
+                          value.length > 16 || 
+                          !checkUsername.hasMatch(value)
+                        ) {
+                          return usernameRequirements;
+                        } else {
+                          return null;
+                        }
+                      },
+                    ),
+                    // password
+                    TextFormField(
+                      obscureText: true,
 
-              TextFormField(
-                obscureText: true,
+                      decoration: const InputDecoration(
+                        icon: Icon(Icons.key),
+                        hintText: "password1234",
+                        labelText: "Password"
+                      ),
 
-                decoration: const InputDecoration(
-                  icon: Icon(Icons.key),
-                  hintText: "password1234",
-                  labelText: "Password"
-                ),
+                      onChanged: (String? value) {
+                        setState(() {
+                          password = value;
+                        });
+                      },
 
-                onChanged: (String? value) {
-                  setState(() {
-                    password = value;
-                  });
-                },
+                      autovalidateMode: AutovalidateMode.onUnfocus,
 
-                autovalidateMode: AutovalidateMode.onUnfocus,
+                      validator: (String? value) {
+                        if (value == null || value.length < 8) {
+                          return passwordRequirements;
+                        } else {
+                          return null;
+                        }
+                      },
+                    ),
 
-                validator: (String? value) {
-                  if (value == null || value.length < 8) {
-                    return passwordRequirements;
-                  } else {
-                    return null;
-                  }
-                },
+                  ],
+                )
               ),
 
               SizedBox(height: 20,),
-
-
 
               EscavalonButton(
                 text: 'Login', 
@@ -194,6 +199,6 @@ Future<String> tryLogin(String username, String password) async {
   if (response.statusCode == 200) {
     return "Logged in successfully!";
   } else {
-    throw Exception('Failed to create message.');
+    throw Exception('Login failed :('); // TODO: return proper error message
   }
 } 

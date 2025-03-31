@@ -53,82 +53,90 @@ class _RegisterFormState extends State<_RegisterForm> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              TextFormField(
-                decoration: const InputDecoration(
-                  icon: Icon(Icons.person),
-                  hintText: "super-cool-username",
-                  labelText: "Username"
-                ),
-                onChanged: (String? value) {
-                  setState(() {
-                    username = value;
-                  });                },
+              EscavalonCard(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // username
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        icon: Icon(Icons.person),
+                        hintText: "cool-username",
+                        labelText: "Username"
+                      ),
+                      onChanged: (String? value) {
+                        setState(() {
+                          username = value;
+                        });                },
 
-                autovalidateMode: AutovalidateMode.onUnfocus,
+                      autovalidateMode: AutovalidateMode.onUnfocus,
 
-                validator: (String? value) {
-                  if (
-                    value == null || 
-                    value.length < 3 ||
-                    value.length > 16 || 
-                    !checkUsername.hasMatch(value)
-                  ) {
-                    return usernameRequirements;
-                  } else {
-                    return null;
-                  }
-                },
+                      validator: (String? value) {
+                        if (
+                          value == null || 
+                          value.length < 3 ||
+                          value.length > 16 || 
+                          !checkUsername.hasMatch(value)
+                        ) {
+                          return usernameRequirements;
+                        } else {
+                          return null;
+                        }
+                      },
+                    ),
+                    // email
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        icon: Icon(Icons.mail),
+                        hintText: "you@gmail.com",
+                        labelText: "Email"
+                      ),
+
+                      onChanged: (String? value) {
+                        setState(() {
+                          email = value;
+                        });
+                      },
+
+                      autovalidateMode: AutovalidateMode.onUnfocus,
+
+                      validator: (String? value) {
+                        if (value == null || value.length < 3) {
+                          return emailRequirements;
+                        } else {
+                          return null;
+                        }
+                      },
+                    ),
+                    // password
+                    TextFormField(
+                      obscureText: true,
+
+                      decoration: const InputDecoration(
+                        icon: Icon(Icons.key),
+                        hintText: "password1234",
+                        labelText: "Password"
+                      ),
+
+                      onChanged: (String? value) {
+                        setState(() {
+                          password = value;
+                        });
+                      },
+
+                      autovalidateMode: AutovalidateMode.onUnfocus,
+
+                      validator: (String? value) {
+                        if (value == null || value.length < 8) {
+                          return passwordRequirements;
+                        } else {
+                          return null;
+                        }
+                      },
+                    ),
+                  ],
+                )
               ),
-
-              TextFormField(
-                decoration: const InputDecoration(
-                  icon: Icon(Icons.mail),
-                  hintText: "you@gmail.com",
-                  labelText: "Email"
-                ),
-
-                onChanged: (String? value) {
-                  setState(() {
-                    email = value;
-                  });
-                },
-
-                autovalidateMode: AutovalidateMode.onUnfocus,
-
-                validator: (String? value) {
-                  if (value == null || value.length < 3) {
-                    return emailRequirements;
-                  } else {
-                    return null;
-                  }
-                },
-              ),
-              TextFormField(
-                obscureText: true,
-
-                decoration: const InputDecoration(
-                  icon: Icon(Icons.key),
-                  hintText: "password1234",
-                  labelText: "Password"
-                ),
-
-                onChanged: (String? value) {
-                  setState(() {
-                    password = value;
-                  });
-                },
-
-                autovalidateMode: AutovalidateMode.onUnfocus,
-
-                validator: (String? value) {
-                  if (value == null || value.length < 8) {
-                    return passwordRequirements;
-                  } else {
-                    return null;
-                  }
-                },
-              ),
-
               EscavalonButton(
                 text: 'Register', 
                 onPressed: () {
