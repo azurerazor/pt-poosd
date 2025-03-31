@@ -4,6 +4,7 @@ import NotFound from './pages/NotFound'
 import Signup from './pages/Signup'
 import Dashboard from './pages/Dashboard'
 import Lobby from './pages/Lobby'
+import Game from './pages/Game'
 
 function App() {
     return (
@@ -14,7 +15,10 @@ function App() {
                 <Route path='/login' Component={Login} />
                 <Route path='/signup' Component={Signup} />
                 <Route path='/dashboard' Component={Dashboard} />
+
+                {/* Game pages */}
                 <Route path="/lobby/*" Component={Lobby} />
+                <Route path="/game/*" Component={Game} />
 
                 {/* 404 */}
                 <Route path='/*' Component={NotFound} />

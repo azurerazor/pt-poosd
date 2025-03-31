@@ -6,11 +6,11 @@ import { useLocation } from 'react-router';
 
 
 const Lobby: React.FC = () => {
-
     // Should eventually always be passed
     // Need a random code when first making the lobby
     const location = useLocation();
     const gameCode = location.state ? location.state.gameCode : "ABCDE";
+    const gameRoute = `/game/${gameCode}`
 
     return (
         <>
@@ -50,10 +50,15 @@ const Lobby: React.FC = () => {
                         />
                     </div>
                     <div className="flex justify-between items-center">
-                        <RouteButton to="/*">Start</RouteButton>
-                        <RouteButton to="/dashboard">Exit</RouteButton>
+                        <RouteButton to={gameRoute}>
+                            Start
+                        </RouteButton>
+                        <RouteButton to="/dashboard">
+                            Exit
+                        </RouteButton>
                     </div>
                 </div>
+
                 <div className="grid grid-rows-2 grid-cols-3 gap-4 gap-x-4 justify-between">
                     <FaceCard 
                         img={"https://assets.dized.app/project/1d4f013b-38de-4a55-bf81-f8390b8c4407/en-US/eb51938ff9a3aaa135a6ae051260d1ab/ed963445-6c3d-4c46-b22c-85f17fb3c60e-d41d8cd98f00b204e9800998ecf8427e.png"}

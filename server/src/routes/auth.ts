@@ -114,8 +114,8 @@ export async function login(req: Request, res: Response, next: () => void) {
  * Logs a user out
  */
 export async function logout(_: Request, res: Response) {
-    res.clearCookie('token');
     res
         .status(200)
+        .clearCookie('token')
         .json({ message: "User successfully logged out" });
 }
