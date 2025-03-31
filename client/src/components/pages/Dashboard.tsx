@@ -1,4 +1,3 @@
-import Axios from 'axios';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { API_URL } from '../../util/api';

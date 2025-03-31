@@ -1,5 +1,4 @@
 import { USERNAME_HINT, USERNAME_MAX_LENGTH, USERNAME_MIN_LENGTH, USERNAME_PATTERN } from '@common/util/validation.js';
-import Axios from 'axios';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { API_URL } from '../../util/api';
@@ -31,7 +30,7 @@ export default function Login() {
             }
             return response.json();
         })
-        .then(data => {
+        .then(_ => {
             alert("Successfully logged in!");
             navigate('/dashboard');
         })
