@@ -1,5 +1,5 @@
 // Username validation constants
-export const USERNAME_PATTERN = "[A-Za-z0-9]+(?:[\-_]*[A-Za-z0-9]+)*[A-Za-z0-9]+";
+export const USERNAME_PATTERN = "[A-Za-z0-9]+(?:[\\-_]*[A-Za-z0-9]+)*[A-Za-z0-9]+";
 export const USERNAME_REGEX = new RegExp(`^${USERNAME_PATTERN}$`);
 export const USERNAME_MIN_LENGTH = 3;
 export const USERNAME_MAX_LENGTH = 16;
