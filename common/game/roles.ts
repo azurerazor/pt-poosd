@@ -3,6 +3,9 @@ export enum Alignment {
     EVIL = 1
 }
 
+/**
+ * Enum flags for the roles in the game.
+ */
 export enum Roles {
     NONE = 0,
 
@@ -19,6 +22,26 @@ export enum Roles {
     GOOD = 1 | 2 | 4,
     EVIL = 8 | 16 | 32 | 64 | 128,
     ANY = GOOD | EVIL,
+
+    DEFAULT_ROLES =
+    SERVANT_OF_ARTHUR | MINION_OF_MORDRED
+    | MERLIN | MORGANA
+    | PERCIVAL
+}
+
+/**
+ * The set of roles required to enable a given role.
+ */
+export const role_requirements: { [key: number]: Roles } = {
+    [Roles.SERVANT_OF_ARTHUR]: Roles.NONE,
+    [Roles.MERLIN]: Roles.NONE,
+    [Roles.PERCIVAL]: Roles.MERLIN | Roles.MORGANA,
+
+    [Roles.MINION_OF_MORDRED]: Roles.NONE,
+    [Roles.MORGANA]: Roles.MERLIN | Roles.PERCIVAL,
+    [Roles.MORDRED]: Roles.MERLIN,
+    [Roles.ASSASSIN]: Roles.MERLIN,
+    [Roles.OBERON]: Roles.NONE,
 }
 
 export class Role {
@@ -180,4 +203,11 @@ export function getRoleByName(name: string): Role {
         if (r.name === name) return r;
     }
     return servant;
+}
+
+/**
+ * Extracts all Role instances contained in a given role set.
+ */
+export function getRoles(role: Roles): Role[] {
+    return all_roles.filter(r => r.is(role));
 }
