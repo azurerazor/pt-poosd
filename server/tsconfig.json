@@ -27,7 +27,4 @@
             "path": "../common"
         }
     ],
-    "include": [
-        "../common/*.ts",
-    ]
 }

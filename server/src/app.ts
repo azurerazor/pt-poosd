@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 
 import { login, logout, register } from './routes/auth.js';
 import game from './routes/game.js';
+import get_user from './routes/get_user.js';
 import stats from './routes/stats.js';
 
 // Constants (duh)
@@ -30,6 +31,7 @@ app.post('/api/login', login);
 app.post('/api/logout', logout);
 
 // Protected routes
+app.use('/api/get_user', get_user);
 app.use('/api/stats', stats);
 app.use('/api/game', game);
 

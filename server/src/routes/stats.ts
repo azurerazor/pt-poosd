@@ -19,7 +19,7 @@ function statsToJson(stats: any): any {
 }
 
 // Fetches stats for a given username (or the currently authenticated user, if omitted)
-router.get('/:forUser?', async (req: Request, res: Response) => {
+router.get('/user/:forUser?', async (req: Request, res: Response) => {
     // Fetch stats for the user
     const forUser = req.params.forUser ?? res.locals.user;
     const stats = await Stats.findOne({ username: req.params.forUser });
@@ -48,6 +48,31 @@ router.get('/:forUser?', async (req: Request, res: Response) => {
     res
         .status(200)
         .json(statsToJson(stats));
+});
+
+// Fetches top stats for a given stat type
+router.get('/top/:statKey/:num(\\d+)?', async (req: Request, res: Response) => {
+    // Check that the stat key is one of Stats' properties
+    const statKey = req.params.statKey;
+    if (!Stats.schema.paths[statKey]) {
+        res
+            .status(400)
+            .json({ message: "Invalid stat key" });
+        return;
+    }
+
+    // Fetch the top `num` stats for the given stat key
+    const num = parseInt(req.params.num) ?? 10;
+    const stats = (
+        await Stats.find()
+            .sort({ [statKey]: 'descending' })
+            .limit(num))
+        .map(statsToJson);
+    
+    // Respond
+    res
+        .status(200)
+        .json(stats);
 });
 
 export default router;

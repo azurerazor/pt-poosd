@@ -1,21 +1,42 @@
-name: deploy
-on:
-    workflow_dispatch:
-    workflow_run:
-        workflows: [ "build" ]
-        types:
-            - completed
+name: Build + Deploy
+on: [ push ]
 
 jobs:
-    deploy:
-        name: Deploy
+    build:
+        name: Build
         runs-on: ubuntu-latest
 
         steps:
             - name: Checkout
               uses: actions/checkout@v4
 
-            - name: Pull through SSH
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                node-version: '22.x'
+
+            - name: Install client dependencies
+              run: cd client && npm install
+
+            - name: Build client
+              run: cd client && npm run build
+
+            - name: Install server dependencies
+              run: cd server && npm install
+
+            - name: Build server
+              run: cd server && npm run build
+
+    deploy:
+        name: Deploy
+        runs-on: ubuntu-latest
+        needs: [ build ]
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Deploy to camelot
               uses: appleboy/ssh-action@v1
               with:
                 host: 45.55.60.192
