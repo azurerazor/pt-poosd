@@ -3,8 +3,7 @@ on:
     workflow_dispatch:
     workflow_run:
         workflows: [ "build" ]
-        types:
-            - completed
+        types: [ success ]
 
 jobs:
     deploy:
@@ -15,7 +14,7 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v4
 
-            - name: Pull through SSH
+            - name: Deploy to camelot
               uses: appleboy/ssh-action@v1
               with:
                 host: 45.55.60.192
