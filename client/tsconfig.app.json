@@ -24,6 +24,11 @@
         "noFallthroughCasesInSwitch": true,
         "noUncheckedSideEffectImports": true,
         "baseUrl": "./src",
+        "paths": {
+            "@common/*": [
+                "../../common/*"
+            ]
+        }
     },
     "references": [
         {

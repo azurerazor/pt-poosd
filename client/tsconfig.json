@@ -6,16 +6,6 @@
         },
         {
             "path": "./tsconfig.node.json"
-        },
-        {
-            "path": "../common"
         }
-    ],
-    "compilerOptions": {
-        "paths": {
-            "@common/*": [
-                "../../common/*"
-            ]
-        }
-    }
+    ]
 }
