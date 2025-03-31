@@ -19,6 +19,9 @@ export default function Login() {
         Axios.post(`${API_URL}/api/login`, {
             username,
             password
+        }, {
+            headers: { 'Content-Type': 'application/json', },
+            withCredentials: true
         }).then(_ => {
             alert("Successfully logged in!");
             navigate('/dashboard');

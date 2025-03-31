@@ -95,11 +95,11 @@ export async function login(req: Request, res: Response, next: () => void) {
 
         // Authenticate
         const token = acquireToken(username);
-        res.cookie('token', token, { httpOnly: false });
 
         // Respond
         res
             .status(200)
+            .cookie('token', token, { httpOnly: false })
             .json({ message: "User successfully logged in" });
         next();
     } catch (err) {

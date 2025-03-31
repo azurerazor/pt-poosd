@@ -21,7 +21,10 @@ mongoose
 
 // Set up the Express app
 const app = express();
-app.use(cors()); // TODO: https://stackoverflow.com/a/69988063 ?
+app.use(cors({
+    origin: process.env.CLIENT_ORIGIN,
+    credentials: true
+}));
 app.use(cookieParser());
 app.use(express.json());
 

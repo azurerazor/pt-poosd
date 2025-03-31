@@ -22,6 +22,9 @@ export default function Signup() {
             email,
             username,
             password
+        }, {
+            headers: { 'Content-Type': 'application/json', },
+            withCredentials: true
         }).then(_ => {
             alert("Signup successful!");
             navigate('/login');
