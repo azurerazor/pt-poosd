@@ -1,7 +1,11 @@
 // import 'dart:convert';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:loading_indicator/loading_indicator.dart';
 import 'package:mobile/escavalon_material.dart';
-// import 'package:http/http.dart' as http;
+// import 'package:mobile/home.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -35,6 +39,8 @@ class _LoginFormState extends State<_LoginForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final RegExp checkUsername = RegExp(r'^[A-Za-z0-9]+(?:[-_]*[A-Za-z0-9]+)*[A-Za-z0-9]+$');
+
+  Future<String>? _loginResponse;
 
   @override
   Widget build(BuildContext context) {
@@ -101,28 +107,19 @@ class _LoginFormState extends State<_LoginForm> {
               SizedBox(height: 20,),
 
 
+
               EscavalonButton(
-                text: "Login",
+                text: 'Login', 
                 onPressed: () {
                   if (_formKey.currentState!.validate() == false) return;
 
+                  _loginResponse = tryLogin(username!, password!);
+
                   showDialog(
                     context: context, 
-                    builder: (context) => AlertDialog(
-                      title: const Text("Log In"),
-                      content: Text("successfully logged in with username: $username, password: $password"),
-                      actions: <Widget>[
-                        TextButton(
-                          child: const Text("OK"),
-                          onPressed: () {
-                            Navigator.pop(context);
-                            Navigator.pop(context);
-                          },
-                        ),
-                      ]
-                    )
+                    builder: (context) => buildResponse()
                   );
-                }, 
+                },
               ),
             ],
           )
@@ -131,10 +128,72 @@ class _LoginFormState extends State<_LoginForm> {
     );
   }
 
-
-
-
-
-
-
+  // Creates AlertDialog with FutureBuilder 
+  // to show loading indicator while waiting for response
+  // or allow further action depending on whether they registered successfully or not
+  FutureBuilder<String> buildResponse() {
+    return FutureBuilder<String>(
+      future: _loginResponse,
+      builder: (context, snapshot) {
+        // If still loading, show loading indicator
+        // very ugly for now but it works
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return AlertDialog(
+            title: Text("Register"),
+            content: LoadingIndicator(
+              indicatorType: Indicator.ballPulse
+            ),
+          );
+        // Oh no, didn't login successuly
+        } else if (snapshot.hasError) {
+          return AlertDialog(
+            title: Text("Login"),
+            content: Text("Error: ${snapshot.error}"),
+            actions: <Widget>[
+              TextButton(
+                child: Text("OK"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              )
+            ]
+          );
+        // Logged in successfully
+        } else {
+          return AlertDialog(
+            title: Text("Login"),
+            content: Text("Logged in successfully!\nUsername: $username"),
+            actions: <Widget>[
+              TextButton(
+                child: const Text("OK"),
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
+              )
+            ]
+          );
+        }
+      },
+    );
+  }
 }
+
+Future<String> tryLogin(String username, String password) async {
+  final response = await http.post(
+    Uri.parse('http://45.55.60.192:5050/api/login'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'username': username,
+      'password': password,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    return "Logged in successfully!";
+  } else {
+    throw Exception('Failed to create message.');
+  }
+} 

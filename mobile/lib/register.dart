@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:loading_indicator/loading_indicator.dart';
 import 'escavalon_material.dart';
 import 'login.dart';
 
@@ -137,30 +138,10 @@ class _RegisterFormState extends State<_RegisterForm> {
 
                   showDialog(
                     context: context, 
-                    builder: (context) => AlertDialog(
-                      title: const Text("Register"),
-                      content: buildFutureBuilder(),
-                      actions: <Widget>[
-                        TextButton(
-                          child: const Text("OK"),
-                          onPressed: () {
-                            Navigator.pop(context);
-                            Navigator.pop(context);
-                            
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => LoginPage()
-                              )
-                            );
-                          },
-                        ),
-                      ]
-                    ));
+                    builder: (context) => buildResponse()
+                  );
                 },
-              ),
-
-              
+              ), 
             ],
           )
         ),
@@ -168,17 +149,58 @@ class _RegisterFormState extends State<_RegisterForm> {
     );
   }
 
-  FutureBuilder<String> buildFutureBuilder() {
+  // Creates AlertDialog with FutureBuilder 
+  // to show loading indicator while waiting for response
+  // or allow further action depending on whether they registered successfully or not
+  FutureBuilder<String> buildResponse() {
     return FutureBuilder<String>(
       future: _registerResponse,
       builder: (context, snapshot) {
+        // If still loading, show loading indicator
+        // very ugly for now but it works
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
+          return AlertDialog(
+            title: Text("Register"),
+            content: LoadingIndicator(
+              indicatorType: Indicator.ballPulse
+            ),
+          );
+        // Oh no, didn't register successuly
         } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
+          return AlertDialog(
+            title: Text("Register"),
+            content: Text("Error: ${snapshot.error}"),
+            actions: <Widget>[
+              TextButton(
+                child: Text("OK"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              )
+            ]
+          );
+        // Registered successfully, show success message and allow navigation directly to login
         } else {
-          // Registered successfully!
-          return Text('Registered successfully!');
+          return AlertDialog(
+            title: Text("Register"),
+            content: Text("Registered successfully!\nUsername: $username\nEmail: $email"),
+            actions: <Widget>[
+              TextButton(
+                child: const Text("OK"),
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => LoginPage()
+                    )
+                  );
+                },
+              )
+            ]
+          );
         }
       },
     );
@@ -201,6 +223,6 @@ Future<String> tryRegister(String username, String email, String password) async
   if (response.statusCode == 201) {
     return "Registered successfully!";
   } else {
-    throw Exception('Failed to create message.');
+    throw Exception('Register failed.'); // TODO: return proper error message
   }
 } 
