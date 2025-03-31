@@ -29,4 +29,5 @@ cp -r shared/ /var/
 # Restart the server process
 echo "Redeploying server..."
 cd /var/server
+pm2 update
 pm2 start
