@@ -10,9 +10,9 @@ function App() {
         <BrowserRouter>
             <Routes>
                 {/* Main (non-game) pages */}
-                <Route path='/' Component={Signup} />
-                <Route path='/signup' Component={Signup} />
+                <Route path='/' Component={Login} />
                 <Route path='/login' Component={Login} />
+                <Route path='/signup' Component={Signup} />
                 <Route path='/dashboard' Component={Dashboard} />
                 <Route path="/lobby/*" Component={Lobby} />
 
