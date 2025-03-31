@@ -1,3 +1,5 @@
+import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from "@common/util/validation";
+
 interface Props {
     name: string;
     label: string;
@@ -20,7 +22,8 @@ const InputPassword: React.FC<Props> = ({ name, label, placeholder = '', value =
                 type="password"
                 className="input validator w-full text-base-content"
                 // @ts-expect-error
-                minlength="8"
+                minlength={PASSWORD_MIN_LENGTH}
+                maxlength={PASSWORD_MAX_LENGTH}
                 required
 
                 id={name}

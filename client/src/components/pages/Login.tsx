@@ -1,3 +1,4 @@
+import { USERNAME_HINT, USERNAME_MAX_LENGTH, USERNAME_MIN_LENGTH, USERNAME_PATTERN } from '@common/util/validation';
 import Axios from 'axios';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
@@ -40,11 +41,11 @@ export default function Login() {
                     <InputTextRegex
                         name='username'
                         label='Username'
-                        minLength={3}
-                        maxLength={16}
-                        pattern="[A-Za-z0-9]+(?:[\-_]*[A-Za-z0-9]+)*[A-Za-z0-9]+"
-                        validatorHint="3-16 letters, numbers, underscores or hyphens"
-                        placeholder="super-cool-username"
+                        pattern={USERNAME_PATTERN}
+                        minLength={USERNAME_MIN_LENGTH}
+                        maxLength={USERNAME_MAX_LENGTH}
+                        validatorHint={USERNAME_HINT}
+                        placeholder="cool-username"
 
                         onChange={(event) => setUsername(event.target.value)}
                     />
