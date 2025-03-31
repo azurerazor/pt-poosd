@@ -1,4 +1,4 @@
-import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from "@common/util/validation";
+import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from "@common/util/validation.js";
 
 interface Props {
     name: string;
