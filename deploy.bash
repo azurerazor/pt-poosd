@@ -3,7 +3,7 @@
 # Build the client
 echo "Building client..."
 cd client
-npm i
+npm i --include=dev
 npm run build
 
 # Copy over to web root + restart the nginx service
@@ -15,6 +15,7 @@ service nginx restart
 # Build the server
 echo "Building server..."
 cd ../server
+npm i --include=dev
 npm run build
 
 # Copy over the server source
