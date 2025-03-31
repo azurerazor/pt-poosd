@@ -20,31 +20,30 @@ export default function Dashboard() {
             }).then(async (data) => {
                 if(data.status != 200)throw Error (data.statusText);
                 setUsername((await data.json()).username);
-                console.log(username);
             }).catch(err => {
                 console.error(err);
                 navigate('/');
             });
         }
-        
         fetchData();
     }, []);
-    console.log(username);
 
     const [gameCode, setGameCode] = useState('');
 
     const handleLogout = () => {
-        Axios.post(`${API_URL}/api/logout`, {
-        }, {
-            headers: { 'Content-Type': 'application/json', },
-            withCredentials: true
+        fetch(`${API_URL}/api/logout`,{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include'
         }).then(_ => {
             alert("Successfully logged out!");
             navigate('/');
         }).catch(err => {
             console.error(err);
             alert("Logout failed: " + err.response.data.message);
-        });
+        });        
     };
 
     const handleJoin = () => {

@@ -46,11 +46,11 @@ export async function register(req: Request, res: Response, next: () => void) {
         // Create the new user and authenticate
         await User.create({ email, username, password });
         const token = acquireToken(username);
-        res.cookie('token', token, { httpOnly: false });
 
         // Respond (duh)
         res
             .status(201)
+            .cookie('token', token, { httpOnly: false })
             .json({ message: "User successfully created" });
         next();
     } catch (err) {
