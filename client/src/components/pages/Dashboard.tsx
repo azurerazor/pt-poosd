@@ -1,33 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { API_URL } from '../../util/api';
 import InputText from '../forms/InputText';
 import FunctionButton from '../misc/FunctionButton';
+import { useUser } from '../../util/auth';
 
 export default function Dashboard() {
     const navigate = useNavigate();
-    const [username, setUsername] = useState('');
-
-    useEffect(() => {
-        const fetchData = async () => {
-            fetch(`${API_URL}/api/get_user`,{
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include'
-            }).then(async (data) => {
-                if(data.status != 200)throw Error (data.statusText);
-                setUsername((await data.json()).username);
-            }).catch(err => {
-                console.error(err);
-                navigate('/');
-            });
-        }
-        fetchData();
-    }, []);
 
     const [gameCode, setGameCode] = useState('');
+
+    const { username } = useUser();
 
     const handleLogout = () => {
         fetch(`${API_URL}/api/logout`,{
