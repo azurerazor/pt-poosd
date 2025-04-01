@@ -1,5 +1,4 @@
 import { USERNAME_HINT, USERNAME_MAX_LENGTH, USERNAME_MIN_LENGTH, USERNAME_PATTERN } from '@common/util/validation.js';
-import Axios from 'axios';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { API_URL } from '../../util/api';
@@ -16,19 +15,30 @@ export default function Login() {
     const [password, setPassword] = useState('');
 
     function handleLogin(event: React.FormEvent<HTMLFormElement>) {
-        Axios.post(`${API_URL}/api/login`, {
-            username,
-            password
-        }, {
-            headers: { 'Content-Type': 'application/json', },
-            withCredentials: true
-        }).then(_ => {
+        fetch(`${API_URL}/api/login`,{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password }),
+            credentials: 'include'
+        }).then(response => {
+            if (!response.ok) {
+                return response.json().then(errorData => {
+                    throw new Error(errorData.message || 'Login failed');
+                });
+            }
+            return response.json();
+        })
+        .then(_ => {
             alert("Successfully logged in!");
             navigate('/dashboard');
-        }).catch(err => {
+        })
+        .catch(err => {
             console.error(err);
-            alert("Login failed: " + err.response.data.message);
+            alert("Login failed: " + err.message);
         });
+
         event.preventDefault();
     }
 
