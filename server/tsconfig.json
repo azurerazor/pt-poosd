@@ -20,7 +20,7 @@
             "@common/*": [
                 "../../common/dist/*"
             ]
-        }
+        },
     },
     "references": [
         {
