@@ -15,14 +15,17 @@ jobs:
               with:
                 node-version: '22.x'
 
+            - name: Install common dependencies
+              run: cd common && npm i --include=dev
+
             - name: Install client dependencies
-              run: cd client && npm install
+              run: cd client && npm i --include=dev
 
             - name: Build client
               run: cd client && npm run build
 
             - name: Install server dependencies
-              run: cd server && npm install
+              run: cd server && npm i --include=dev
 
             - name: Build server
               run: cd server && npm run build
