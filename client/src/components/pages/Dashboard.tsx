@@ -34,7 +34,7 @@ export default function Dashboard() {
     };
 
     const handleMake = () => {
-        //TO-DO get random lobby code and actually set the websocket up
+        //TO-DO get random lobby code and make new Lobby and actually set the websocket up
         navigate(`/lobby/${gameCode}`,{state:{gameCode:gameCode}});
     };
 

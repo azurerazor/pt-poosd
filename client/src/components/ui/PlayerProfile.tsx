@@ -1,14 +1,13 @@
 import React from "react";
+import { Player } from "../../../../common/game/player"
 
 interface Props {
-    username: string;
-    userCharacter: string;
-    isHost?: boolean;
+    player: Player;
 }
 
-const PlayerProfile: React.FC<Props> = ({ username, userCharacter, isHost = false }) => {
-    
-    const host = isHost ? "👑" : "";
+const PlayerProfile: React.FC<Props> = ({ player }) => {
+
+    const host = player.isHost ? "👑" : "";
 
     return (
         <div className="card card-border bg-base-100 w-96">
@@ -16,10 +15,10 @@ const PlayerProfile: React.FC<Props> = ({ username, userCharacter, isHost = fals
                 <div className="flex gap-4">
                     <div className="avatar">
                         <div className="ring-primary ring-offset-base-100 w-14 rounded-full ring ring-offset-2">
-                            <img src={userCharacter} />
+                            <img src={player.avatar} />
                         </div>
                     </div>
-                    <h2 className="card-title text-xl">{username}</h2>
+                    <h2 className="card-title text-xl">{player.username}</h2>
                 </div>
                 <div className="flex justify-center items-center">
                     <h2 className="text-3xl">{host}</h2>

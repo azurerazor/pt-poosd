@@ -19,7 +19,7 @@ export class Player {
     /**
      * The player's selected avatar
      */
-    public avatar: string = "default";
+    public avatar: string = "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp";
 
     /**
      * This player's set of possible roles, if applicable.
