@@ -1,7 +1,8 @@
+import { EMAIL_REGEX, PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH, USERNAME_MAX_LENGTH, USERNAME_MIN_LENGTH, USERNAME_REGEX } from '@common/util/validation.js';
 import bcrypt from 'bcrypt';
+import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/user.js';
-import { Request, Response } from 'express';
 
 require('dotenv').config();
 const AUTH_KEY = process.env.AUTH_KEY!;
@@ -24,6 +25,26 @@ export async function register(req: Request, res: Response, next: () => void) {
             res
                 .status(400)
                 .json({ message: "Missing one or more required fields" });
+            return;
+        }
+
+        // Validate fields
+        if (!EMAIL_REGEX.test(email)) {
+            res
+                .status(400)
+                .json({ message: "Invalid email address" });
+            return;
+        }
+        if (!USERNAME_REGEX.test(username) || username.length < USERNAME_MIN_LENGTH || username.length > USERNAME_MAX_LENGTH) {
+            res
+                .status(400)
+                .json({ message: `Invalid username: must be ${USERNAME_MIN_LENGTH}-${USERNAME_MAX_LENGTH} letters, numbers, underscores or hyphens` });
+            return;
+        }
+        if (password.length < PASSWORD_MIN_LENGTH || password.length > PASSWORD_MAX_LENGTH) {
+            res
+                .status(400)
+                .json({ message: `Invalid password: must be ${PASSWORD_MIN_LENGTH}-${PASSWORD_MAX_LENGTH} characters long` });
             return;
         }
 

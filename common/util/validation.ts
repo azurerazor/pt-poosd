@@ -8,3 +8,7 @@ export const USERNAME_HINT = `${USERNAME_MIN_LENGTH}-${USERNAME_MAX_LENGTH} lett
 // Password validation constants
 export const PASSWORD_MIN_LENGTH = 8;
 export const PASSWORD_MAX_LENGTH = 64;
+
+// Email validation constants
+export const EMAIL_PATTERN = "^\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$"
+export const EMAIL_REGEX = new RegExp(`^${EMAIL_PATTERN}$`);
