@@ -123,12 +123,12 @@ export abstract class EventBroker {
     }
 
     /**
-     * Gets the active lobby state for a given username
+     * Gets the origin to send with events
      * 
-     * On the client, always returns the active lobby (username is ignored)
-     * On the server, returns the lobby the user is in
+     * On the client, this is the username of the logged-in user
+     * On the server, this is always "server"
      */
-    protected abstract getActiveLobby(username: string): Lobby;
+    protected abstract getOrigin(): string;
 
     /**
      * Gets the JWT signing key if on the client
@@ -138,17 +138,17 @@ export abstract class EventBroker {
     protected abstract getSigningKey(): string | null;
 
     /**
-     * Gets the origin to send with events
-     * 
-     * On the client, this is the username of the logged-in user
-     * On the server, this is always "server"
-     */
-    protected abstract getOrigin(): string;
-
-    /**
      * Sends an actual event packet to the other side
      */
-    protected abstract sendPacket(packet: EventPacket): void;
+    protected abstract sendPacket(lobby: Lobby, packet: EventPacket): void;
+
+    /**
+     * Gets the active lobby state for a given username, or null if none
+     * 
+     * On the client, always returns the active lobby (username is ignored)
+     * On the server, returns the lobby the user is in
+     */
+    protected abstract getActiveLobby(username: string): Lobby | null;
 
 
     /**
@@ -188,7 +188,7 @@ export abstract class EventBroker {
         event.read(packet.data);
 
         // Get the active lobby state and dispatch the event
-        const lobby = this.getActiveLobby(packet.origin);
+        const lobby = this.getActiveLobby(packet.origin)!;
         this.dispatch(lobby, event);
     }
 
@@ -205,7 +205,8 @@ export abstract class EventBroker {
             this.getSigningKey());
 
         // Send the packet
-        this.sendPacket(packet);
+        const lobby = this.getActiveLobby(origin)!;
+        this.sendPacket(lobby, packet);
     }
 }
 
