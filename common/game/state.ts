@@ -74,6 +74,12 @@ export class Lobby {
     public host: string;
 
     /**
+     * The username of the current leader (team proposer)
+     * Null if a game is not in progress
+     */
+    public leader: string | null = null;
+
+    /**
      * The current game state
     */
     public state: LobbyState;
@@ -171,6 +177,30 @@ export class Lobby {
         // Set the new host
         this.host = newHost;
         player.isHost = true;
+
+        return true;
+    }
+
+    /**
+     * Sets the lobby leader to a new player if they are connected
+     * Returns false if the player is not in the lobby or not currently connected
+     */
+    public setLeader(newLeader: string): boolean {
+        // Get the player object for the new leader
+        const player = this.getPlayer(newLeader);
+        if (!player || !player.isConnected) return false;
+
+        // Unset the previous leader
+        if (this.leader) {
+            const oldLeader = this.getPlayer(this.leader);
+            if (oldLeader) {
+                oldLeader.isLeader = false;
+            }
+        }
+
+        // Set the new leader
+        this.leader = newLeader;
+        player.isLeader = true;
 
         return true;
     }

@@ -12,6 +12,11 @@ export class Player {
     public isHost: boolean;
 
     /**
+     * Whether the player is the current leader (team proposer)
+     */
+    public isLeader: boolean = false;
+
+    /**
      * Whether the player is currently connected
      */
     public isConnected: boolean = true;
