@@ -83,6 +83,57 @@ export async function register(req: Request, res: Response, next: () => void) {
     }
 }
 
+export async function verifyEmail(req: Request, res: Response) {
+    try {
+        const { token } = req.params;
+        if (!token) {
+            res
+                .status(400)
+                .json({ message: "Missing token" });
+            return;
+        }
+
+        // Verify the token
+        jwt.verify(token, AUTH_KEY, async (err: any, data: any) => {
+            if (err) {
+                res
+                    .status(401)
+                    .json({ message: "Invalid token" });
+                return;
+            }
+
+            // Locate the user
+            const user = await User.findOne({ username: data.username });
+            if (!user) {
+                res
+                    .status(401)
+                    .json({ message: "Invalid token" });
+                return;
+            }
+            if (user.isVerified) {
+                res
+                    .status(400)
+                    .json({ message: "Email address already verified" });
+                return;
+            }
+
+            // Verify the email address
+            user.isVerified = true;
+            await user.save();
+
+            // Respond
+            res
+                .status(200)
+                .json({ message: "Email address successfully verified" });
+        });
+    } catch (err) {
+        console.error(err);
+        res
+            .status(500)
+            .json({ message: "Internal server error" });
+    }
+}
+
 /**
  * Logs a user in
  */
@@ -111,6 +162,14 @@ export async function login(req: Request, res: Response, next: () => void) {
             res
                 .status(401)
                 .json({ message: "Invalid password" });
+            return;
+        }
+
+        // Check if the user has verified their email address
+        if (!user.isVerified) {
+            res
+                .status(401)
+                .json({ message: "Email address has not been verified" });
             return;
         }
 

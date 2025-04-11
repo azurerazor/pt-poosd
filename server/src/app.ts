@@ -3,7 +3,7 @@ import cors from 'cors';
 import express from 'express';
 import mongoose from 'mongoose';
 
-import { login, logout, register } from './routes/auth.js';
+import { login, logout, register, verifyEmail } from './routes/auth.js';
 import game from './routes/game.js';
 import get_user from './routes/get_user.js';
 import stats from './routes/stats.js';
@@ -32,6 +32,7 @@ app.use(express.json());
 app.post('/api/register', register);
 app.post('/api/login', login);
 app.post('/api/logout', logout);
+app.post('/api/verify/:token', verifyEmail);
 
 // Protected routes
 app.use('/api/get_user', get_user);

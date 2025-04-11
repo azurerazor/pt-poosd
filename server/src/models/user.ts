@@ -27,6 +27,14 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Password is required'],
     },    
+
+    /**
+     * Whether the user has verified their email address
+     */
+    isVerified: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 // Hash the user's password before serializing
