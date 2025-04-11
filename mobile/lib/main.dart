@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-
 import 'home.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const Escavalon());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class Escavalon extends StatelessWidget {
+  const Escavalon({super.key});
 
   // This widget is the root of your application.
   @override
