@@ -153,7 +153,7 @@ class _LoginFormState extends State<_LoginForm> {
         } else if (snapshot.hasError) {
           return AlertDialog(
             title: Text("Login"),
-            content: Text("Error: ${snapshot.error}"),
+            content: Text("${snapshot.error}"),
             actions: <Widget>[
               TextButton(
                 child: Text("OK"),
@@ -201,6 +201,11 @@ Future<String> tryLogin(String username, String password) async {
   if (response.statusCode == 200) {
     return "Logged in successfully!";
   } else {
-    throw Exception('Login failed :('); // TODO: return proper error message
-  }
+    final dynamic responseBody = jsonDecode(response.body);
+    if (responseBody is Map<String, dynamic>) {
+      final String errorMessage = responseBody['message'] ?? "Unknown error";
+      throw Exception(errorMessage);
+    } else {
+      throw Exception("Unknown error");
+    }  }
 } 

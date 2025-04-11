@@ -177,7 +177,7 @@ class _RegisterFormState extends State<_RegisterForm> {
         } else if (snapshot.hasError) {
           return AlertDialog(
             title: Text("Register"),
-            content: Text("Error: ${snapshot.error}"),
+            content: Text("${snapshot.error}"),
             actions: <Widget>[
               TextButton(
                 child: Text("OK"),
@@ -231,6 +231,12 @@ Future<String> tryRegister(String username, String email, String password) async
   if (response.statusCode == 201) {
     return "Registered successfully!";
   } else {
-    throw Exception('Register failed.'); // TODO: return proper error message
+    final dynamic responseBody = jsonDecode(response.body);
+    if (responseBody is Map<String, dynamic>) {
+      final String errorMessage = responseBody['message'] ?? "Unknown error";
+      throw Exception(errorMessage);
+    } else {
+      throw Exception("Unknown error");
+    }
   }
 } 
