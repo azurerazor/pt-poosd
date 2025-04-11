@@ -90,6 +90,12 @@ export class Lobby {
     public enabledRoles: Roles = Roles.DEFAULT_ROLES;
 
     /**
+     * The order of players for display and leader selection
+     * Randomly shuffled at the start of the game
+     */
+    public playerOrder: string[] = [];
+
+    /**
      * The info + state of all users in the lobby
      */
     private players: Map<string, Player>;
@@ -212,7 +218,11 @@ export class Lobby {
     public addPlayer(username: string): boolean {
         // Check if the player is already in the lobby
         if (this.players.has(username)) return false;
+
+        // Otherwise, add to both player map and the ordering
         this.players.set(username, new Player(username));
+        this.playerOrder.push(username);
+
         return true;
     }
 
@@ -221,7 +231,16 @@ export class Lobby {
      * Returns false if the player was not in the lobby
      */
     public removePlayer(username: string): boolean {
-        return this.players.delete(username);
+        if (!this.players.has(username)) return false;
+
+        // Remove the player from the player order
+        const index = this.playerOrder.indexOf(username);
+        this.playerOrder.splice(index, 1);
+
+        // Remove the player from the players map
+        this.players.delete(username);
+
+        return true;
     }
 
     /**
