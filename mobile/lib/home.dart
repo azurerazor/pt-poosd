@@ -100,13 +100,8 @@ class _HomeContentState extends State<_HomeContent> {
                 children: <Widget>[
                   EscavalonButton(
                     text: 'Login', 
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => LoginPage()
-                        )
-                      );
+                    onPressed: () {                      
+                      _getUserNameFromLogin(context);
                     }
                   ),
                   EscavalonButton(
@@ -129,6 +124,20 @@ class _HomeContentState extends State<_HomeContent> {
       ],
     );
   }
+
+
+  void _getUserNameFromLogin(BuildContext context) async {
+    final String? thisUsername = await Navigator.push(
+      context, 
+      MaterialPageRoute(
+        builder: (context) => LoginPage()
+      )
+    );
+
+    setState(() {
+      _username = thisUsername;
+    });
+  } 
 }
 
 // launches the web app in the default browser

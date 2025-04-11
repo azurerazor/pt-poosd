@@ -170,10 +170,12 @@ class _LoginFormState extends State<_LoginForm> {
             content: Text("Logged in successfully!\nUsername: $username"),
             actions: <Widget>[
               TextButton(
+                // TODO: send token back to home page
+                // https://pub.dev/packages/dart_jsonwebtoken
                 child: const Text("OK"),
                 onPressed: () {
                   Navigator.pop(context);
-                  Navigator.pop(context);
+                  Navigator.pop(context, username);
                 },
               )
             ]
