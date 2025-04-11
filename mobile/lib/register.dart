@@ -41,6 +41,7 @@ class _RegisterFormState extends State<_RegisterForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final RegExp checkUsername = RegExp(r'^[A-Za-z0-9]+(?:[-_]*[A-Za-z0-9]+)*[A-Za-z0-9]+$');
+  final RegExp checkEmail = RegExp(r"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$");
 
   Future<String>? _registerResponse;
 
@@ -67,7 +68,8 @@ class _RegisterFormState extends State<_RegisterForm> {
                       onChanged: (String? value) {
                         setState(() {
                           username = value;
-                        });                },
+                        });               
+                      },
 
                       autovalidateMode: AutovalidateMode.onUnfocus,
 
@@ -101,7 +103,11 @@ class _RegisterFormState extends State<_RegisterForm> {
                       autovalidateMode: AutovalidateMode.onUnfocus,
 
                       validator: (String? value) {
-                        if (value == null || value.length < 3) {
+                        if (
+                          value == null || 
+                          value.length < 3 ||
+                          !checkEmail.hasMatch(value)
+                        ) {
                           return emailRequirements;
                         } else {
                           return null;
