@@ -1,3 +1,5 @@
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile/escavalon_material.dart';
@@ -28,11 +30,20 @@ const ColorFilter greyscale = ColorFilter.matrix(<double>[
   0,      0,      0,      1, 0,
 ]);
 
+FlutterSecureStorage? webTokenStorage;
+
 class LobbyPage extends StatelessWidget {
-  const LobbyPage({super.key});
+  final FlutterSecureStorage? token;
+  
+  const LobbyPage({
+    super.key,
+    required this.token,
+  });
 
   @override
   Widget build(BuildContext context) {
+    webTokenStorage = token;
+
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -76,43 +87,56 @@ class _LobbyPageContentState extends State<_LobbyPageContent> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         EscavalonCard(
-          child: Form(
-            key: _formKey,
-            child: TextFormField(
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly
-              ],
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                hintText: "5-10",
-                labelText: "Number of players"
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget> [
+              Form(
+                key: _formKey,
+                child: TextFormField(
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                    hintText: "5-10",
+                    labelText: "Number of players"
+                  ),
+                  onChanged: (String? value) {
+                    setState(() {
+                      if (value == null) {
+                        _numPlayers = 5;
+                      } else {
+                        _numPlayers = int.tryParse(value) ?? 5;
+                      }
+                    });                
+                  },
+
+                  autovalidateMode: AutovalidateMode.onUnfocus,
+
+                  validator: (String? value) {
+                    int? val = (value == null) ? null : int.tryParse(value);
+                    if (val == null || val < 5 || val > 10) {
+                      return "Enter a number between 5 and 10";
+                    }
+                    
+                    int maxNumEvil = numEvil[val] ?? 2;
+                    if (_numEvilRoles > maxNumEvil) {
+                      return "Too many evil roles selected";
+                    }
+
+                    return null;
+                  },
+                ),
               ),
-              onChanged: (String? value) {
-                setState(() {
-                  if (value == null) {
-                    _numPlayers = 5;
-                  } else {
-                    _numPlayers = int.tryParse(value) ?? 5;
-                  }
-                });                
-              },
 
-              autovalidateMode: AutovalidateMode.onUnfocus,
-
-              validator: (String? value) {
-                int? val = (value == null) ? null : int.tryParse(value);
-                if (val == null || val < 5 || val > 10) {
-                  return "Enter a number between 5 and 10";
-                }
-                
-                int maxNumEvil = numEvil[val] ?? 2;
-                if (_numEvilRoles > maxNumEvil) {
-                  return "Too many evil roles selected";
-                }
-
-                return null;
-              },
-            ),
+              Container(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "Number of evil players: ${numEvil[_numPlayers] ?? "?"}"
+                ),
+              )
+              
+            ],
           )
         ),
 
@@ -124,8 +148,8 @@ class _LobbyPageContentState extends State<_LobbyPageContent> {
               roleCard("Merlin"),
               roleCard("Percival"),
               roleCard("Morgana"),
-              roleCard("Assassin"),
               roleCard("Mordred"),
+              roleCard("Assassin"),
               roleCard("Oberon"),
             ],
           )
@@ -168,6 +192,20 @@ class _LobbyPageContentState extends State<_LobbyPageContent> {
               setState(() {
                 _rolesSelected[role] = !(_rolesSelected[role]!);
               });
+
+              if (_rolesSelected["Merlin"] == true) {
+                return;
+              }
+
+              if (_rolesSelected["Percival"] == true) {
+                _rolesSelected["Percival"] = false;
+                addEvilRole("Morgana");
+              }
+
+              if (_rolesSelected["Mordred"] == true) {
+                addEvilRole("Mordred");
+              }
+
               return;
             }
 
@@ -176,6 +214,20 @@ class _LobbyPageContentState extends State<_LobbyPageContent> {
                 setState(() {
                   _rolesSelected["Percival"] = !(_rolesSelected["Percival"]!);
                 });
+
+                if (_rolesSelected["Percival"] == true) {
+                  _rolesSelected["Merlin"] = true;
+                }
+              }
+
+              return;
+            }
+
+            if (role == "Mordred") {
+              if (addEvilRole("Mordred")) {
+                if (_rolesSelected["Mordred"] == true) {
+                  _rolesSelected["Merlin"] = true;
+                }
               }
 
               return;

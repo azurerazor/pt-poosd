@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'escavalon_material.dart';
 import 'lobby.dart';
 import 'login.dart';
 import 'register.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 final Uri _url = Uri.parse('http://45.55.60.192/');
 
@@ -71,7 +71,7 @@ class _HomeContentState extends State<_HomeContent> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => LobbyPage()
+                builder: (context) => LobbyPage(token: webTokenStorage)
               )
             );
           }
@@ -95,11 +95,33 @@ class _HomeContentState extends State<_HomeContent> {
                   ),
                   EscavalonButton(
                     text: 'Logout', 
-                    onPressed: ()=>{
-                      webTokenStorage?.delete(key: "token"),
-                      setState(() {
-                        _username = null;
-                      })
+                    onPressed: () {
+                      showDialog(
+                        context: context, 
+                        builder: (context) => AlertDialog(
+                          title: const Text("Logout"),
+                          content: const Text("Are you sure you want to logout?"),
+                          actions: <Widget>[
+                            TextButton(
+                              child: const Text("NO"),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            TextButton(
+                              child: const Text("YES"),
+                              onPressed: () {
+                                webTokenStorage?.delete(key: "token");
+                                setState(() {
+                                  _username = null;
+                                });
+                                
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        )
+                      );
                     }
                   ),
                 ],
