@@ -2,29 +2,23 @@ import { useState, useEffect } from 'react';
 import FaceCard from "../ui/FaceCard";
 import PlayerProfile from "../ui/PlayerProfile";
 import RouteButton from "../misc/RouteButton";
-import { Lobby as Lob } from "../../../../common/game/state";
 import { getRoles, Roles } from "../../../../common/game/roles";
-import { Player } from "../../../../common/game/player"
-import { useLocation } from 'react-router';
-
+import { Player } from "../../../../common/game/player";
+import { ClientLobby } from "../../game/lobby";
 
 const Lobby: React.FC = () => {
-
-    // Should eventually always be passed
-    // Need a random code when first making the lobby
-    const location = useLocation();
-    const gameCode = location.state ? location.state.gameCode : "ABCDE";
+    const lobby = ClientLobby.getInstance();
+    const gameCode = lobby.id;
     const gameRoute = `/game/${gameCode}`
 
     //TEMP UNTIL LOBBY BACKEND
-    let lobby = new Lob(gameCode, "IDK", () => { return; });
-    lobby.addPlayer("IDK");
+    lobby.addPlayer("booleancube");
     lobby.addPlayer("user2");
     lobby.addPlayer("user3");
     const [players, setPlayers] = useState<Player[]>([]);
 
     useEffect(() => {
-        setPlayers(lobby.getPlayers());
+        setPlayers(lobby.getConnectedPlayers());
     }, []);
 
     let specialRoles = getRoles(Roles.SPECIAL_ROLES);
@@ -36,7 +30,6 @@ const Lobby: React.FC = () => {
                     <div className="flex flex-col gap-2">
                         <h2 className="text-xl font-bold">Lobby Code: {gameCode}</h2>
                         <hr className="mb-2" />
-
                         {players.map((player, idx) => (
                             <PlayerProfile
                                 key = {idx}

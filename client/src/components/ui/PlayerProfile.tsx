@@ -1,5 +1,5 @@
 import React from "react";
-import { Player } from "../../../../common/game/player"
+import { Player } from "../../../../common/game/player";
 
 interface Props {
     player: Player;

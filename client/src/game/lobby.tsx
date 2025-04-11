@@ -1,6 +1,6 @@
 import { Lobby } from "@common/game/state";
 
-class ClientLobby extends Lobby {
+export class ClientLobby extends Lobby {
     private static instance: ClientLobby | null = null;
 
     public static getInstance(): ClientLobby {
