@@ -5,6 +5,7 @@ import 'escavalon_material.dart';
 import 'lobby.dart';
 import 'login.dart';
 import 'register.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 final Uri _url = Uri.parse('http://45.55.60.192/');
 
@@ -37,6 +38,7 @@ class _HomeContent extends StatefulWidget {
 
 class _HomeContentState extends State<_HomeContent> {
   String? _username;
+  FlutterSecureStorage? webTokenStorage;
 
   @override
   Widget build(BuildContext context) {
@@ -49,11 +51,13 @@ class _HomeContentState extends State<_HomeContent> {
               return Text(
                 "Welcome,\n $_username!",
                 style: TextStyle(fontSize: 24),
+                textAlign: TextAlign.center,
               );
             } else {
               return const Text(
                 "Welcome to\n Escavalon!",
                 style: TextStyle(fontSize: 24),
+                textAlign: TextAlign.center,
               );
             }
           }
@@ -91,7 +95,12 @@ class _HomeContentState extends State<_HomeContent> {
                   ),
                   EscavalonButton(
                     text: 'Logout', 
-                    onPressed: ()=>{}
+                    onPressed: ()=>{
+                      webTokenStorage?.delete(key: "token"),
+                      setState(() {
+                        _username = null;
+                      })
+                    }
                   ),
                 ],
               );
@@ -101,7 +110,7 @@ class _HomeContentState extends State<_HomeContent> {
                   EscavalonButton(
                     text: 'Login', 
                     onPressed: () {                      
-                      _getUserNameFromLogin(context);
+                      _getUserInfoFromLogin(context);
                     }
                   ),
                   EscavalonButton(
@@ -125,9 +134,8 @@ class _HomeContentState extends State<_HomeContent> {
     );
   }
 
-
-  void _getUserNameFromLogin(BuildContext context) async {
-    final String? thisUsername = await Navigator.push(
+  void _getUserInfoFromLogin(BuildContext context) async {
+    final info = await Navigator.push(
       context, 
       MaterialPageRoute(
         builder: (context) => LoginPage()
@@ -135,7 +143,8 @@ class _HomeContentState extends State<_HomeContent> {
     );
 
     setState(() {
-      _username = thisUsername;
+      _username = info[0];
+      webTokenStorage = info[1];
     });
   } 
 }
