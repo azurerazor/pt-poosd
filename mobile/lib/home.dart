@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'escavalon_material.dart';
-import 'game.dart';
+import 'lobby.dart';
 import 'login.dart';
 import 'register.dart';
 
@@ -67,7 +67,7 @@ class _HomeContentState extends State<_HomeContent> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => GamePage()
+                builder: (context) => LobbyPage()
               )
             );
           }

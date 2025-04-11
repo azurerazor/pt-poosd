@@ -28,8 +28,8 @@ const ColorFilter greyscale = ColorFilter.matrix(<double>[
   0,      0,      0,      1, 0,
 ]);
 
-class GamePage extends StatelessWidget {
-  const GamePage({super.key});
+class LobbyPage extends StatelessWidget {
+  const LobbyPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +42,7 @@ class GamePage extends StatelessWidget {
           child: 
             Container(
               padding: const EdgeInsets.all(16.0), 
-              child: _GamePageContent()
+              child: _LobbyPageContent()
             )
         ),
     );
@@ -50,14 +50,14 @@ class GamePage extends StatelessWidget {
   
 }
 
-class _GamePageContent extends StatefulWidget {
-  const _GamePageContent();
+class _LobbyPageContent extends StatefulWidget {
+  const _LobbyPageContent();
 
   @override
-  State<_GamePageContent> createState() => _GamePageContentState();
+  State<_LobbyPageContent> createState() => _LobbyPageContentState();
 }
 
-class _GamePageContentState extends State<_GamePageContent> {
+class _LobbyPageContentState extends State<_LobbyPageContent> {
   int _numPlayers = 5;
   int _numEvilRoles = 0;
   final Map<String, bool> _rolesSelected = {
