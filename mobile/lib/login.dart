@@ -1,9 +1,13 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:mobile/escavalon_material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+final webTokenStorage = const FlutterSecureStorage();
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -144,7 +148,7 @@ class _LoginFormState extends State<_LoginForm> {
         // very ugly for now but it works
         if (snapshot.connectionState == ConnectionState.waiting) {
           return AlertDialog(
-            title: Text("Register"),
+            title: Text("Login"),
             content: LoadingIndicator(
               indicatorType: Indicator.ballPulse
             ),
@@ -170,12 +174,10 @@ class _LoginFormState extends State<_LoginForm> {
             content: Text("Logged in successfully!\nUsername: $username"),
             actions: <Widget>[
               TextButton(
-                // TODO: send token back to home page
-                // https://pub.dev/packages/dart_jsonwebtoken
                 child: const Text("OK"),
                 onPressed: () {
                   Navigator.pop(context);
-                  Navigator.pop(context, username);
+                  Navigator.pop(context, [username, webTokenStorage]);
                 },
               )
             ]
@@ -184,6 +186,10 @@ class _LoginFormState extends State<_LoginForm> {
       },
     );
   }
+}
+
+Future<void> storeToken(String token) async {
+  await webTokenStorage.write(key: "token", value: token);
 }
 
 Future<String> tryLogin(String username, String password) async {
@@ -199,7 +205,14 @@ Future<String> tryLogin(String username, String password) async {
   );
 
   if (response.statusCode == 200) {
-    return "Logged in successfully!";
+    if (response.headers['set-cookie'] == null) {
+      throw Exception("No cookie found");
+    }
+
+    Cookie cookie = Cookie.fromSetCookieValue(response.headers['set-cookie']!);
+    storeToken(cookie.value);
+
+    return "";
   } else {
     final dynamic responseBody = jsonDecode(response.body);
     if (responseBody is Map<String, dynamic>) {

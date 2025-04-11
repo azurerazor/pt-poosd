@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'escavalon_material.dart';
@@ -37,6 +38,7 @@ class _HomeContent extends StatefulWidget {
 
 class _HomeContentState extends State<_HomeContent> {
   String? _username;
+  FlutterSecureStorage? webTokenStorage;
 
   @override
   Widget build(BuildContext context) {
@@ -49,11 +51,13 @@ class _HomeContentState extends State<_HomeContent> {
               return Text(
                 "Welcome,\n $_username!",
                 style: TextStyle(fontSize: 24),
+                textAlign: TextAlign.center,
               );
             } else {
               return const Text(
                 "Welcome to\n Escavalon!",
                 style: TextStyle(fontSize: 24),
+                textAlign: TextAlign.center,
               );
             }
           }
@@ -67,7 +71,7 @@ class _HomeContentState extends State<_HomeContent> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => LobbyPage()
+                builder: (context) => LobbyPage(token: webTokenStorage)
               )
             );
           }
@@ -91,7 +95,34 @@ class _HomeContentState extends State<_HomeContent> {
                   ),
                   EscavalonButton(
                     text: 'Logout', 
-                    onPressed: ()=>{}
+                    onPressed: () {
+                      showDialog(
+                        context: context, 
+                        builder: (context) => AlertDialog(
+                          title: const Text("Logout"),
+                          content: const Text("Are you sure you want to logout?"),
+                          actions: <Widget>[
+                            TextButton(
+                              child: const Text("NO"),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            TextButton(
+                              child: const Text("YES"),
+                              onPressed: () {
+                                webTokenStorage?.delete(key: "token");
+                                setState(() {
+                                  _username = null;
+                                });
+                                
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        )
+                      );
+                    }
                   ),
                 ],
               );
@@ -101,7 +132,7 @@ class _HomeContentState extends State<_HomeContent> {
                   EscavalonButton(
                     text: 'Login', 
                     onPressed: () {                      
-                      _getUserNameFromLogin(context);
+                      _getUserInfoFromLogin(context);
                     }
                   ),
                   EscavalonButton(
@@ -125,9 +156,8 @@ class _HomeContentState extends State<_HomeContent> {
     );
   }
 
-
-  void _getUserNameFromLogin(BuildContext context) async {
-    final String? thisUsername = await Navigator.push(
+  void _getUserInfoFromLogin(BuildContext context) async {
+    final info = await Navigator.push(
       context, 
       MaterialPageRoute(
         builder: (context) => LoginPage()
@@ -135,7 +165,8 @@ class _HomeContentState extends State<_HomeContent> {
     );
 
     setState(() {
-      _username = thisUsername;
+      _username = info[0];
+      webTokenStorage = info[1];
     });
   } 
 }
