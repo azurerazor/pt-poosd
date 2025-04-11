@@ -1,5 +1,11 @@
 name: Build + Deploy
-on: [ push ]
+on:
+    push:
+        paths:
+            - 'client/**'
+            - 'common/**'
+            - 'server/**'
+            - '.github/workflows/**'
 
 jobs:
     build:
