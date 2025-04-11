@@ -20,6 +20,14 @@ const Map<String, String> roleDescriptions = {
   "Mordred": "Mordred is an optional Character on the Side of Evil. He appears as Good to Merlin, but if he is killed, the Good players win.",
 };
 
+// source: https://api.flutter.dev/flutter/dart-ui/ColorFilter/ColorFilter.matrix.html
+const ColorFilter greyscale = ColorFilter.matrix(<double>[
+  0.2126, 0.7152, 0.0722, 0, 0,
+  0.2126, 0.7152, 0.0722, 0, 0,
+  0.2126, 0.7152, 0.0722, 0, 0,
+  0,      0,      0,      1, 0,
+]);
+
 class GamePage extends StatelessWidget {
   const GamePage({super.key});
 
@@ -107,57 +115,20 @@ class _GamePageContentState extends State<_GamePageContent> {
             ),
           )
         ),
-        
-        EscavalonButton(
-          text: 'Merlin', 
-          onPressed: () {
-            setState(() {
-              _rolesSelected["Merlin"] = !_rolesSelected["Merlin"]!;
-            });
-          },
-        ),
 
-        EscavalonButton(
-          text: 'Percival', 
-          onPressed: () {
-            if (addEvilRole("Morgana")) {
-              setState(() {
-                _rolesSelected["Percival"] = !_rolesSelected["Percival"]!;
-              });
-            }
-          },
-        ),
-
-        EscavalonButton(
-          text: 'Morgana', 
-          onPressed: () {
-            if (addEvilRole("Morgana")) {
-              setState(() {
-                _rolesSelected["Percival"] = !_rolesSelected["Percival"]!;
-              });
-            }
-          },
-        ),
-
-        EscavalonButton(
-          text: 'Mordred', 
-          onPressed: () {
-            addEvilRole("Mordred");
-          },
-        ),
-
-        EscavalonButton(
-          text: 'Assassin', 
-          onPressed: () {
-            addEvilRole("Assassin");
-          },
-        ),
-
-        EscavalonButton(
-          text: 'Oberon', 
-          onPressed: () {
-            addEvilRole("Oberon");
-          },
+        SizedBox(
+          height: 300,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: [
+              roleCard("Merlin"),
+              roleCard("Percival"),
+              roleCard("Morgana"),
+              roleCard("Assassin"),
+              roleCard("Mordred"),
+              roleCard("Oberon"),
+            ],
+          )
         ),
 
         EscavalonButton(
@@ -186,7 +157,85 @@ class _GamePageContentState extends State<_GamePageContent> {
     );
   }
 
+  Widget roleCard(String role) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        IconButton(
+          icon: getRoleImage(role),
+          onPressed: () {
+            if (role == "Merlin") {
+              setState(() {
+                _rolesSelected[role] = !(_rolesSelected[role]!);
+              });
+              return;
+            }
+
+            if (role == "Percival" || role == "Morgana") {
+              if (addEvilRole("Morgana")) {
+                setState(() {
+                  _rolesSelected["Percival"] = !(_rolesSelected["Percival"]!);
+                });
+              }
+
+              return;
+            }
+
+            addEvilRole(role);
+          },
+        ),
+
+        // Info button
+        ConstrainedBox(
+          constraints: const BoxConstraints(
+            minWidth: 150,
+            maxWidth: 150,
+          ),
+          child: EscavalonButton(
+            onPressed: () => showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: Text(role),
+                content: Text(roleDescriptions[role] ?? "No description available"),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text("OK"),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              )
+            ),
+            child: Row(
+              children: <Widget>[                
+                Expanded(
+                  child: Text(
+                    role,
+                    textAlign: TextAlign.center
+                  )
+                ),
+
+                Icon(Icons.info_outline),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   bool addEvilRole(String role) {
+    bool canAddEvilRole() {
+      if (numEvil[_numPlayers] == null) {
+        return false; // or throw an error
+        // current validation should prevent even reaching this point but who knows
+      }
+
+      int maxNumEvil = numEvil[_numPlayers] ?? 2;
+      return (_numEvilRoles < maxNumEvil);
+    }
+
     if (_rolesSelected[role] == false) {
       if (!canAddEvilRole()) {
         return false;
@@ -205,70 +254,23 @@ class _GamePageContentState extends State<_GamePageContent> {
     return true;
   }
 
-  bool canAddEvilRole() {
-    if (numEvil[_numPlayers] == null) {
-      return false; // or throw an error
-      // current validation should prevent even reaching this point but who knows
+  Widget getRoleImage(String role) {
+    Widget thisImage = Image(
+      image: ResizeImage(
+        AssetImage("assets/$role.png"),
+        width: 150,
+      )
+    );
+
+    if (_rolesSelected[role]!) {
+      return thisImage;
     }
 
-    int maxNumEvil = numEvil[_numPlayers] ?? 2;
-    return (_numEvilRoles < maxNumEvil);
+    // if role not selected, return greyed out image
+    return ColorFiltered(
+      colorFilter: greyscale, 
+      child: thisImage
+    );
   }
+
 }
-
-
-
-
-// class _RoleCard extends StatelessWidget {
-//   final String name;
-//   final bool status;
-//   const _RoleCard({required this.name, required this.status});
-  
-//   @override
-//   Widget build(BuildContext context) {
-//     return Text(name);
-//     // return ConstrainedBox(
-//     //   constraints: BoxConstraints(
-//     //     maxWidth: 80,
-//     //   ),
-//     //   child: Column(
-//     //     mainAxisAlignment: MainAxisAlignment.center,
-//     //     children: <Widget>[
-//     //       ConstrainedBox(
-//     //         constraints: BoxConstraints(
-//     //           minWidth: 80,
-//     //           minHeight: 160,
-//     //           maxWidth: 80,
-//     //           maxHeight: 160,
-//     //         ),
-//     //         child: Image.asset(
-//     //             "assets/percival.png",
-//     //             fit: BoxFit.cover,
-//     //           )
-//     //       ),
-//     //       EscavalonButton(
-//     //         text: name,
-//     //         textStyle: TextStyle(
-//     //           fontSize: 8,
-//     //         ),
-//     //         onPressed: () => showDialog(
-//     //           context: context,
-//     //           builder: (context) => AlertDialog(
-//     //             title: Text(name),
-//     //             content: Text(roleDescriptions[name]!),
-//     //             actions: <Widget>[
-//     //               TextButton(
-//     //                 child: const Text("OK"),
-//     //                 onPressed: () {
-//     //                   Navigator.of(context).pop();
-//     //                 },
-//     //               ),
-//     //             ],
-//     //           )
-//     //         ),
-//     //       ),
-//     //     ],
-//     //   ),
-//     // );
-//   }
-// }
