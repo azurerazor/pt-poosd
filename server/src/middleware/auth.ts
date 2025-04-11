@@ -36,6 +36,8 @@ export function requireAuth(req: Request, res: Response, next: () => void) {
             return;
         }
 
+        // TODO: Check whether the user has verified their email address
+
         // All good
         res.locals.user = user.username;
         next();

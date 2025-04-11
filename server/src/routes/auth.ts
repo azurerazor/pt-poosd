@@ -165,13 +165,14 @@ export async function login(req: Request, res: Response, next: () => void) {
             return;
         }
 
-        // Check if the user has verified their email address
-        if (!user.isVerified) {
-            res
-                .status(401)
-                .json({ message: "Email address has not been verified" });
-            return;
-        }
+        // TODO: Check for email verification
+        // // Check if the user has verified their email address
+        // if (!user.isVerified) {
+        //     res
+        //         .status(401)
+        //         .json({ message: "Email address has not been verified" });
+        //     return;
+        // }
 
         // Authenticate
         const token = acquireToken(username);
