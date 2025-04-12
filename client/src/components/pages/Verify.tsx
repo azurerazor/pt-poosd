@@ -23,8 +23,8 @@ export default function Verify() {
           credentials: 'include'
         });
 
-        await res.json();
-        if (res.status !== 200) throw new Error(res.message);
+        const responseJSON = await res.json();
+        if (res.status !== 200) throw new Error(responseJSON.message);
         setVerified(true);
       } catch (err) {
         console.error('Auth error:', err);
