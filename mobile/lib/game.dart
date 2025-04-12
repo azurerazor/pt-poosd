@@ -112,6 +112,5 @@ class _GamePageContentState extends State<_GamePageContent> {
 
     // return to home screen
     Navigator.of(context).pop();
-    Navigator.of(context).pop();
   }
 }

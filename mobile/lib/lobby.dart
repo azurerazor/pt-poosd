@@ -136,6 +136,7 @@ class _LobbyPageContentState extends State<_LobbyPageContent> {
           onPressed: () {
             if (_formKey.currentState!.validate() == false) return;
             
+            Navigator.pop(context);
             Navigator.push(
               context,
               MaterialPageRoute(
