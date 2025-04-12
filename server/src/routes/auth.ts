@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/user.js';
+import { sendEmail } from '../networking/mail.js';
 
 require('dotenv').config();
 const AUTH_KEY = process.env.AUTH_KEY!;
@@ -12,6 +13,31 @@ const AUTH_KEY = process.env.AUTH_KEY!;
  */
 function acquireToken(username: string): string {
     return jwt.sign({ username }, AUTH_KEY, { expiresIn: '3d' });
+}
+
+/**
+ * Gets an email verification link for a user with the given token
+ */
+function getVerificationLink(token: string): string {
+    return `${process.env.CLIENT_ORIGIN}/verify?token=${token}`;
+}
+
+/**
+ * Sends a verification email to the given user
+ */
+async function sendVerificationEmail(username: string, email: string, token: string) {
+    const body = `<h1>Verify your email address for Escavalon</h1>
+<h3>Hello, ${username}!</h3>
+<p>Thank you for registering for Escavalon! To verify your email address, please click the following link: <a href="${getVerificationLink(token)}">verify your email address</a></p>
+<p>If you did not try to create an account, please ignore this email.</p>
+`;
+
+    return await sendEmail({
+        from: 'Escavalon <io@escavalon.quest>',
+        to: email,
+        subject: 'Escavalon: Verify email address',
+        html: body,
+    });
 }
 
 /**
@@ -64,14 +90,17 @@ export async function register(req: Request, res: Response, next: () => void) {
             return;
         }
 
-        // Create the new user and authenticate
+        // Create the new user
         await User.create({ email, username, password });
+
+        // Send the verification email
         const token = acquireToken(username);
+        await sendVerificationEmail(username, email, token);
 
         // Respond (duh)
         res
             .status(201)
-            .cookie('token', token, { httpOnly: false })
+            // .cookie('token', token, { httpOnly: false })
             .json({ message: "User successfully created" });
         next();
     } catch (err) {
