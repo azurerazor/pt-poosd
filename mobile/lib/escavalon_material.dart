@@ -14,7 +14,7 @@ const Map<String, String> roleDescriptions = {
   "Merlin": "Merlin is an optional Character on the Side of Good. He knows who the Evil players are, but if he is killed, the Evil players win. Adding Merlin into the game will mkae the Good side more powerful and win more ofen.",
   "Percival": "Percival is an optional Character on the Side of Good. Pervival's special power is knowledge of Merlin at the start of the game. Using Percival's knowledge wisely is key to protecting Merlin's identity. Adding Percival into the game will make the Good side more powerful and win more often.",
   "Assassin": "Assassin is an optional Character on the Side of Evil. They make the final decision on who to kill at the end of the game. If they kill Merlin, the Evil players win.",
-  "Morgana": "Morgana is an optional Character on the Side of Evil. Morgana's special power",  
+  "Morgan``a": "Morgana is an optional Character on the Side of Evil. Morgana's special power",  
   "Oberon": "Oberon is an optional Character on the Side of Evil. He does not know who the Evil players are, but if he is killed, the Good players win.",
   "Mordred": "Mordred is an optional Character on the Side of Evil. He appears as Good to Merlin, but if he is killed, the Good players win.",
 };
@@ -94,11 +94,22 @@ class EscavalonButton extends StatelessWidget {
             } else if (child != null) {
               return child!;
             } else {
-              return Text("button content", style: textStyle);
+              return SizedBox(
+                width: 0,
+                height: 0,
+              );
             }
           }
         ),
       )
     );
   }
+}
+
+// String buildEvilScript(bool? includesOberon, bool? includesMordred) {
+//   String result = "All Minions of Mordred, ";
+// }
+
+String getIntroScript() {
+  return "Everybody, close your eyes.";
 }
