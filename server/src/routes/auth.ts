@@ -25,19 +25,27 @@ function getVerificationLink(token: string): string {
 /**
  * Sends a verification email to the given user
  */
-async function sendVerificationEmail(username: string, email: string, token: string) {
+async function sendVerificationEmail(username: string, email: string, token: string): boolean {
     const body = `<h1>Verify your email address for Escavalon</h1>
 <h3>Hello, ${username}!</h3>
 <p>Thank you for registering for Escavalon! To verify your email address, please click the following link: <a href="${getVerificationLink(token)}">verify your email address</a></p>
 <p>If you did not try to create an account, please ignore this email.</p>
 `;
 
-    return await sendEmail({
+    const response = await sendEmail({
         from: 'Escavalon <io@escavalon.quest>',
         to: email,
         subject: 'Escavalon: Verify email address',
         html: body,
     });
+
+    // Check for errors
+    if (response.error) {
+        console.error(response.error);
+        return false;
+    }
+
+    return true;
 }
 
 /**
@@ -95,7 +103,17 @@ export async function register(req: Request, res: Response, next: () => void) {
 
         // Send the verification email
         const token = acquireToken(username);
-        await sendVerificationEmail(username, email, token);
+        const valid = await sendVerificationEmail(username, email, token);
+
+        // If we failed to send the verification email, the email must be invalid
+        // Delete the user and return an error
+        if (!valid) {
+            await User.deleteOne({ username });
+            res
+                .status(400)
+                .json({ message: "Invalid email address" });
+            return;
+        }
 
         // Respond (duh)
         res
