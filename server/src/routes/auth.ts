@@ -27,9 +27,13 @@ function getVerificationLink(token: string): string {
  */
 async function sendVerificationEmail(username: string, email: string, token: string): Promise<boolean> {
     const body = `<h1>Verify your email address for Escavalon</h1>
-<h3>Hello, ${username}!</h3>
-<p>Thank you for registering for Escavalon! To verify your email address, please click the following link: <a href="${getVerificationLink(token)}">verify your email address</a></p>
+<h2>Hello, ${username}!</h2>
+<p>Thank you for registering for Escavalon! To verify your email address, please click the link below:</p>
+<p><a href="${getVerificationLink(token)}">verify your email address</a></p>
 <p>If you did not try to create an account, please ignore this email.</p>
+
+<!-- Prevent Gmail from clipping here -->
+<span style="opacity: 0">${Date.now()}</span>
 `;
 
     const response = await sendEmail({

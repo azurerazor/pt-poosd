@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
         required: [true, 'Email address is required'],
         unique: true,
     },
-    
+
     /**
      * The user's username (unique; used as an identifier)
      */
@@ -19,14 +19,14 @@ const userSchema = new mongoose.Schema({
         required: [true, 'Username is required'],
         unique: true,
     },
-    
+
     /**
      * The user's (hashed) password
      */
     password: {
         type: String,
         required: [true, 'Password is required'],
-    },    
+    },
 
     /**
      * Whether the user has verified their email address
@@ -39,7 +39,10 @@ const userSchema = new mongoose.Schema({
 
 // Hash the user's password before serializing
 userSchema.pre('save', async function () {
-    this.password = await bcrypt.hash(this.password, 12);
+    const user = this;
+
+    if (!user.isModified('password')) return;
+    user.password = await bcrypt.hash(user.password, 12);
 });
 
 const User = mongoose.model('User', userSchema);
