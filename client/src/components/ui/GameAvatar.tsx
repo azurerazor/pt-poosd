@@ -14,7 +14,6 @@ const GameAvatar: React.FC<Props> = ({ player }) => {
   const lobby = ClientLobby.getInstance();
   const myUser = lobby.getPlayer(useUser().username);
 
-  console.log(myUser);
   const couldBeGood = player.role ? (player.role & Roles.GOOD) != Roles.NONE : false;
   const couldBeBad = player.role ? (player.role & Roles.EVIL) != Roles.NONE : false;
   const result = player === myUser ? "" : couldBeGood && couldBeBad ? "🟣" : couldBeGood ? "🔵" : couldBeBad ? "🔴" : "";

@@ -14,7 +14,7 @@ export default function Verify() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/verify/:token`, {
+        const res = await fetch(`${API_URL}/api/verify/${token}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -23,8 +23,8 @@ export default function Verify() {
           credentials: 'include'
         });
 
-        if (res.status !== 200) throw new Error(res.statusText);
         await res.json();
+        if (res.status !== 200) throw new Error(res.message);
         setVerified(true);
       } catch (err) {
         console.error('Auth error:', err);
@@ -38,7 +38,7 @@ export default function Verify() {
   }, []);
 
   useEffect(() => {
-    if (verified === false) {
+    if (!isLoading && verified === false) {
       navigate('/login');
     }
   }, [verified, navigate]);
