@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Install common dependencies
+echo "Installing common dependencies..."
+cd common
+npm i --include=dev
+cd ../
+
 # Build the client
 echo "Building client..."
 cd client
