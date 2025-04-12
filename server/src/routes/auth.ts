@@ -25,7 +25,7 @@ function getVerificationLink(token: string): string {
 /**
  * Sends a verification email to the given user
  */
-async function sendVerificationEmail(username: string, email: string, token: string): boolean {
+async function sendVerificationEmail(username: string, email: string, token: string): Promise<boolean> {
     const body = `<h1>Verify your email address for Escavalon</h1>
 <h3>Hello, ${username}!</h3>
 <p>Thank you for registering for Escavalon! To verify your email address, please click the following link: <a href="${getVerificationLink(token)}">verify your email address</a></p>
