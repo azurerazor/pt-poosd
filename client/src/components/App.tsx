@@ -6,6 +6,7 @@ import Signup from './pages/Signup'
 import Dashboard from './pages/Dashboard'
 import Lobby from './pages/Lobby'
 import Game from './pages/Game'
+import Verify from './pages/Verify'
 
 import ProtectedRoute from 'util/auth';
 
@@ -17,7 +18,8 @@ function App() {
                 <Route path='/' Component={Login} />
                 <Route path='/login' Component={Login} />
                 <Route path='/signup' Component={Signup} />
-
+                <Route path="/verify" element={<Verify />} />
+                
                 {/* Protected Routes */}
                 <Route path='/dashboard' element={<ProtectedRoute element={<Dashboard />} />} />
 

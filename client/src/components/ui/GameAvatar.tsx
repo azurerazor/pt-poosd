@@ -1,6 +1,9 @@
 import { useHiddenContext } from "../../util/hiddenContext";
 import { Player } from "../../../../common/game/player";
 import { Roles } from "../../../../common/game/roles";
+import { useUser } from '../../util/auth';
+import { ClientLobby } from "../../game/lobby";
+
 
 interface Props {
     player: Player;
@@ -8,10 +11,13 @@ interface Props {
 
 const GameAvatar: React.FC<Props> = ({ player }) => {
   const { isHidden } = useHiddenContext();
+  const lobby = ClientLobby.getInstance();
+  const myUser = lobby.getPlayer(useUser().username);
 
+  console.log(myUser);
   const couldBeGood = player.role ? (player.role & Roles.GOOD) != Roles.NONE : false;
   const couldBeBad = player.role ? (player.role & Roles.EVIL) != Roles.NONE : false;
-  const result = couldBeGood && couldBeBad ? "🟣" : couldBeGood ? "🔵" : couldBeBad ? "🔴" : "";
+  const result = player === myUser ? "" : couldBeGood && couldBeBad ? "🟣" : couldBeGood ? "🔵" : couldBeBad ? "🔴" : "";
 
   return (
     <div className="relative">
