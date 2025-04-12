@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
         required: [true, 'Email address is required'],
         unique: true,
     },
-    
+
     /**
      * The user's username (unique; used as an identifier)
      */
@@ -19,14 +19,14 @@ const userSchema = new mongoose.Schema({
         required: [true, 'Username is required'],
         unique: true,
     },
-    
+
     /**
      * The user's (hashed) password
      */
     password: {
         type: String,
         required: [true, 'Password is required'],
-    },    
+    },
 
     /**
      * Whether the user has verified their email address
