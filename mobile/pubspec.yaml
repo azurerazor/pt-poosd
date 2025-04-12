@@ -38,6 +38,8 @@ dependencies:
   loading_indicator: ^3.1.1
   url_launcher: ^6.3.1
   flutter_secure_storage: ^9.2.4
+  flutter_timer_countdown: ^1.0.7
+  flutter_tts: ^4.2.2
 
 dev_dependencies:
   flutter_test:
