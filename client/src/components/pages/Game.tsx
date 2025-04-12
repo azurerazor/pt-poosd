@@ -9,6 +9,7 @@ import { useUser } from '../../util/auth';
 import { useNavigate } from 'react-router';
 import { ContextProvider } from "../../util/hiddenContext";
 import { ClientLobby } from "../../game/lobby";
+import VoteMission from 'components/ui/VoteMission';
 
 export default function Game() {
     const navigate = useNavigate();
@@ -47,13 +48,19 @@ export default function Game() {
           ))}
         </div>
 
+        <div className="absolute bottom-4 left-4">
+          {[...Array(5)].map((_, i) => (
+            <VoteMission key={i} status={false} />
+          ))}
+        </div>
+
         <div className="absolute bottom-4 right-4 p-2">
           <GameCard
             role={getRoleByName("Percival")}
           />
         </div>
 
-        <div className="absolute bottom-4 left-4 p-2">
+        <div className="absolute top-4 left-4 p-2">
           <FunctionButton
             label="Options"
             onClick={() => (document.getElementById("Options") as HTMLDialogElement)?.showModal()}
