@@ -99,7 +99,7 @@ export async function register(req: Request, res: Response, next: () => void) {
         }
 
         // Create the new user
-        await User.create({ email, username, password });
+        const user = await User.create({ email, username, password });
 
         // Send the verification email
         const token = acquireToken(username);
@@ -108,7 +108,7 @@ export async function register(req: Request, res: Response, next: () => void) {
         // If we failed to send the verification email, the email must be invalid
         // Delete the user and return an error
         if (!valid) {
-            await User.deleteOne({ username });
+            await user.deleteOne();
             res
                 .status(400)
                 .json({ message: "Invalid email address" });
