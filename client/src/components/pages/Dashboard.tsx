@@ -45,7 +45,7 @@ export default function Dashboard() {
             <div className="justify-center">
                 <InputText 
                     name="Game Code"
-                    placeholder="Game Code"
+                    placeholder="Enter game code"
                     label=''
                     onChange={(event) => setGameCode(event.target.value)}
                 />

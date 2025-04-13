@@ -58,14 +58,14 @@ export default function Login() {
                         minLength={USERNAME_MIN_LENGTH}
                         maxLength={USERNAME_MAX_LENGTH}
                         validatorHint={USERNAME_HINT}
-                        placeholder="cool-username"
+                        placeholder="Enter username"
 
                         onChange={(event) => setUsername(event.target.value)}
                     />
                     <InputPassword
                         name='password'
                         label="Password"
-                        placeholder="password1234"
+                        placeholder="Enter password"
 
                         onChange={(event) => setPassword(event.target.value)}
                     />

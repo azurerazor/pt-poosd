@@ -60,21 +60,21 @@ export default function Signup() {
                         minLength={USERNAME_MIN_LENGTH}
                         maxLength={USERNAME_MAX_LENGTH}
                         validatorHint={USERNAME_HINT}
-                        placeholder="super-cool-username"
+                        placeholder="Enter username"
 
                         onChange={(event) => setUsername(event.target.value)}
                     />
                     <InputEmail
                         name='email'
                         label="Email"
-                        placeholder="you@gmail.com"
+                        placeholder="Enter email"
 
                         onChange={(event) => setEmail(event.target.value)}
                     />
                     <InputPassword
                         name='password'
                         label="Password"
-                        placeholder="password1234"
+                        placeholder="Enter password"
 
                         onChange={(event) => setPassword(event.target.value)}
                     />
