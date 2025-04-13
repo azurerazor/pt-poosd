@@ -19,9 +19,9 @@ const RoleRevealCard: React.FC<Props> = ({ player }) => {
 
   console.log(playersInfo);
   playersInfo.forEach((player) => {
-      if(getRoles(player.role!).length == 1){
+      if(player.role && getRoles(player.role).length == 1){
         myRole = getRoles(player.role!)[0];
-      }else{
+      }else if(player.role){
         otherRoles = getRoles(player.role!);
         otherPlayers.push(player);
       }
