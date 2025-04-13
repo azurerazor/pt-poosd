@@ -21,9 +21,11 @@ type Props = {
   myPlayer: Player;
   selectedTeam: string[];
   setSelectedTeam: React.Dispatch<React.SetStateAction<string[]>>;
+  successFail: Outcome;
+  setSuccessFail: React.Dispatch<React.SetStateAction<Outcome>>;
 };
 
-export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam }: Props) {
+export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam, successFail, setSuccessFail }: Props) {
   const navigate = useNavigate();
   const [showRoleCard, setShowRoleCard] = useState(true);
 
@@ -128,7 +130,7 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
         />
         <dialog id="SuccessFail" className="modal">
           <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <SuccessFailCard player={myPlayer} players={players} />
+            <SuccessFailCard player={myPlayer} players={players} setSuccessFail={setSuccessFail} />
           </div>
           <form method="dialog" className="modal-backdrop">
             <button>close</button>

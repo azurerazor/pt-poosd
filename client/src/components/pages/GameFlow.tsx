@@ -6,6 +6,7 @@ import { Player } from "../../../../common/game/player";
 import { useUser } from '../../util/auth';
 import { ClientLobby } from "../../game/lobby";
 import Loading from "./Loading";
+import { Outcome } from "../../../../common/game/state";
 
 export const quests = [
   [],[],[],[],[],
@@ -38,6 +39,7 @@ export default function GameFlow() {
   const [isLoading, setIsLoading] = useState(false);
   const [changeView, setChangeView] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState<string[]>([]);
+  const [successFail, setSuccessFail] = useState<Outcome>(Outcome.NONE);
 
   //TEMP UNTIL BACKEND
   useEffect(() => {
@@ -74,6 +76,10 @@ export default function GameFlow() {
     }
   }, [changeView]);
 
+  useEffect(() => {
+    console.log("YIPPEE!", successFail);
+  }, [successFail]);
+
   if(isLoading){
     return <Loading />;
   }
@@ -95,7 +101,8 @@ export default function GameFlow() {
           myPlayer={myPlayer}
           selectedTeam={selectedTeam}
           setSelectedTeam={setSelectedTeam}
-
+          successFail={successFail}
+          setSuccessFail={setSuccessFail}
         />
       )}
     </div>
