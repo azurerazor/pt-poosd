@@ -12,7 +12,7 @@ const Lobby: React.FC = () => {
     const gameRoute = `/game/${gameCode}`
 
     //TEMP UNTIL LOBBY BACKEND
-    lobby.addPlayer("booleancube");
+    lobby.addPlayer("blueol");
     lobby.addPlayer("user2");
     lobby.addPlayer("user3");
     const [players, setPlayers] = useState<Player[]>([]);

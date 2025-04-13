@@ -13,7 +13,9 @@ const GameAvatar: React.FC<Props> = ({ player }) => {
   const { isHidden } = useHiddenContext();
   const lobby = ClientLobby.getInstance();
   const myUser = lobby.getPlayer(useUser().username);
+  const leader = player.isLeader;
 
+  console.log(player.username, leader);
   const couldBeGood = player.role ? (player.role & Roles.GOOD) != Roles.NONE : false;
   const couldBeBad = player.role ? (player.role & Roles.EVIL) != Roles.NONE : false;
   const result = player === myUser ? "" : couldBeGood && couldBeBad ? "🟣" : couldBeGood ? "🔵" : couldBeBad ? "🔴" : "";
@@ -21,7 +23,7 @@ const GameAvatar: React.FC<Props> = ({ player }) => {
   return (
     <div className="relative">
       <div className="avatar join-item p-1">
-        <div className="w-24 rounded relative">
+        <div className={`w-24 rounded relative border-4 ${leader ? 'border-yellow-400' : 'border-transparent'}`}>
           <img src={player.avatar} alt={player.username} />
         </div>
       </div>
