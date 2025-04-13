@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 // includes UI components and constants for the Escavalon game
 const Map<int, int> numEvil = {
@@ -106,4 +108,74 @@ class EscavalonButton extends StatelessWidget {
   }
 }
 
+class ExtendableCountDownTimer extends StatefulWidget {
+  final Duration initialDuration;
+  final Duration extensionDuration;
+  final VoidCallback? onTimerFinished;
+  final String? extendButtonText;
 
+  const ExtendableCountDownTimer({
+    super.key, 
+    required this.initialDuration,
+    this.extensionDuration = const Duration(seconds: 5),
+    this.onTimerFinished,
+    this.extendButtonText,
+  });
+
+  @override
+  State<ExtendableCountDownTimer> createState() => _ExtendableCountDownTimerState();
+}
+
+class _ExtendableCountDownTimerState extends State<ExtendableCountDownTimer> {
+  late DateTime _endTime;
+
+  @override
+  void initState() {
+    super.initState();
+    _endTime = DateTime.now().add(widget.initialDuration);
+  }
+
+  void _extendTimer() {
+    setState(() {
+      _endTime = _endTime.add(widget.extensionDuration);
+    });
+  }
+
+  void _onTimerFinished() {
+    if (widget.onTimerFinished != null) {
+      widget.onTimerFinished!();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        EscavalonCard(
+          child: Center(
+            child: TimerCountdown(
+              format: CountDownTimerFormat.minutesSeconds,
+              endTime: _endTime,
+              onEnd: _onTimerFinished,
+              timeTextStyle: TextStyle(fontSize: 24),
+            ),
+          )
+        ),
+
+        EscavalonButton(
+          text: widget.extendButtonText ?? "Extend Timer",
+          onPressed: () => _extendTimer(),
+        ),
+      ],
+    );
+  }
+}
+
+FlutterTts createTts() {
+  FlutterTts result = FlutterTts();
+  result.setLanguage("en-US");
+  result.setSpeechRate(0.5);
+  result.setVolume(1.0);
+  return result;
+}

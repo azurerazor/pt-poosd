@@ -25,33 +25,56 @@ class _QuestRunnerState extends State<QuestRunner> {
   int currentQuestPhase = 0;
   int numFailedVotes = 0;
   List<Team?> questResults = List<Team?>.generate(5, (int idx) => null, growable: false);
+  bool twoFailsRequired = false;
 
   @override
-  Widget build(BuildContext context) {
-    
+  Widget build(BuildContext context) {   
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Align(
           alignment: Alignment.topCenter,
-          child: EscavalonCard(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  "Quest ${currentQuest + 1}",
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              EscavalonCard(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      "Quest ${currentQuest + 1}",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    Text(
+                      "Size of quest: ${questRequirements[globalNumPlayers]![currentQuest + 1]}\n${twoFailsRequired ? "Two traitors" : "One traitor"} required for mission to fail.",
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                )
+              ),
+
+              SizedBox(height: 20,),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: List.generate(
+                  5,
+                  (index) {
+                    if (questResults[index] == Team.good) {
+                      return Icon(Icons.check);
+                    } else if (questResults[index] == Team.evil) {
+                      return Icon(Icons.close);
+                    }
+
+                    return Icon(Icons.question_mark);
+                  },
                 ),
-                Text(
-                  "Size of quest: ${questRequirements[globalNumPlayers]![currentQuest + 1]}\n${currentQuest != 3 ? "One traitor" : "Two traitors"} required for mission to fail.",
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            )
+              ),
+            ],
           ),
         ),
 
@@ -61,7 +84,7 @@ class _QuestRunnerState extends State<QuestRunner> {
               if (currentQuestPhase == 0) {
                 return _Discussion(
                   numOnQuest: questRequirements[globalNumPlayers]![currentQuest + 1]!,
-                  twoFailsRequired: currentQuest == 3,
+                  twoFailsRequired: twoFailsRequired,
                   updateQuestRunnerPhase: updateQuestRunnerPhase,
                 );
               }
@@ -76,7 +99,7 @@ class _QuestRunnerState extends State<QuestRunner> {
               // otherwise we're running the quest
               return _Mission(
                 numOnQuest: questRequirements[globalNumPlayers]![currentQuest + 1]!,
-                twoFailsRequired: currentQuest == 3,
+                twoFailsRequired: twoFailsRequired,
                 updateQuestRunnerPhaseWithQuestVictor: updateQuestRunnerPhaseWithQuestVictor,
               );
             }),
@@ -93,6 +116,12 @@ class _QuestRunnerState extends State<QuestRunner> {
       if (currentQuestPhase == 3) {
         currentQuest++;
         currentQuestPhase = 0;
+      }
+
+      if (currentQuest == 3 && globalNumPlayers > 6) {
+        twoFailsRequired = true;
+      } else {
+        twoFailsRequired = false;
       }
     });
 
@@ -152,7 +181,6 @@ class _QuestRunnerState extends State<QuestRunner> {
 
 }
 
-// TODO: implement discussion
 class _Discussion extends StatelessWidget {
   final int numOnQuest;
   final bool twoFailsRequired;
@@ -163,10 +191,47 @@ class _Discussion extends StatelessWidget {
     required this.twoFailsRequired,
     required this.updateQuestRunnerPhase,
   });
-
+  
   @override
   Widget build(BuildContext context) {
-    return Text("Discussion phase: $numOnQuest, $twoFailsRequired");
+    FlutterTts thisTts = createTts();
+
+    thisTts.speak(
+      "Create a team of $numOnQuest players to go on this mission. ${twoFailsRequired ? "Minions of Mordred, remember that you need two traitors to fail this mission for the entire quest to fail." : ""}"
+    );
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        ExtendableCountDownTimer(
+          initialDuration: Duration(minutes: 7),
+          extensionDuration: Duration(minutes: 5),
+          onTimerFinished: onTimerFinished,
+          extendButtonText: "Extend discussion by 5 minutes",
+        ),
+
+        SizedBox(height: 20),
+
+        EscavalonButton(
+          text: "Start vote",
+          onPressed: () => updateQuestRunnerPhase(),
+        ),
+      ],
+    );
+  }
+
+  void onTimerFinished() async {
+    void startVote() async {
+      await Future.delayed(Duration(seconds: 4));
+      updateQuestRunnerPhase();
+    }
+
+    FlutterTts thisTts = createTts();
+    thisTts.setCompletionHandler(() {
+      startVote();
+    });
+    
+    thisTts.speak("Time has run out! Starting voting phase.");
   }
 }
 

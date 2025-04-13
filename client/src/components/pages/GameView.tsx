@@ -12,6 +12,7 @@ import { HiddenContextProvider } from "../../util/hiddenContext";
 import VoteMission from 'components/ui/VoteMission';
 import RoleRevealCard from "../ui/RoleRevealCard"
 import SuccessFailCard from 'components/ui/SuccessFailCard';
+import {quests, fails} from "./GameFlow"
 
 type Props = {
   players: Player[];
@@ -56,7 +57,7 @@ export default function GameView({ players, myPlayer }: Props) {
         </div>
         <div className="join join-vertical lg:join-horizontal">
           {[...Array(5)].map((_, i) => (
-            <GameMission key={i} status={_A[i % 3]} pcount={i} numFails={0} />
+            <GameMission key={i} status={null} pcount={quests[players.length][i]} numFails={fails[players.length][i]} />
           ))}
         </div>
       <div className="justify-between">
