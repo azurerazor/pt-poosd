@@ -105,10 +105,9 @@ export function initializeSockets(server: Server): void {
             lobby.playerOrder = playerOrder;
 
             // If this was the last player, clean up the lobby
-            if (lobby.getPlayerCount() === 0) {
+            if (lobby.getConnectedPlayerCount() === 0) {
                 console.log(`Lobby ${lobby.id} is empty, removing`);
                 lobby.close();
-                deleteLobby(lobby.id);
 
                 return;
             }
