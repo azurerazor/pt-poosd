@@ -29,3 +29,29 @@ export function setActiveLobby(player: string, lobbyId: string | null): void {
     if (lobbyId) playerLobbies.set(player, lobbyId);
     else playerLobbies.delete(player);
 }
+
+/**
+ * Adds a lobby to the store
+ */
+export function putLobby(lobby: Lobby): void {
+    if (lobbies.has(lobby.id)) {
+        throw new Error(`Lobby with ID ${lobby.id} already exists`);
+    }
+    lobbies.set(lobby.id, lobby);
+    for (const player of lobby.getPlayers()) {
+        playerLobbies.set(player.username, lobby.id);
+    }
+}
+
+/**
+ * Deletes a lobby from the store
+ */
+export function deleteLobby(lobbyId: string): void {
+    const lobby = lobbies.get(lobbyId);
+    if (lobby) {
+        lobbies.delete(lobbyId);
+        for (const player of lobby.getPlayers()) {
+            playerLobbies.delete(player.username);
+        }
+    }
+}

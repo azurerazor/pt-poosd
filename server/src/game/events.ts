@@ -15,6 +15,13 @@ export class ServerEventBroker extends EventBroker {
      */
     private static instance: ServerEventBroker = new ServerEventBroker();
 
+    /**
+     * Gets the singleton instance of the server event broker
+     */
+    public static getInstance(): ServerEventBroker {
+        return this.instance;
+    }
+
     protected getOrigin(): string { return 'server'; }
 
     /**
