@@ -132,7 +132,7 @@ class _HomeContentState extends State<_HomeContent> {
                   EscavalonButton(
                     text: 'Login', 
                     onPressed: () {                      
-                      _getUserInfoFromLogin(context);
+                      _getUserInfoFromLogin();
                     }
                   ),
                   EscavalonButton(
@@ -156,7 +156,7 @@ class _HomeContentState extends State<_HomeContent> {
     );
   }
 
-  void _getUserInfoFromLogin(BuildContext context) async {
+  void _getUserInfoFromLogin() async {
     final info = await Navigator.push(
       context, 
       MaterialPageRoute(

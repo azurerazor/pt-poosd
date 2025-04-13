@@ -190,14 +190,14 @@ class _LoginFormState extends State<_LoginForm> {
       }
     }
 
-    setState(() {
-      _isLoading = false;
-    });
-
     _processLoginResponse(errorMessage);
   } 
 
   void _processLoginResponse(String? message) {
+    setState(() {
+      _isLoading = false;
+    });
+
     if (message != null) {
       showDialog(
         context: context,
