@@ -37,6 +37,7 @@ export default function GameFlow() {
   const lobby = ClientLobby.getInstance();
   const [isLoading, setIsLoading] = useState(false);
   const [changeView, setChangeView] = useState(false);
+  const [selectedTeam, setSelectedTeam] = useState<string[]>([]);
 
   //TEMP UNTIL BACKEND
   useEffect(() => {
@@ -49,7 +50,7 @@ export default function GameFlow() {
     lobby.addPlayer("user126");
     lobby.addPlayer("user127");
     lobby.addPlayer("azure");
-
+    setSelectedTeam(["blueol", "azure", "user2"]);
     setMyPlayer(lobby.getPlayer(username)!);
     setPlayers(lobby.getConnectedPlayers());
     setLobbyId(lobby.id);
@@ -62,7 +63,7 @@ export default function GameFlow() {
         lobby.setEnabledRoles(Roles.ANY);
         lobby.setPlayerRoles("blueol", Roles.PERCIVAL);
         lobby.setPlayerRoles("user3", Roles.MERLIN | Roles.MORGANA);
-        lobby.setPlayerRoles("azure", Roles.MORGANA);
+        lobby.setPlayerRoles("azure", Roles.MORGANA | Roles.MERLIN);
         lobby.setLeader("the_host");
 
         setGameReady(true);
@@ -91,7 +92,10 @@ export default function GameFlow() {
       ) : (
         <GameView
           players={players}
-          myPlayer={myPlayer}          
+          myPlayer={myPlayer}
+          selectedTeam={selectedTeam}
+          setSelectedTeam={setSelectedTeam}
+
         />
       )}
     </div>

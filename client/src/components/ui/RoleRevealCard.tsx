@@ -1,6 +1,7 @@
 import { Player } from "../../../../common/game/player";
-import { getRoles } from "../../../../common/game/roles";
+import { Role, getRoles } from "../../../../common/game/roles";
 import { ClientLobby } from "../../game/lobby";
+import RoleRevealInfo from "./RoleRevealInfo";
 
 interface Props {
   player: Player;
@@ -12,8 +13,8 @@ const RoleRevealCard: React.FC<Props> = ({ player, players, onClose }) => {
   const playersInfo = players.filter((p) => p.role);
   
   const myRole = getRoles(player.role!)[0];
-  let otherRoles = [];
-  let otherPlayers = [];
+  let otherRoles: Role[] = [];
+  let otherPlayers: Player[] = [];
 
   playersInfo.forEach((p) => {
     if (p.username !== player.username && p.role) {
@@ -23,19 +24,45 @@ const RoleRevealCard: React.FC<Props> = ({ player, players, onClose }) => {
   });
 
   return (
-    <div className="card card-side bg-base-100 shadow-sm">
-      <figure>
+    <div className="card card-side bg-base-100 shadow-sm w-[42rem] h-[24rem]">
+      <figure className="w-1/2 h-full">
         <img src={myRole.image} alt={myRole.name} />
       </figure>
-      <div className="card-body w-full">
-        <h1 className="text-xl font-bold flex-row">{myRole.name}</h1>
-        <hr />
-        <h2 className="text-l flex-row mb-12">{myRole.description}</h2>
-        <h3 className="text-xl font-bold">Information</h3>
+      <div className="card-body flex flex-col justify-between">
+        <div>
+          <h1 className="text-xl font-bold">{myRole.name}</h1>
+          <hr className="my-1" />
+          <h2 className="text-l mb-6">{myRole.description}</h2>
+          <h3 className="text-xl font-bold mb-1">Information</h3>
+          <p className="mb-2">
+            The following players could be <span className="font-bold">ANY</span> of these roles:
+          </p>
+          <div className="flex justify-center mb-4">
+            <div className="join space-x-3">
+              {otherRoles.map((r, idx) => (
+                <RoleRevealInfo key={r.name + idx} role={r} />
+              ))}
+            </div>
+          </div>
+
+          <div className="join join-horizontal flex flex-row flex-wrap justify-center">
+            {otherPlayers.map((p) => (
+              <div key={p.username} className="flex flex-col">
+                <div className="avatar p-1">
+                  <div className="w-14 rounded border-4">
+                    <img src={p.avatar} alt={p.username} />
+                  </div>
+                </div>
+                <h2 className="text-sm font-semibold">{p.username}</h2>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {onClose && (
           <button
             onClick={onClose}
-            className="mt-6 self-end bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition"
+            className="mt-4 self-end bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition"
           >
             Continue
           </button>

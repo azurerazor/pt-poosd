@@ -9,18 +9,21 @@ import FunctionButton from "../misc/FunctionButton";
 import { useUser } from '../../util/auth';
 import { useNavigate } from 'react-router';
 import { HiddenContextProvider } from "../../util/hiddenContext";
-import VoteMission from 'components/ui/VoteMission';
+import VoteMission from '../ui/VoteMission';
 import RoleRevealCard from "../ui/RoleRevealCard"
-import SuccessFailCard from 'components/ui/SuccessFailCard';
 import {quests, fails} from "./GameFlow"
 import { LobbyState, Outcome } from "../../../../common/game/state";
+import SuccessFailCard from '../ui/SuccessFailCard';
+import MissionVoteCard from '../ui/MissionVoteCard';
 
 type Props = {
   players: Player[];
   myPlayer: Player;
+  selectedTeam: string[];
+  setSelectedTeam: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
-export default function GameView({ players, myPlayer }: Props) {
+export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam }: Props) {
   const navigate = useNavigate();
   const [showRoleCard, setShowRoleCard] = useState(true);
 
@@ -137,6 +140,22 @@ export default function GameView({ players, myPlayer }: Props) {
          * Displays the player's role with a toggleable card
          */
         }
+
+        <div className="absolute bottom-60">
+          <FunctionButton
+          label="Vote on Mission"
+          onClick={() => (document.getElementById("MissionVote") as HTMLDialogElement)?.showModal()}
+        />
+        <dialog id="MissionVote" className="modal">
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <MissionVoteCard selectedTeam={selectedTeam} players={players} />
+          </div>
+          <form method="dialog" className="modal-backdrop">
+            <button>close</button>
+          </form>
+        </dialog>
+        </div>
+
         <div className="absolute bottom-4 right-4 p-2">
           <GameCard
             role={getRoles(myPlayer.role!)[0]}
