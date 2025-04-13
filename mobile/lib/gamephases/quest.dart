@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
@@ -50,7 +52,7 @@ class _QuestRunnerState extends State<QuestRunner> {
                       textAlign: TextAlign.center,
                     ),
                     Text(
-                      "Size of quest: ${questRequirements[globalNumPlayers]![currentQuest + 1]}\n${twoFailsRequired ? "Two traitors" : "One traitor"} required for mission to fail.",
+                      "Size of quest: ${questRequirements[globalNumPlayers]![currentQuest + 1]}\n${twoFailsRequired ? "Two traitors" : "One traitor"} required for mission to fail.\nNumber of failed proposals: $numFailedVotes.",
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -235,7 +237,6 @@ class _Discussion extends StatelessWidget {
   }
 }
 
-// TODO: implement vote
 class _Vote extends StatelessWidget {
   final int numOnQuest;
   final Function(bool) updateQuestRunnerPhaseWithPossibleRepeat;
@@ -247,7 +248,57 @@ class _Vote extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text("Voting phase: $numOnQuest");
+    readScript();
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        const Text(
+          "Leader, propose a team.\nThen have everyone vote.\nDid the vote pass or fail?",
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+          textAlign: TextAlign.center,
+        ),
+
+        SizedBox(height: 20,),
+
+        EscavalonButton(
+          text: "PASS",
+          onPressed: () => updateQuestRunnerPhaseWithPossibleRepeat(false),
+        ),
+        
+        EscavalonButton(
+          text: "FAIL",
+          onPressed: () => updateQuestRunnerPhaseWithPossibleRepeat(true),
+        ),
+      ],
+    );
+  }
+
+  void readScript() async {
+    FlutterTts thisTts = createTts();
+
+    List<(String, int)> script = [("Leader, propose a team of $numOnQuest players.", 30)];
+    script.add(("Everybody, in 3", 1));
+    script.add(("2", 1));
+    script.add(("1", 1));
+    script.add(("vote!", 5));
+    script.add(("Did the vote pass or fail?", 0));
+
+    for (var line in script) {
+      await thisTts.speak(line.$1);
+      Completer<void> completer = Completer<void>();
+      
+      thisTts.setCompletionHandler(() {
+        completer.complete();
+      });
+      await completer.future;
+
+      await Future.delayed(Duration(seconds: line.$2)); 
+    }
+
   }
 }
 
