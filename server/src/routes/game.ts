@@ -8,7 +8,7 @@ const router = Router();
 router.use(requireAuth);
 
 // Creates a new lobby and returns its code
-router.post('/create', async (req: Request, res: Response) => {
+router.get('/create', async (req: Request, res: Response) => {
     // Fetch the current user's name
     const user = res.locals.user;
 
@@ -22,6 +22,8 @@ router.post('/create', async (req: Request, res: Response) => {
     const lobby = new ServerLobby(lobbyId, user);
     putLobby(lobby);
 
+    console.log(`Lobby ${lobbyId} created by ${user.username}`);
+
     // Set a timer to delete this lobby after 5 minutes
     // if nobody has joined
     setTimeout(() => {
@@ -29,6 +31,7 @@ router.post('/create', async (req: Request, res: Response) => {
         if (!lobby) return;
 
         if (lobby.getConnectedPlayerCount() === 0) {
+            console.log(`Lobby ${lobbyId} has been inactive for 5 minutes. Deleting...`);
             lobby.close();
             return;
         }
