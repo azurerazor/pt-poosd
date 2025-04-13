@@ -135,6 +135,13 @@ export class Role {
     public canSee(role: Role): boolean {
         return role.is(this.information);
     }
+
+    /**
+     * Checks if this role can see the given role set
+     */
+    public canSeeRoles(roles: Roles): boolean {
+        return (this.information & roles) === roles;
+    }
 }
 
 export const servant = new Role(

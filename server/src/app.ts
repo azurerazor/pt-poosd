@@ -3,6 +3,9 @@ import cors from 'cors';
 import express from 'express';
 import mongoose from 'mongoose';
 
+import http from 'http';
+import { Server } from 'socket.io';
+import { initializeSockets } from './game/sockets.js';
 import { login, logout, register, verifyEmail } from './routes/auth.js';
 import game from './routes/game.js';
 import get_user from './routes/get_user.js';
@@ -28,6 +31,17 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json());
 
+// Set up the socket.io server
+const httpServer = http.createServer(app);
+const ioServer = new Server(httpServer, {
+    cors: {
+        origin: process.env.CLIENT_ORIGIN,
+        methods: ["GET", "POST"],
+        credentials: true
+    }
+});
+initializeSockets(ioServer);
+
 // Auth routes
 app.post('/api/register', register);
 app.post('/api/login', login);
@@ -39,7 +53,7 @@ app.use('/api/get_user', get_user);
 app.use('/api/stats', stats);
 app.use('/api/game', game);
 
-// Do the thing
-app.listen(PORT, () => {
+// Listen for incoming requests
+httpServer.listen(PORT, () => {
     console.log(`Avalon server listening on port ${PORT}`);
 });

@@ -338,4 +338,39 @@ export class Lobby {
         if (player) return player;
         return null;
     }
+
+    /**
+     * Gets a version of the player map with only data visible to a certain player
+     */
+    public getPlayerMapFor(username: string): Map<string, Player> {
+        const res: Map<string, Player> = new Map();
+
+        // Get the requested player's role object
+        const player = this.getPlayer(username)!;
+        const role = player.getPossibleRoles()![0];
+
+        // Loop through all players
+        for (const [name, player] of this.players) {
+            // If this is the requested player, return all their data
+            if (name === username) {
+                res.set(name, player);
+                continue;
+            }
+
+            // Otherwise, return only the data that is visible to this player
+            const newPlayer = new Player(name, player.isHost);
+
+            // Populate data
+            newPlayer.isLeader = player.isLeader;
+            newPlayer.isConnected = player.isConnected;
+            newPlayer.avatar = player.avatar;
+
+            // Check if role is visible to the requested player
+            if (role.canSeeRoles(player.role!)) {
+                newPlayer.role = player.role;
+            }
+        }
+
+        return res;
+    }
 }
