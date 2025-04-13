@@ -262,7 +262,6 @@ class _VoteState extends State<_Vote> {
 
   @override
   Widget build(BuildContext context) {
-
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -327,7 +326,6 @@ class _VoteState extends State<_Vote> {
 
 }
 
-// TODO: implement mission
 class _Mission extends StatefulWidget {
   final int numOnQuest;
   final bool twoFailsRequired;
@@ -345,10 +343,82 @@ class _Mission extends StatefulWidget {
 }
 
 class _MissionState extends State<_Mission> {
+  bool finishedSpeaking = false;
+
+  @override
+  void initState() {
+    super.initState();
+    readScript();
+  }
+
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text(
+          "Distribute vote cards.\nThen, reveal the votes.\nDid the quest succeed?",
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+          textAlign: TextAlign.center,
+        ),
+
+        SizedBox(height: 20,),
+
+        EscavalonButton(
+          text: "SUCCEED",
+          onPressed: () => {
+            if (finishedSpeaking) {
+              widget.updateQuestRunnerPhaseWithQuestVictor(Team.good)
+            }
+          },
+        ),
+        
+        EscavalonButton(
+          text: "FAIL",
+          onPressed: () => {
+            if (finishedSpeaking) {
+              widget.updateQuestRunnerPhaseWithQuestVictor(Team.evil)
+            }
+          },        
+        ),
+      ],
+    );  
   }
   
+  void readScript() async {
+    FlutterTts thisTts = createTts();
+
+    List<(String, int)> script = [("Distribute vote cards among players on mission.", 5)];
+    script.add(("Loyal Servants of Arthur, vote success.", 1));
+    script.add(("Minions of Mordred, you can choose to between chosing to suceed or fail.", 1));
+    script.add(("1", 1));
+
+    if (widget.twoFailsRequired) {
+      script.add(("Remember, you need two fail votes for the entire quest to fail.", 7));
+    } else {
+      script.add(("Remember, even one fail vote will cause the entire quest to fail.", 7));
+    }
+
+    script.add(("Reveal the vote cards. Did the quest succeed or fail?", 0));
+
+    for (var line in script) {
+      await thisTts.speak(line.$1);
+      Completer<void> completer = Completer<void>();
+      
+      thisTts.setCompletionHandler(() {
+        completer.complete();
+      });
+      await completer.future;
+
+      await Future.delayed(Duration(seconds: line.$2)); 
+    }
+
+    setState(() {
+      finishedSpeaking = true;
+    });
+  }
+
 }
