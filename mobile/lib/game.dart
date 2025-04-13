@@ -1,8 +1,9 @@
-import 'dart:convert';
-import 'dart:io';
+// import 'dart:convert';
+// import 'dart:io';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:mobile/escavalon_material.dart';
 
 enum Team { good, evil, }
@@ -72,18 +73,35 @@ class _GamePageContentState extends State<_GamePageContent> {
   List<Team?> questResults = List<Team?>.generate(5, (int idx) => null, growable: false);
 
   Future<bool>? _gameSavedSuccessfully;
-  bool _gameSaved = false;
+  final bool _gameSaved = false; // TODO: make this less of a mess
+
+  FlutterTts flutterTts = FlutterTts();
+
+  @override
+  void initState() {
+    super.initState();
+    flutterTts.setLanguage("en-US");
+    flutterTts.setSpeechRate(0.5);
+    flutterTts.setVolume(1.0);
+  }
 
   @override
   Widget build(BuildContext context) {
     switch (gamePhase) {
       case 0:
-        return _Night(updateGamePhase: (newPhase) => setState(() {
-          gamePhase = newPhase;
-        }));
+        return Builder(
+          builder: (context) => _Night(
+            // TODO: stop exception happenning at end of night
+            updateGamePhase: (newPhase) => setState(() {
+              gamePhase = newPhase;
+            }),
+            flutterTts: flutterTts,
+          )
+        );
       case 1:
         return Text("Questing...");
       case 2:
+        // evil already won -- they don't need to try to assassinate Merlin
         if (numVictories[Team.evil] == 3) {
           setState(() {
             gamePhase = 3;
@@ -109,7 +127,9 @@ class _GamePageContentState extends State<_GamePageContent> {
     // TODO: run quest and return results
   }
 
+  // not yet tested
   Widget endGame(BuildContext context) {
+    // if user is logged in, we can try to save the game
     if (globalToken != null) {
       _gameSavedSuccessfully = trySave();
     }
@@ -240,8 +260,11 @@ class _GamePageContentState extends State<_GamePageContent> {
 
 class _Night extends StatefulWidget {
   final Function(int) updateGamePhase;
+  final FlutterTts flutterTts;
+
   const _Night({
     required this.updateGamePhase,
+    required this.flutterTts,
   });
 
   @override
@@ -249,29 +272,63 @@ class _Night extends StatefulWidget {
 }
 
 class _NightState extends State<_Night> {
-  int nightPhase = 0; // 0: evil, 1: merlin, 2: percival
+  int scriptIdx = 0;
+  NightPhase nightPhase = NightPhase.start;
+  List<(NightPhase, String, int)>? script;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.flutterTts.setCompletionHandler(() {
+      updateIndex();
+    });
+
+    script = getNightScript(
+      numEvil[globalNumPlayers] ?? 2,
+      globalRolesSelected["Merlin"],
+      globalRolesSelected["Percival"],
+      globalRolesSelected["Oberon"],
+      globalRolesSelected["Mordred"],
+    );
+  }
   
   @override
   Widget build(BuildContext context) {
-    switch (nightPhase) {
-      case 0: // TODO: reveal evil roles to eachother (check for Oberon)
-
-
-        setState(() {
-          nightPhase = 1;
-        });
-      case 1: // TODO: reveal evil roles to Merlin (check for Mordred)
-
-
-      case 2: // TODO: reveal Merlin/Morgana to Percival
-
-      default:
-        throw ErrorDescription("Invalid night phase: $nightPhase");
+    if (scriptIdx == script!.length) {
+      widget.updateGamePhase(1);
+      return Text(
+        "Night phase complete. Good luck on your quests!",
+        style: TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+        ),
+        textAlign: TextAlign.center,
+      );
     }
 
-    return Text("Revealing pertinent information...");
+    speak(script![scriptIdx].$2);
+    return Text(
+      script![scriptIdx].$2,
+      style: TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+      ),
+      textAlign: TextAlign.center,
+    );
   }
   
+  Future<void> speak(String text) async {
+    await widget.flutterTts.speak(text);
+  }
+
+  Future<void> updateIndex() async {
+    await Future.delayed(Duration(seconds: script![scriptIdx].$3));
+
+    setState(() {
+      scriptIdx++;
+    });
+  }
+
 }
 
 // TODO: send game results to server

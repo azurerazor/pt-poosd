@@ -106,10 +106,102 @@ class EscavalonButton extends StatelessWidget {
   }
 }
 
-// String buildEvilScript(bool? includesOberon, bool? includesMordred) {
-//   String result = "All Minions of Mordred, ";
-// }
 
-String getIntroScript() {
-  return "Everybody, close your eyes.";
+// Night Script
+enum NightPhase {
+  start,
+  evil,
+  merlin,
+  percival,
+  end,
+}
+
+List<(NightPhase, String, int)> getNightScript(int numEvil, bool? includesMerlin, bool? includesPercival, bool? includesOberon, bool? includesMordred) {
+  List<(NightPhase, String, int)> result = [];
+
+  result.add((NightPhase.start, "Starting Escavalon game. Everybody, close your eyes.", 2));
+
+  result.addAll(
+    _getEvilScript(numEvil, includesOberon)
+  );
+
+  if (includesMerlin == true) {
+    result.addAll(
+      _getMerlinScript(numEvil, includesMordred)
+    );
+  }
+
+  if (includesPercival == true) {
+    result.addAll(
+      _getPercivalScript()
+    );
+  }
+
+  result.add((NightPhase.end, "Everybody, open your eyes. The night is over. Good luck on your quests!", 2));
+
+  return result;
+
+}
+
+List<(NightPhase, String, int)> _getEvilScript(int numEvil, bool? includesOberon) {
+  String firstPart = "All Minions of Mordred, ";
+
+  if (includesOberon == true) {
+    firstPart += "excluding Oberon, ";
+  }
+
+  firstPart += "open your eyes, raise your hands, and look for each other. ";
+
+  numEvil -= 1; // they don't see themselves
+  if (includesOberon == true) {
+    numEvil -= 1; // they don't see Oberon
+  }
+  
+  if (numEvil == 0) {
+    firstPart += "You should see no players with their hands raised. ";
+  } else if (numEvil == 1) {
+    firstPart += "You should see $numEvil player with their hand raised. ";
+  } else if (numEvil > 1) {
+    firstPart += "You should see $numEvil players with their hands raised. ";
+  }
+
+  List<(NightPhase, String, int)> result = [
+    (NightPhase.evil, firstPart, 8), 
+    (NightPhase.evil, "All Minions of Mordred, close your eyes and put your hands down.", 3)
+  ];
+  return result;
+}
+
+List <(NightPhase, String, int)> _getMerlinScript(int numEvil, bool? includesMordred) {
+  String firstPart = "Merlin, open your eyes. All Minions of Mordred, ";
+
+  if (includesMordred == true) {
+    firstPart += "except Mordred himself, ";
+  }
+
+  firstPart += "keep your eyes closed and raise your hands. ";
+
+  if (includesMordred == true) {
+    numEvil -= 1;
+  }
+
+  if (numEvil == 1) {
+    firstPart += "Merlin, you should see $numEvil player with their hand raised. ";
+  } else if (numEvil > 1) {
+    firstPart += "Merlin, you should see $numEvil players with their hands raised. ";
+  }
+
+  List<(NightPhase, String, int)> result = [
+    (NightPhase.merlin, firstPart, 8), 
+    (NightPhase.merlin, "Merlin, close your eyes. All Minions of Mordred, put your hands down.", 3),
+  ];
+  return result;
+}
+
+List<(NightPhase, String, int)> _getPercivalScript() {
+  List<(NightPhase, String, int)> result = [
+    (NightPhase.percival, "Percival, open your eyes. Merlin and Morgana, keep your eyes closed and raise your hands. Percival, you should see 2 players with their hands raised.", 8),
+    (NightPhase.percival, "Percival, close your eyes. Merlin and Morgana, put your hands down. ", 3),
+  ];
+  return result;
 }
