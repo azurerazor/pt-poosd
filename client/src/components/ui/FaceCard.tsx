@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { Role, Roles } from "../../../../common/game/roles";
+import { useState, useEffect } from "react";
+import { Role, role_dependencies, role_requirements, Roles } from "../../../../common/game/roles";
 import { ClientLobby } from "../../game/lobby";
+import { useRolesetContext } from "util/rolesetContext";
 
 interface Props {
     role: Role;
@@ -9,15 +10,23 @@ interface Props {
 
 const FaceCard: React.FC<Props> = ({ role, status = true }) => {
   const lobby = ClientLobby.getInstance();
-  const [isGrayScale, setIsGrayScale] = useState(status);
+  const {roles, setRoles} = useRolesetContext();
+  const isGrayScale = (roles & role.role) === 0;
 
   const handleClick = () => {
-    setIsGrayScale((prevStatus) => !prevStatus);
-    lobby.setEnabledRoles(!isGrayScale ? lobby.enabledRoles | role.role : lobby.enabledRoles & (Roles.ANY & ~(role.role)));
+    if ((roles & role.role) === 0) {
+      // turn on requirements
+      setRoles((r: Roles) => (r | role.role | role_requirements[role.role]));
+    } else {
+      setRoles((r: Roles) => (r & (~role_dependencies[role.role]) & (~role.role)));
+    }
   }
 
-  let grayScaleVal = !isGrayScale ? 100 : 0;
-  let grayScale = `grayscale(${grayScaleVal}%)`;
+  useEffect(() => {
+    lobby.setEnabledRoles(roles);
+  }, [roles]);
+
+  let grayScaleVal = isGrayScale ? 100 : 0;
 
   return (
     <div className="card bg-base-100 w-60 shadow-sm h-[380px] flex flex-col" onClick={handleClick}>
@@ -25,7 +34,7 @@ const FaceCard: React.FC<Props> = ({ role, status = true }) => {
             <img
                 src={role.image}
                 alt={role.name}
-                style={{ objectFit: 'cover', maxHeight: 300, filter: grayScale }}
+                style={{ objectFit: 'cover', maxHeight: 300, filter: `grayscale(${grayScaleVal}%)` }}
                 width="100%"
             />
         </figure>

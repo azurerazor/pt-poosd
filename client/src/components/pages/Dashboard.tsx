@@ -29,13 +29,12 @@ export default function Dashboard() {
     };
 
     const handleJoin = () => {
-        //TO-DO check if lobby exists?
-        navigate(`/lobby/${gameCode}`);
+        navigate(`/game/${gameCode}`);
     };
 
     const handleMake = () => {
         //TO-DO get random lobby code and make new Lobby and actually set the websocket up
-        navigate(`/lobby/${gameCode}`);
+        navigate(`/game/${gameCode}`);
     };
 
     return (
@@ -45,7 +44,7 @@ export default function Dashboard() {
             <div className="justify-center">
                 <InputText 
                     name="Game Code"
-                    placeholder="Game Code"
+                    placeholder="Enter game code"
                     label=''
                     onChange={(event) => setGameCode(event.target.value)}
                 />

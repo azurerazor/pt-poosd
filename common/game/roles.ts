@@ -48,6 +48,22 @@ export const role_requirements: { [key: number]: Roles } = {
     [Roles.OBERON]: Roles.NONE,
 }
 
+/**
+ * The set of roles that require a given role
+ * basically the inverse of the above
+ */
+export const role_dependencies: { [key: number]: Roles } = {
+    [Roles.SERVANT_OF_ARTHUR]: Roles.SERVANT_OF_ARTHUR,
+    [Roles.MERLIN]: Roles.PERCIVAL | Roles.MORGANA| Roles.MORDRED | Roles.ASSASSIN,
+    [Roles.PERCIVAL]: Roles.MORGANA,
+
+    [Roles.MINION_OF_MORDRED]: Roles.NONE,
+    [Roles.MORGANA]: Roles.PERCIVAL,
+    [Roles.MORDRED]: Roles.NONE,
+    [Roles.ASSASSIN]: Roles.NONE,
+    [Roles.OBERON]: Roles.NONE,
+}
+
 export class Role {
     /**
      * The role represented by this object

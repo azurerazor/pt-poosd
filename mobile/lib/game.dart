@@ -1,5 +1,10 @@
+// import 'dart:convert';
+// import 'dart:io';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:mobile/escavalon_material.dart';
 
 enum Team { good, evil, }
 
@@ -46,7 +51,6 @@ class GamePage extends StatelessWidget {
         ),
     );
   }
-  
 }
 
 class _GamePageContent extends StatefulWidget {
@@ -65,32 +69,54 @@ class _GamePageContentState extends State<_GamePageContent> {
     Team.evil: 0,
   };
 
-  int gamePhase = 0; // 0: start, 1: quests, 2: end
+  int gamePhase = 0; // 0: start, 1: quests, 2: assassinate, 3: end
   List<Team?> questResults = List<Team?>.generate(5, (int idx) => null, growable: false);
+
+  Future<bool>? _gameSavedSuccessfully;
+  final bool _gameSaved = false; // TODO: make this less of a mess
+
+  FlutterTts flutterTts = FlutterTts();
+
+  @override
+  void initState() {
+    super.initState();
+    flutterTts.setLanguage("en-US");
+    flutterTts.setSpeechRate(0.5);
+    flutterTts.setVolume(1.0);
+  }
 
   @override
   Widget build(BuildContext context) {
     switch (gamePhase) {
       case 0:
-        return Text("Game starting...",);
+        return Builder(
+          builder: (context) => _Night(
+            updateGamePhase: (newPhase) => setState(() {
+              gamePhase = newPhase;
+            }),
+            flutterTts: flutterTts,
+          )
+        );
       case 1:
         return Text("Questing...");
       case 2:
-        return Text("Ending game...");
+        // evil already won -- they don't need to try to assassinate Merlin
+        if (numVictories[Team.evil] == 3) {
+          setState(() {
+            gamePhase = 3;
+          });
+        }
+        // TODO: implement Merlin assassination
+        return Text("Assassinating Merlin...");
+      case 3:
+
+
+
+
+        return endGame(context);
       default:
         throw ErrorDescription("Invalid game phase: $gamePhase");
     }
-  }
-
-  void startGame(BuildContext context) {
-    // TODO: reveal evil roles to eachother (check for Oberon)
-    // TODO: reveal evil roles to Merlin (check for Mordred)
-    // TODO: reveal Merlin/Morgana to Percival
-
-    // start the quest phase!
-    setState(() {
-      gamePhase = 1;
-    });
   }
 
   void runQuest(BuildContext context) {
@@ -100,17 +126,231 @@ class _GamePageContentState extends State<_GamePageContent> {
     // TODO: run quest and return results
   }
 
-  void endGame(BuildContext context) {
-    // TODO: implement Merlin assassination
-    if (numVictories[Team.good] == 3) {
-
+  // not yet tested
+  Widget endGame(BuildContext context) {
+    // if user is logged in, we can try to save the game
+    if (globalToken != null) {
+      _gameSavedSuccessfully = trySave();
     }
 
-    // TODO: send game results to server
-    // time started, winner, numPlayers, special roles used, winners of each round
-    // remember to send time as UTC!
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        EscavalonCard(
+          child: Text(
+            "Game Over!\nVictory for:\n${winner == Team.good ? "Good" : "Evil"}",
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          )
+        ),
 
-    // return to home screen
-    Navigator.of(context).pop();
+        // save game status
+        Builder(
+          builder: (context) {
+            if (globalToken != null) {
+              return saveStatus(context);
+            } else {
+              return const SizedBox.shrink();
+            }
+          }
+        ),
+
+        EscavalonButton(
+          text: "Return to Home Screen",
+          onPressed: () {
+            bool returnToHome = true;
+
+            if (globalToken != null && _gameSaved == false) {
+              showDialog(
+                context: context, 
+                builder: (context) => AlertDialog(
+                  title: const Text("Warning!"),
+                  content: const Text("Game not saved. Are you sure you want to return to the home screen?"),
+                  actions: <Widget>[
+                    TextButton(
+                      child: const Text("NO"),
+                      onPressed: () {
+                        returnToHome = false;
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    TextButton(
+                      child: const Text("YES"),
+                      onPressed: () {
+                        returnToHome = true;
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            if (returnToHome) {
+              Navigator.of(context).pop();
+            }
+          },
+        ),
+      // 
+      ]
+    );
   }
+
+  FutureBuilder<bool> saveStatus(BuildContext context) {
+    return FutureBuilder<bool>(
+      future: _gameSavedSuccessfully,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Row(
+            children: const <Widget>[
+              Expanded(
+                child: Text(
+                  "Saving game...",
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              CircularProgressIndicator(),
+            ],
+          );
+        } else if (snapshot.hasError) {
+          return Row(
+            children: [
+              Expanded(
+                child: Text(
+                  "Failed to save game: ${snapshot.error}",
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              Icon(Icons.close),
+            ],
+          );
+        } else if (snapshot.hasData && snapshot.data == true) {
+          return Row(
+            children: [
+              Expanded(
+                child: Text(
+                  "Game saved successfully!",
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              Icon(Icons.check),
+            ],
+          );
+        } else {
+          return Row(
+            children: [
+              Expanded(
+                child: Text(
+                  "Failed to save game.",
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              Icon(Icons.close),
+            ],
+          );        
+        }
+      },
+    );
+  }
+}
+
+class _Night extends StatefulWidget {
+  final Function(int) updateGamePhase;
+  final FlutterTts flutterTts;
+
+  const _Night({
+    required this.updateGamePhase,
+    required this.flutterTts,
+  });
+
+  @override
+  State<StatefulWidget> createState() => _NightState();
+}
+
+class _NightState extends State<_Night> {
+  int scriptIdx = 0;
+  NightPhase nightPhase = NightPhase.start;
+  List<(NightPhase, String, int)>? script;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.flutterTts.setCompletionHandler(() {
+      updateIndex();
+    });
+
+    script = getNightScript(
+      numEvil[globalNumPlayers] ?? 2,
+      globalRolesSelected["Merlin"],
+      globalRolesSelected["Percival"],
+      globalRolesSelected["Oberon"],
+      globalRolesSelected["Mordred"],
+    );
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    if (scriptIdx == script!.length) {
+      return Text(
+        "Night phase complete. Good luck on your quests!",
+        style: TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+        ),
+        textAlign: TextAlign.center,
+      );
+    }
+
+    speak(script![scriptIdx].$2);
+    return Text(
+      script![scriptIdx].$2,
+      style: TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+      ),
+      textAlign: TextAlign.center,
+    );
+  }
+  
+  Future<void> speak(String text) async {
+    await widget.flutterTts.speak(text);
+  }
+
+  Future<void> updateIndex() async {
+    await Future.delayed(Duration(seconds: script![scriptIdx].$3));
+
+    setState(() {
+      scriptIdx++;
+    });
+
+    // once we're done with the script, we can move on to the next phase of the game
+    if (scriptIdx == script!.length) {
+      widget.updateGamePhase(1);
+    }
+  }
+
+}
+
+// TODO: send game results to server
+// time started, winner, numPlayers, special roles used (probably just as 'RoleName':'True/False'), whether each round suceeded/failed
+// remember to send time as UTC!
+Future<bool> trySave() async {
+  return true;
+  // final HttpResponse response;
+
+  // if (response.statusCode == 201) {
+  //   return true;
+  // } else {
+  //   final dynamic responseBody = jsonDecode(response.body);
+  //   if (responseBody is Map<String, dynamic>) {
+  //     final String errorMessage = responseBody['message'] ?? "Unknown error";
+  //     throw Exception(errorMessage);
+  //   } else {
+  //     throw Exception("Unknown error");
+  //   }
+  // }
+
 }

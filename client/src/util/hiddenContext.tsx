@@ -8,7 +8,7 @@ interface HiddenContextType {
 
 const HiddenContext = createContext<HiddenContextType | undefined>(undefined);
 
-export const ContextProvider = ({ children }: { children: React.ReactNode }) => {
+export const HiddenContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [isHidden, setIsHidden] = useState(true);
 
   return (
