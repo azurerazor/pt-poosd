@@ -18,6 +18,8 @@ type Props = {
   myPlayer: Player;
 };
 
+let _A = [null, true, false]; // silly debug array for the GameMissions
+
 export default function GameView({ players, myPlayer }: Props) {
   const navigate = useNavigate();
   const [showRoleCard, setShowRoleCard] = useState(true);
@@ -52,10 +54,9 @@ export default function GameView({ players, myPlayer }: Props) {
             <GameAvatar key={player.username} player={player} myPlayer={myPlayer} />
           ))}
         </div>
-
         <div className="join join-vertical lg:join-horizontal">
           {[...Array(5)].map((_, i) => (
-            <GameMission key={i} status={false} />
+            <GameMission key={i} status={_A[i % 3]} pcount={i} numFails={0} />
           ))}
         </div>
       <div className="justify-between">
