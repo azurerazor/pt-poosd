@@ -230,6 +230,10 @@ class _DiscussionState extends State<_Discussion> {
   }
 
   void onTimerFinished() async {
+    setState(() {
+      finishedSpeaking = false;
+    });
+
     void startVote() async {
       await Future.delayed(Duration(seconds: 4));
       widget.updateQuestPhase();
