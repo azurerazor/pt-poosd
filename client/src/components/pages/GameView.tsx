@@ -15,6 +15,7 @@ import {quests, fails} from "./GameFlow"
 import { LobbyState, Outcome } from "../../../../common/game/state";
 import SuccessFailCard from '../ui/SuccessFailCard';
 import MissionVoteCard from '../ui/MissionVoteCard';
+import MissionRevealCard from '../ui/MissionRevealCard';
 
 type Props = {
   players: Player[];
@@ -23,12 +24,13 @@ type Props = {
   setSelectedTeam: React.Dispatch<React.SetStateAction<string[]>>;
   successFail: Outcome;
   setSuccessFail: React.Dispatch<React.SetStateAction<Outcome>>;
+  outcomes: Outcome[];
 };
 
-export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam, successFail, setSuccessFail }: Props) {
+export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam, successFail, setSuccessFail, outcomes }: Props) {
   const navigate = useNavigate();
   const [showRoleCard, setShowRoleCard] = useState(true);
-
+  console.log(players);
   const handleLeave = () => {
     navigate(`/dashboard`);
   };
@@ -137,7 +139,6 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
           </form>
         </dialog>
         </div>
-
         {
         /**
          * Voting on mission
@@ -156,6 +157,21 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
             <button>close</button>
           </form>
         </dialog>
+        </div>
+
+        <div className="absolute bottom-20">
+          <FunctionButton
+            label="Reveal Mission"
+            onClick={() => (document.getElementById("RevealMission") as HTMLDialogElement)?.showModal()}
+          />
+          <dialog id="RevealMission" className="modal">
+            <div className="fixed inset-0 z-50 flex items-center justify-center">
+              <MissionRevealCard outcomes={outcomes} />
+            </div>
+            <form method="dialog" className="modal-backdrop">
+              <button>close</button>
+            </form>
+          </dialog>
         </div>
 
         {

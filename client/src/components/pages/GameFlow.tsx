@@ -40,6 +40,7 @@ export default function GameFlow() {
   const [changeView, setChangeView] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState<string[]>([]);
   const [successFail, setSuccessFail] = useState<Outcome>(Outcome.NONE);
+  const [outcomes, setOutcomes] = useState<Outcome[]>([]);
 
   //TEMP UNTIL BACKEND
   useEffect(() => {
@@ -67,7 +68,6 @@ export default function GameFlow() {
         lobby.setPlayerRoles("user3", Roles.MERLIN | Roles.MORGANA);
         lobby.setPlayerRoles("azure", Roles.MORGANA | Roles.MERLIN);
         lobby.setLeader("the_host");
-
         setGameReady(true);
         setIsLoading(false);
       };
@@ -103,6 +103,7 @@ export default function GameFlow() {
           setSelectedTeam={setSelectedTeam}
           successFail={successFail}
           setSuccessFail={setSuccessFail}
+          outcomes={outcomes}
         />
       )}
     </div>
