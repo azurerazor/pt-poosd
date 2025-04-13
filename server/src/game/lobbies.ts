@@ -1,9 +1,9 @@
-import { Lobby } from "@common/game/state";
+import { ServerLobby } from "./lobby";
 
 /**
  * In-memory store for lobbies mapped by ID
  */
-const lobbies: Map<string, Lobby> = new Map();
+const lobbies: Map<string, ServerLobby> = new Map();
 
 /**
  * Maps player names to their active lobby IDs
@@ -13,7 +13,7 @@ const playerLobbies: Map<string, string> = new Map();
 /**
  * Gets the active lobby for a given player, or null if one is not alive
  */
-export function getActiveLobby(player: string): Lobby | null {
+export function getActiveLobby(player: string): ServerLobby | null {
     const lobbyId = playerLobbies.get(player);
     if (!lobbyId) return null;
 
@@ -33,7 +33,7 @@ export function setActiveLobby(player: string, lobbyId: string | null): void {
 /**
  * Adds a lobby to the store
  */
-export function putLobby(lobby: Lobby): void {
+export function putLobby(lobby: ServerLobby): void {
     if (lobbies.has(lobby.id)) {
         throw new Error(`Lobby with ID ${lobby.id} already exists`);
     }
@@ -54,4 +54,11 @@ export function deleteLobby(lobbyId: string): void {
             playerLobbies.delete(player.username);
         }
     }
+}
+
+/**
+ * Gets a lobby by its ID
+ */
+export function getLobby(lobbyId: string): ServerLobby | null {
+    return lobbies.get(lobbyId) || null;
 }
