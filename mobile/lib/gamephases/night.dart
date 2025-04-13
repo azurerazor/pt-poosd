@@ -6,12 +6,10 @@ import 'package:mobile/game.dart';
 
 class Night extends StatefulWidget {
   final Function(int) updateGamePhase;
-  final FlutterTts flutterTts;
 
   const Night({
     super.key, 
     required this.updateGamePhase,
-    required this.flutterTts,
   });
 
   @override
@@ -23,11 +21,12 @@ class _NightState extends State<Night> {
   // not yet used : will be used to determine appearance of the screen (e.g. display merlin during merlin phase)
   // _NightPhase _nightPhase = _NightPhase.start;
   List<(_NightPhase, String, int)>? script;
+  FlutterTts flutterTts = createTts();
 
   @override
   void initState() {
     super.initState();
-    widget.flutterTts.setCompletionHandler(() {
+    flutterTts.setCompletionHandler(() {
       updateIndex();
     });
 
@@ -65,7 +64,7 @@ class _NightState extends State<Night> {
   }
   
   Future<void> speak(String text) async {
-    await widget.flutterTts.speak(text);
+    await flutterTts.speak(text);
   }
 
   Future<void> updateIndex() async {

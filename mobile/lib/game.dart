@@ -93,7 +93,6 @@ class _GamePageContentState extends State<_GamePageContent> {
             updateGamePhase: (newPhase) => setState(() {
               gamePhase = newPhase;
             }),
-            flutterTts: flutterTts,
           )
         );
       case 1:
