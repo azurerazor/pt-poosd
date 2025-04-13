@@ -61,7 +61,7 @@ class _QuestRunnerState extends State<QuestRunner> {
 
               SizedBox(height: 20,),
 
-              Row(
+              EscavalonCard(child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: List.generate(
                   5,
@@ -75,7 +75,7 @@ class _QuestRunnerState extends State<QuestRunner> {
                     return Icon(Icons.question_mark);
                   },
                 ),
-              ),
+              )),
             ],
           ),
         ),
@@ -237,7 +237,7 @@ class _Discussion extends StatelessWidget {
   }
 }
 
-class _Vote extends StatelessWidget {
+class _Vote extends StatefulWidget {
   final int numOnQuest;
   final Function(bool) updateQuestRunnerPhaseWithPossibleRepeat;
 
@@ -245,10 +245,23 @@ class _Vote extends StatelessWidget {
     required this.numOnQuest,
     required this.updateQuestRunnerPhaseWithPossibleRepeat,
   });
+  
+  @override
+  State<StatefulWidget> createState() => _VoteState();
+
+}
+
+class _VoteState extends State<_Vote> {
+  bool finishedSpeaking = false;
+
+  @override
+  void initState() {
+    super.initState();
+    readScript();
+  }
 
   @override
   Widget build(BuildContext context) {
-    readScript();
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -266,12 +279,20 @@ class _Vote extends StatelessWidget {
 
         EscavalonButton(
           text: "PASS",
-          onPressed: () => updateQuestRunnerPhaseWithPossibleRepeat(false),
+          onPressed: () => {
+            if (finishedSpeaking) {
+              widget.updateQuestRunnerPhaseWithPossibleRepeat(false)
+            }
+          },
         ),
         
         EscavalonButton(
           text: "FAIL",
-          onPressed: () => updateQuestRunnerPhaseWithPossibleRepeat(true),
+          onPressed: () => {
+            if (finishedSpeaking) {
+              widget.updateQuestRunnerPhaseWithPossibleRepeat(true)
+            }
+          },        
         ),
       ],
     );
@@ -280,7 +301,7 @@ class _Vote extends StatelessWidget {
   void readScript() async {
     FlutterTts thisTts = createTts();
 
-    List<(String, int)> script = [("Leader, propose a team of $numOnQuest players.", 30)];
+    List<(String, int)> script = [("Leader, propose a team of $widget.numOnQuest players.", 30)];
     script.add(("Everybody, in 3", 1));
     script.add(("2", 1));
     script.add(("1", 1));
@@ -299,7 +320,9 @@ class _Vote extends StatelessWidget {
       await Future.delayed(Duration(seconds: line.$2)); 
     }
 
+    finishedSpeaking = true;
   }
+
 }
 
 // TODO: implement mission
