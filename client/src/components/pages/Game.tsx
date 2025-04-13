@@ -7,7 +7,7 @@ import { Player } from "../../../../common/game/player"
 import FunctionButton from "../misc/FunctionButton";
 import { useUser } from '../../util/auth';
 import { useNavigate } from 'react-router';
-import { ContextProvider } from "../../util/hiddenContext";
+import { HiddenContextProvider } from "../../util/hiddenContext";
 import { ClientLobby } from "../../game/lobby";
 import VoteMission from 'components/ui/VoteMission';
 import RoleRevealCard from "../ui/RoleRevealCard"
@@ -40,7 +40,7 @@ export default function Game() {
 
 
     return (
-      <ContextProvider>
+      <HiddenContextProvider>
         {showRoleCard && (
           <div
             className="fixed inset-0 z-50 flex items-center justify-center"
@@ -99,6 +99,6 @@ export default function Game() {
           </dialog>
         </div>
         </div>
-      </ContextProvider>
+      </HiddenContextProvider>
   );
 }

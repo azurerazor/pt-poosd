@@ -5,6 +5,7 @@ import RouteButton from "../misc/RouteButton";
 import { getRoles, Roles } from "../../../../common/game/roles";
 import { Player } from "../../../../common/game/player";
 import { ClientLobby } from "../../game/lobby";
+import { RolesetContextProvider } from 'util/rolesetContext';
 
 const Lobby: React.FC = () => {
     const lobby = ClientLobby.getInstance();
@@ -24,7 +25,7 @@ const Lobby: React.FC = () => {
     let specialRoles = getRoles(Roles.SPECIAL_ROLES);
 
     return (
-        <>
+        <RolesetContextProvider>
             <div className="flex justify-center gap-4 p-4 h-screen">
                 <div className="flex flex-col justify-between">
                     <div className="flex flex-col gap-2">
@@ -60,7 +61,7 @@ const Lobby: React.FC = () => {
 
                 </div>
             </div>
-        </>
+        </RolesetContextProvider>
     );
 }
 
