@@ -7,16 +7,6 @@ export class Player {
     public username: string;
 
     /**
-     * Whether the player is the host
-     */
-    public isHost: boolean;
-
-    /**
-     * Whether the player is the current leader (team proposer)
-     */
-    public isLeader: boolean = false;
-
-    /**
      * Whether the player is currently connected
      */
     public isConnected: boolean = true;
@@ -53,9 +43,8 @@ export class Player {
         return null;
     }
 
-    public constructor(username: string, host: boolean = false, role: Roles | null = null) {
+    public constructor(username: string, role: Roles | null = null) {
         this.username = username;
-        this.isHost = host;
         this.role = role;
     }
 }

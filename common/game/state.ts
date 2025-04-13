@@ -38,6 +38,23 @@ export enum GameState {
     RESULTS = "results",
 }
 
+export enum Outcome {
+    /**
+     * The mission has not yet been completed
+     */
+    NONE = "none",
+
+    /**
+     * The mission was successful
+     */
+    SUCCESS = "success",
+
+    /**
+     * The mission failed
+     */
+    FAILURE = "failure",
+}
+
 export class LobbyState {
     /**
      * The current phase of the game
@@ -48,6 +65,11 @@ export class LobbyState {
      * The current round, if applicable
      */
     public round: number = -1;
+
+    /**
+     * Round outcomes, if applicable
+     */
+    public outcomes: Outcome[] | null = null;
 
     /**
      * The current team being proposed or on a mission, if applicable
