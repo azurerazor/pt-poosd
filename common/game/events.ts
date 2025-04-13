@@ -168,59 +168,280 @@ export abstract class EventBroker {
 }
 
 /**
-//  * Describes an event passed between the client and server
-// */
-// export abstract class Event {
-//     /**
-//      * The event type identifier
-//     */
-//     abstract type: EventType;
+ * Triggered on the client when a connection is established and
+ * the current state has been fetched from the server
+ */
+export class ReadyEvent extends Event {
+    public constructor() { super("ready"); }
 
-//     /**
-//      * The direction of this event
-//     */
-//     abstract direction: Direction;
+    public read(json: any): void { }
+    public write(): any { return {}; }
+}
 
-//     /**
-//      * Whether this event type is only valid from the lobby host
-//      * Only set for events sent to the server
-//     */
-//     abstract hostOnly?: boolean;
+/**
+ * Triggered on the client when disconnected for any reason
+ * This might be instead of a "ready" event if the initial
+ * connection was unsuccessful (e.g. invalid lobby ID)
+ * 
+ * When received on the client, should show a dialog and leave
+ * the lobby page (back to dashboard)
+ */
+export class DisconnectEvent extends Event {
+    public reason: string;
+    public constructor(reason: string) {
+        super("disconnect");
+        this.reason = reason;
+    }
 
-//     /**
-//      * The user that originated this event
-//      * Only set for events sent to the server
-//     */
-//     user?: string;
+    public read(json: any): void { this.reason = json.reason; }
+    public write(): any { return { reason: this.reason }; }
+}
 
-//     /**
-//      * Apply the event to the given lobby state
-//      */
-//     abstract apply(state: Lobby): void;
-// }
+/**
+ * Triggered on the client after the lobby state has changed
+ * and the view should update
+ * 
+ * This describes a general change in the lobby state; the event
+ * will have non-null values for any properties that have changed
+ * on the lobby
+ * 
+ * Note that player statuses can change, e.g. the client might
+ * now become the host of the lobby or players might be removed
+ * entirely
+ * 
+ * If the state changed, might need some sweeping changes to view
+ * (e.g. if game started, switch to the game view)
+ */
+export class UpdateEvent extends Event {
+    /**
+     * The current game state, if updated
+     */
+    public state: LobbyState | null = null;
 
-// export enum EventType {
-//     /**
-//      * Player joined the lobby
-//      */
-//     PLAYER_JOIN = "player_join",
-// }
+    /**
+     * The username of the new lobby host, if updated
+     */
+    public host: string | null = null;
 
-// abstract class ServerEvent extends Event {
-//     direction = Direction.TO_SERVER;
-//     hostOnly = false;
+    /**
+     * The username of the new leader, if updated
+     */
+    public leader: string | null = null;
 
-//     constructor(public user: string) {
-//         super();
-//         this.user = user;
-//     }
-// }
+    /**
+     * The set of enabled roles, if updated
+     */
+    public enabledRoles: string[] | null = null;
 
-// class PlayerJoinEvent extends ServerEvent {
-//     type = EventType.PLAYER_JOIN;
+    /**
+     * The info + state of all users in the lobby, if updated
+     */
+    public players: Map<string, any> | null = null;
+    /**
+     * The new player order, if updated
+     */
+    public playerOrder: string[] | null = null;
 
-//     apply(state: Lobby): void {
-//         // Add the player to the lobby
-//         state.playerJoin(this.user);
-//     }
-// }
+    public constructor() { super("update"); }
+
+    public setHost(host: string): UpdateEvent {
+        this.host = host;
+        return this;
+    }
+
+    public setLeader(leader: string): UpdateEvent {
+        this.leader = leader;
+        return this;
+    }
+
+    public setState(state: LobbyState): UpdateEvent {
+        this.state = state;
+        return this;
+    }
+
+    public setEnabledRoles(roles: string[]): UpdateEvent {
+        this.enabledRoles = roles;
+        return this;
+    }
+
+    public setPlayers(players: Map<string, any>): UpdateEvent {
+        this.players = players;
+        return this;
+    }
+
+    public setPlayerOrder(order: string[]): UpdateEvent {
+        this.playerOrder = order;
+        return this;
+    }
+
+    public read(json: any): void {
+        this.playerOrder = json.player_order || null;
+        this.host = json.host || null;
+        this.leader = json.leader || null;
+        this.state = json.state || null;
+        this.enabledRoles = json.enabled_roles || null;
+        this.players = json.players || null;
+    }
+
+    public write(): any {
+        let json: any = {};
+        if (this.playerOrder) json.player_order = this.playerOrder;
+        if (this.host) json.host = this.host;
+        if (this.leader) json.leader = this.leader;
+        if (this.state) json.state = this.state;
+        if (this.enabledRoles) json.enabled_roles = this.enabledRoles;
+        if (this.players) json.players = this.players;
+        return json;
+    }
+}
+
+/**
+ * Sent from the client (only valid from the host) to update
+ * the set of enabled roles
+ * 
+ * When received on the server, if the roleset is valid, an
+ * update event is dispatched to all clients
+ */
+export class SetRoleListEvent extends Event {
+    public roles: Roles;
+    public constructor(roles: Roles) {
+        super("set_role_list");
+        this.roles = roles;
+    }
+
+    public read(json: any): void { this.roles = json.roles; }
+    public write(): any { return { roles: this.roles }; }
+}
+
+/**
+ * Triggered when a team has been proposed that should be voted for
+ * 
+ * When received on the server:
+ *  - Distributed to clients, if the proposal was valid
+ *  - If invalid, the team proposal state update event is sent again
+ *    to retrigger a new proposal from the same leader
+ * 
+ * When received on the client: shows a vote dialog
+ */
+export class TeamProposalEvent extends Event {
+    public players: string[];
+
+    public constructor() {
+        super("team_proposal");
+        this.players = [];
+    }
+
+    public read(json: any): void { this.players = json.players; }
+    public write(): any { return { players: this.players }; }
+}
+
+/**
+ * Sent from client to the server when voting on a team proposal
+ */
+export class TeamVoteEvent extends Event {
+    public vote: boolean;
+
+    public constructor(vote: boolean) {
+        super("team_vote");
+        this.vote = vote;
+    }
+
+    public read(json: any): void { this.vote = json.vote; }
+    public write(): any { return { vote: this.vote }; }
+}
+
+/**
+ * Sent to all clients when a team vote has passed and a mission
+ * is in progress
+ * 
+ * When received on the client, if the player is on the team,
+ * shows a mission dialog to select an outcome
+ * 
+ * players is technically redundant, but included for ease of use
+ */
+export class MissionStartEvent extends Event {
+    public players: string[];
+
+    public constructor() {
+        super("mission_start");
+        this.players = [];
+    }
+
+    public read(json: any): void { this.players = json.players; }
+    public write(): any { return { players: this.players }; }
+}
+
+
+/**
+ * Sent from the client to the server when selecting a mission
+ * outcome (pass or fail)
+ */
+export class MissionChoiceEvent extends Event {
+    public pass: boolean;
+
+    public constructor(pass: boolean) {
+        super("mission_choice");
+        this.pass = pass;
+    }
+
+    public read(json: any): void { this.pass = json.pass; }
+    public write(): any { return { pass: this.pass }; }
+}
+
+/**
+ * Sent to clients when enough missions have passed and evil
+ * players have the chance to pick out Merlin
+ * 
+ * If the assassin role is enabled, only the assasin should
+ * be able to send in a vote
+ * 
+ * Otherwise, all evil players can send a MerlinGuessEvent
+ */
+export class AssassinationEvent extends Event {
+    public constructor() {
+        super("assassination");
+    }
+
+    public read(json: any): void { }
+    public write(): any { return {}; }
+}
+
+/**
+ * Sent from the client to vote for who an evil player thinks
+ * Merlin is
+ * 
+ * If the assassin role is enabled, this event is ignored for
+ * any origin other than the assassin
+ * 
+ * Otherwise, the vote considers all evil players
+ */
+export class MerlinGuessEvent extends Event {
+    public guess: string;
+
+    public constructor(guess: string) {
+        super("merlin_guess");
+        this.guess = guess;
+    }
+
+    public read(json: any): void { this.guess = json.guess; }
+    public write(): any { return { guess: this.guess }; }
+}
+
+/**
+ * Sent to clients with the results of the game
+ * 
+ * An update event will be sent *before* this one that changes
+ * the state to RESULTS; a placeholder can be displayed before
+ * actual results are received via this event
+ */
+export class GameResultEvent extends Event {
+    public winner: Alignment;
+
+    public constructor(winner: Alignment) {
+        super("game_result");
+        this.winner = winner;
+    }
+
+    public read(json: any): void { this.winner = json.winner; }
+    public write(): any { return { winner: this.winner }; }
+}
