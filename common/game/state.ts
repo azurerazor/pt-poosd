@@ -132,7 +132,10 @@ export class Lobby {
         this.host = host;
         this.state = new LobbyState();
 
-        this.players = new Map<string, Player>([[host, new Player(host, true)]]);
+        const player = new Player(host, true);
+        player.isConnected = false;
+
+        this.players = new Map<string, Player>([[host, player]]);
         this.onClose = onClose;
     }
 
