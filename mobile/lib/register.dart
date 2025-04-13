@@ -43,7 +43,7 @@ class _RegisterFormState extends State<_RegisterForm> {
   final RegExp checkUsername = RegExp(r'^[A-Za-z0-9]+(?:[-_]*[A-Za-z0-9]+)*[A-Za-z0-9]+$');
   final RegExp checkEmail = RegExp(r"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$");
 
-  Future<String>? _registerResponse;
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -143,19 +143,32 @@ class _RegisterFormState extends State<_RegisterForm> {
                   ],
                 )
               ),
-              EscavalonButton(
-                text: 'Register', 
-                onPressed: () {
-                  if (_formKey.currentState!.validate() == false) return;
 
-                  _registerResponse = tryRegister(username!, email!, password!);
+              Builder(
+                builder: (context) {
+                  if (_isLoading == false) {
+                    return EscavalonButton(
+                      text: 'Register', 
+                      onPressed: () {
+                        if (_formKey.currentState!.validate() == false) return;
+                        _tryRegister(username!, email!, password!);
+                      },
+                    );
+                  } else {
+                    return EscavalonButton(
+                      child: SizedBox(
+                        width: 21,
+                        height: 21,
+                        child: LoadingIndicator(
+                          indicatorType: Indicator.ballPulse
+                        ),
+                      ),
+                      onPressed: () => {} // do nothing
+                    );
+                  }
+                }
+              ),
 
-                  showDialog(
-                    context: context, 
-                    builder: (context) => buildResponse()
-                  );
-                },
-              ), 
             ],
           )
         ),
@@ -163,86 +176,81 @@ class _RegisterFormState extends State<_RegisterForm> {
     );
   }
 
-  // Creates AlertDialog with FutureBuilder 
-  // to show loading indicator while waiting for response
-  // or allow further action depending on whether they registered successfully or not
-  FutureBuilder<String> buildResponse() {
-    return FutureBuilder<String>(
-      future: _registerResponse,
-      builder: (context, snapshot) {
-        // If still loading, show loading indicator
-        // very ugly for now but it works
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return AlertDialog(
-            title: Text("Register"),
-            content: LoadingIndicator(
-              indicatorType: Indicator.ballPulse
-            ),
-          );
-        // Oh no, didn't register successuly
-        } else if (snapshot.hasError) {
-          return AlertDialog(
-            title: Text("Register"),
-            content: Text("${snapshot.error}"),
-            actions: <Widget>[
-              TextButton(
-                child: Text("OK"),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              )
-            ]
-          );
-        // Registered successfully, show success message and allow navigation directly to login
-        } else {
-          return AlertDialog(
-            title: Text("Register"),
-            content: Text("Registered successfully!\nUsername: $username\nEmail: $email"),
-            actions: <Widget>[
-              TextButton(
-                child: const Text("OK"),
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                  
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => LoginPage()
-                    )
-                  );
-                },
-              )
-            ]
-          );
-        }
+  Future<void> _tryRegister(String username, String email, String password) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final response = await http.post(
+      Uri.parse('http://45.55.60.192:5050/api/register'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
       },
+      body: jsonEncode(<String, String>{
+        'username': username,
+        'email': email,
+        'password': password,
+      }),
     );
+
+    if (response.statusCode == 201) {
+      return _processRegisterResponse(null);
+    } else {
+      final dynamic responseBody = jsonDecode(response.body);
+      if (responseBody is Map<String, dynamic>) {
+        return _processRegisterResponse(responseBody['message'] ?? "Unknown error");
+      } else {
+        return _processRegisterResponse("Unknown error");
+      }
+    }
+  }  
+
+  void _processRegisterResponse(String? message) {
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (message != null) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text("Error registering"),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: Text("OK"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            )
+          ]
+        ),
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text("Registered successfully!"),
+          content: Text("Username: $username\nEmail: $email"),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Proceed to login"),
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LoginPage(),
+                  ),
+                );
+              },
+            )
+          ]
+        ),
+      );
+    }
+
   }
 }
 
-Future<String> tryRegister(String username, String email, String password) async {
-  final response = await http.post(
-    Uri.parse('http://45.55.60.192:5050/api/register'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String, String>{
-      'username': username,
-      'email': email,
-      'password': password,
-    }),
-  );
-
-  if (response.statusCode == 201) {
-    return "Registered successfully!";
-  } else {
-    final dynamic responseBody = jsonDecode(response.body);
-    if (responseBody is Map<String, dynamic>) {
-      final String errorMessage = responseBody['message'] ?? "Unknown error";
-      throw Exception(errorMessage);
-    } else {
-      throw Exception("Unknown error");
-    }
-  }
-} 
