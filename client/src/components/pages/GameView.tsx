@@ -72,10 +72,14 @@ export default function GameView({ players, myPlayer }: Props) {
           onClick={() => (document.getElementById("MissionSelect") as HTMLDialogElement)?.showModal()}
         />
         <dialog id="MissionSelect" className="modal">
-          <div className="modal-box join join-horizontal w-auto">
-            {players.map((player) => (
-              <MissionPlayerSelect key={player.username} player={player} />
-            ))}
+          <div className="modal-box">
+          <h1 className="text-xl font-bold flex-row">Select n players:</h1>
+            <div className="join join-horizontal flex flex-row flex-wrap justify-center">
+              {players.map((player) => (
+                <MissionPlayerSelect key={player.username} player={player} />
+              ))}
+            </div>
+            <FunctionButton label="Submit" />
           </div>
           <form method="dialog" className="modal-backdrop">
             <button>close</button>
