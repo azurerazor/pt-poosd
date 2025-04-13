@@ -320,13 +320,15 @@ class _VoteState extends State<_Vote> {
       await Future.delayed(Duration(seconds: line.$2)); 
     }
 
-    finishedSpeaking = true;
+    setState(() {
+      finishedSpeaking = true;
+    });
   }
 
 }
 
 // TODO: implement mission
-class _Mission extends StatelessWidget {
+class _Mission extends StatefulWidget {
   final int numOnQuest;
   final bool twoFailsRequired;
   final Function(Team) updateQuestRunnerPhaseWithQuestVictor;
@@ -336,9 +338,17 @@ class _Mission extends StatelessWidget {
     required this.twoFailsRequired,
     required this.updateQuestRunnerPhaseWithQuestVictor,
   });
+  
+  @override
+  State<StatefulWidget> createState() => _MissionState();
 
+}
+
+class _MissionState extends State<_Mission> {
   @override
   Widget build(BuildContext context) {
-    return Text("Mission phase: $numOnQuest, $twoFailsRequired");
+    // TODO: implement build
+    throw UnimplementedError();
   }
+  
 }
