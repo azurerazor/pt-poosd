@@ -4,35 +4,33 @@ import { ClientLobby } from "../../game/lobby";
 
 interface Props {
   player: Player;
+  players: Player[];
   onClose?: () => void;
 }
 
-const RoleRevealCard: React.FC<Props> = ({ player, onClose }) => {
-  const lobby = ClientLobby.getInstance();
-
-  const playersInfo = lobby.getPlayers().filter((player) => player.role);
-  let myRole = null;
+const RoleRevealCard: React.FC<Props> = ({ player, players, onClose }) => {
+  const playersInfo = players.filter((p) => p.role);
+  
+  const myRole = getRoles(player.role!)[0];
   let otherRoles = [];
   let otherPlayers = [];
 
-  playersInfo.forEach((player) => {
-    if (player.role && getRoles(player.role!).length === 1) {
-      myRole = getRoles(player.role!)[0];
-    } else if (player.role) {
-      otherRoles = getRoles(player.role!);
-      otherPlayers.push(player);
+  playersInfo.forEach((p) => {
+    if (p.username !== player.username && p.role) {
+      otherRoles = getRoles(p.role!);
+      otherPlayers.push(p);
     }
   });
 
   return (
     <div className="card card-side bg-base-100 shadow-sm">
       <figure>
-        <img src={myRole!.image} alt={myRole!.name} />
+        <img src={myRole.image} alt={myRole.name} />
       </figure>
       <div className="card-body w-full">
-        <h1 className="text-xl font-bold flex-row">{myRole!.name}</h1>
+        <h1 className="text-xl font-bold flex-row">{myRole.name}</h1>
         <hr />
-        <h2 className="text-l flex-row mb-12">{myRole!.description}</h2>
+        <h2 className="text-l flex-row mb-12">{myRole.description}</h2>
         <h3 className="text-xl font-bold">Information</h3>
         {onClose && (
           <button

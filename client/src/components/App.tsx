@@ -4,8 +4,9 @@ import Login from './pages/Login'
 import NotFound from './pages/NotFound'
 import Signup from './pages/Signup'
 import Dashboard from './pages/Dashboard'
-import Lobby from './pages/Lobby'
-import Game from './pages/Game'
+// import Lobby from './pages/Lobby'
+// import Game from './pages/Game'
+import GameFlow from './pages/GameFlow'
 import Verify from './pages/Verify'
 
 import ProtectedRoute from 'util/auth';
@@ -24,8 +25,7 @@ function App() {
                 <Route path='/dashboard' element={<ProtectedRoute element={<Dashboard />} />} />
 
                 {/* Game pages */}
-                <Route path="/lobby/*" element={<ProtectedRoute element={<Lobby />} />} />
-                <Route path="/game/*" element={<ProtectedRoute element={<Game />} />} />
+                <Route path="/game/*" element={<ProtectedRoute element={<GameFlow />} />} />
 
                 {/* 404 */}
                 <Route path='/*' Component={NotFound} />

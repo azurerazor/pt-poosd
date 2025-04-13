@@ -12,7 +12,6 @@ const FaceCard: React.FC<Props> = ({ role, status = true }) => {
   const lobby = ClientLobby.getInstance();
   const {roles, setRoles} = useRolesetContext();
   const isGrayScale = (roles & role.role) === 0;
-  console.log(isGrayScale, role.name, roles);
 
   const handleClick = () => {
     if ((roles & role.role) === 0) {
@@ -28,7 +27,6 @@ const FaceCard: React.FC<Props> = ({ role, status = true }) => {
   }, [roles]);
 
   let grayScaleVal = isGrayScale ? 100 : 0;
-  // let grayScale = `grayscale(${grayScaleVal}%)`;
 
   return (
     <div className="card bg-base-100 w-60 shadow-sm h-[380px] flex flex-col" onClick={handleClick}>

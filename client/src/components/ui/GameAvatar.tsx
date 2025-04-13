@@ -7,18 +7,16 @@ import { ClientLobby } from "../../game/lobby";
 
 interface Props {
   player: Player;
+  myPlayer: Player;
 }
 
-const GameAvatar: React.FC<Props> = ({ player }) => {
+const GameAvatar: React.FC<Props> = ({ player, myPlayer }) => {
   const { isHidden } = useHiddenContext();
-  const lobby = ClientLobby.getInstance();
-  const myUser = lobby.getPlayer(useUser().username);
   const leader = player.isLeader;
 
-  console.log(player.username, leader);
   const couldBeGood = player.role ? (player.role & Roles.GOOD) != Roles.NONE : false;
   const couldBeBad = player.role ? (player.role & Roles.EVIL) != Roles.NONE : false;
-  const result = player === myUser ? "" : couldBeGood && couldBeBad ? "🟣" : couldBeGood ? "🔵" : couldBeBad ? "🔴" : "";
+  const result = player.username === myPlayer.username ? "" : couldBeGood && couldBeBad ? "🟣" : couldBeGood ? "🔵" : couldBeBad ? "🔴" : "";
 
   return (
     <div className="relative">
