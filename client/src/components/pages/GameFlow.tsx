@@ -7,6 +7,26 @@ import { useUser } from '../../util/auth';
 import { ClientLobby } from "../../game/lobby";
 import Loading from "./Loading";
 
+export const quests = [
+  [],[],[],[],[],
+  [ 2,  3,  2,  3,  3],
+  [ 2,  3,  4,  3,  4],
+  [ 2,  3,  3,  4,  4],
+  [ 3,  4,  4,  5,  5],
+  [ 3,  4,  4,  5,  5],
+  [3, 4, 4, 5, 5],
+];
+
+export const fails = [
+  [],[],[],[],[],
+  [1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1],
+  [1, 1, 1, 2, 1],
+  [1, 1, 1, 2, 1],
+  [1, 1, 1, 2, 1],
+  [1, 1, 1, 2, 1],
+];
+
 export default function GameFlow() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [gameReady, setGameReady] = useState(false);
