@@ -42,7 +42,7 @@ class _LoginFormState extends State<_LoginForm> {
 
   final RegExp checkUsername = RegExp(r'^[A-Za-z0-9]+(?:[-_]*[A-Za-z0-9]+)*[A-Za-z0-9]+$');
 
-  Future<String>? _loginResponse;
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -117,19 +117,31 @@ class _LoginFormState extends State<_LoginForm> {
 
               SizedBox(height: 20,),
 
-              EscavalonButton(
-                text: 'Login', 
-                onPressed: () {
-                  if (_formKey.currentState!.validate() == false) return;
-
-                  _loginResponse = tryLogin(username!, password!);
-
-                  showDialog(
-                    context: context, 
-                    builder: (context) => buildResponse()
-                  );
-                },
+              Builder(
+                builder: (context) {
+                  if (_isLoading == false) {
+                    return EscavalonButton(
+                      text: 'Login', 
+                      onPressed: () {
+                        if (_formKey.currentState!.validate() == false) return;
+                        _tryLogin(username!, password!);
+                      },
+                    );
+                  } else {
+                    return EscavalonButton(
+                      child: SizedBox(
+                        width: 21,
+                        height: 21,
+                        child: LoadingIndicator(
+                          indicatorType: Indicator.ballPulse
+                        ),
+                      ),
+                      onPressed: () => {} // do nothing
+                    );
+                  }
+                }
               ),
+
             ],
           )
         ),
@@ -137,88 +149,74 @@ class _LoginFormState extends State<_LoginForm> {
     );
   }
 
-  // Creates AlertDialog with FutureBuilder 
-  // to show loading indicator while waiting for response
-  // or allow further action depending on whether they registered successfully or not
-  FutureBuilder<String> buildResponse() {
-    return FutureBuilder<String>(
-      future: _loginResponse,
-      builder: (context, snapshot) {
-        // If still loading, show loading indicator
-        // very ugly for now but it works
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return AlertDialog(
-            title: Text("Login"),
-            content: LoadingIndicator(
-              indicatorType: Indicator.ballPulse
-            ),
-          );
-        // Oh no, didn't login successuly
-        } else if (snapshot.hasError) {
-          return AlertDialog(
-            title: Text("Login"),
-            content: Text("${snapshot.error}"),
-            actions: <Widget>[
-              TextButton(
-                child: Text("OK"),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              )
-            ]
-          );
-        // Logged in successfully
-        } else {
-          return AlertDialog(
-            title: Text("Login"),
-            content: Text("Logged in successfully!\nUsername: $username"),
-            actions: <Widget>[
-              TextButton(
-                child: const Text("OK"),
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.pop(context, [username, webTokenStorage]);
-                },
-              )
-            ]
-          );
-        }
+  Future<void> _storeToken(String token) async {
+    await webTokenStorage.write(key: "token", value: token);
+  }
+
+  Future<void> _tryLogin(String username, String password) async {
+    if (_isLoading) return; // shouldn't be able to call this function if already loading
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    final response = await http.post(
+      Uri.parse('http://45.55.60.192:5050/api/login'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
       },
+      body: jsonEncode(<String, String>{
+        'username': username,
+        'password': password,
+      }),
     );
+
+    String? errorMessage;
+
+    if (response.statusCode == 200) {
+      if (response.headers['set-cookie'] == null) {
+        errorMessage == "No cookie found";
+      } else {
+        Cookie cookie = Cookie.fromSetCookieValue(response.headers['set-cookie']!);
+        _storeToken(cookie.value);
+      }
+
+    } else {
+      final dynamic responseBody = jsonDecode(response.body);
+      if (responseBody is Map<String, dynamic>) {
+        errorMessage = responseBody['message'] ?? "Unknown error";
+      } else {
+        errorMessage = "Unknown error";
+      }
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    _processLoginResponse(errorMessage);
+  } 
+
+  void _processLoginResponse(String? message) {
+    if (message != null) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text("Login"),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: Text("OK"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            )
+          ]
+        ),
+      );
+    } else {
+      Navigator.pop(context, [username, webTokenStorage]);
+    }
   }
 }
 
-Future<void> storeToken(String token) async {
-  await webTokenStorage.write(key: "token", value: token);
-}
-
-Future<String> tryLogin(String username, String password) async {
-  final response = await http.post(
-    Uri.parse('http://45.55.60.192:5050/api/login'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String, String>{
-      'username': username,
-      'password': password,
-    }),
-  );
-
-  if (response.statusCode == 200) {
-    if (response.headers['set-cookie'] == null) {
-      throw Exception("No cookie found");
-    }
-
-    Cookie cookie = Cookie.fromSetCookieValue(response.headers['set-cookie']!);
-    storeToken(cookie.value);
-
-    return "";
-  } else {
-    final dynamic responseBody = jsonDecode(response.body);
-    if (responseBody is Map<String, dynamic>) {
-      final String errorMessage = responseBody['message'] ?? "Unknown error";
-      throw Exception(errorMessage);
-    } else {
-      throw Exception("Unknown error");
-    }  }
-} 
