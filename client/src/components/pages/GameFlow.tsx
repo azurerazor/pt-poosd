@@ -22,13 +22,13 @@ export default function GameFlow() {
   useEffect(() => {
     lobby.addPlayer("blueol");
     lobby.addPlayer("user2");
-    lobby.addPlayer("user112");
+    lobby.addPlayer("user3");
     lobby.addPlayer("user123");
     lobby.addPlayer("user124");
     lobby.addPlayer("user125");
     lobby.addPlayer("user126");
     lobby.addPlayer("user127");
-    lobby.addPlayer("user3");
+    lobby.addPlayer("azure");
 
     setMyPlayer(lobby.getPlayer(username)!);
     setPlayers(lobby.getConnectedPlayers());
@@ -41,8 +41,8 @@ export default function GameFlow() {
       const initializeGame = async () => {        
         lobby.setEnabledRoles(Roles.ANY);
         lobby.setPlayerRoles("blueol", Roles.PERCIVAL);
-        lobby.setPlayerRoles("user2", Roles.MERLIN | Roles.MORGANA);
-        lobby.setPlayerRoles("user3", Roles.MORGANA | Roles.MERLIN);
+        lobby.setPlayerRoles("user3", Roles.MERLIN | Roles.MORGANA);
+        lobby.setPlayerRoles("azure", Roles.MORGANA);
         lobby.setLeader("the_host");
 
         setGameReady(true);
