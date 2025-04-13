@@ -137,12 +137,12 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
           </form>
         </dialog>
         </div>
+
         {
         /**
-         * Displays the player's role with a toggleable card
+         * Voting on mission
          */
         }
-
         <div className="absolute bottom-60">
           <FunctionButton
           label="Vote on Mission"
@@ -158,6 +158,11 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
         </dialog>
         </div>
 
+        {
+        /**
+         * Displays the player's role with a toggleable card
+         */
+        }
         <div className="absolute bottom-4 right-4 p-2">
           <GameCard
             role={getRoles(myPlayer.role!)[0]}

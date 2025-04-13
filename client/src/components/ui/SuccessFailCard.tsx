@@ -2,15 +2,16 @@ import { Player } from "../../../../common/game/player";
 import { Roles, getRoles } from "../../../../common/game/roles";
 import { ClientLobby } from "../../game/lobby";
 import { Outcome } from "../../../../common/game/state";
+import FunctionButton from "../misc/FunctionButton";
+import { useState } from 'react';
 
 interface Props {
     player: Player;
     players: Player[];
     setSuccessFail: React.Dispatch<React.SetStateAction<Outcome>>;
-    onClose?: () => void;
 }
 
-const SuccessFailCard: React.FC<Props> = ({ player, players, setSuccessFail, onClose }) => {
+const SuccessFailCard: React.FC<Props> = ({ player, players, setSuccessFail}) => {
     const playersInfo = players.filter((p) => p.role);
 
     const myRole = getRoles(player.role!)[0];
@@ -33,22 +34,36 @@ const SuccessFailCard: React.FC<Props> = ({ player, players, setSuccessFail, onC
         failCard = successCard;
     }
 
+    const [leftActive, setLeft] = useState(false);
+    const [rightActive, setRight] = useState(false);
+
+    const handleLeft = () => {
+        console.log("accepted");
+        setLeft(leftActive => !leftActive);
+        if (!leftActive) setRight(false);
+    };
+
+    const handleRight = () => {
+        console.log("rejected");
+        setRight(rightActive => !rightActive);
+        if (!rightActive) setLeft(false);
+    };
+
     return (
         <div className="card bg-base-100 shadow-sm">
         <div className="card-body w-full">
             <h1 className="text-xl font-bold flex-row">Vote for this mission:</h1>
             <div className="join join-horizontal flex justify-between space-x-5">
-                <img src={successCard} alt="Success Card" className="w-60" onClick={() => setSuccessFail(Outcome.SUCCESS)}/>
-                <img src={failCard} alt="Fail Card" className="w-60" onClick={() => setSuccessFail(Outcome.FAILURE)}/>
+                <img src={successCard} alt="Success Card" 
+                className={`w-60 border-6 ${leftActive ? 'border-blue-400' : 'border-transparent'}`}
+                onClick={handleLeft}
+                />
+                <img src={failCard} alt="Fail Card" 
+                className={`w-60 border-6 ${rightActive ? 'border-blue-400' : 'border-transparent'}`} 
+                onClick={handleRight}
+                />
             </div>
-            {onClose && (
-            <button
-                onClick={onClose}
-                className="mt-6 self-end bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition"
-            >
-                Continue
-            </button>
-            )}
+            <div className="flex-row"><FunctionButton label="Submit" /></div>
         </div>
         </div>
     );
