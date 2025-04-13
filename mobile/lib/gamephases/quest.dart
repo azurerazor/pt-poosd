@@ -8,19 +8,19 @@ import 'package:mobile/game.dart';
 
 int _deltaQuestsWon = 0; // positive if good, negative if evil
 
-class QuestRunner extends StatefulWidget {
+class Quest extends StatefulWidget {
   final Function((Team, List<Team?>)) sendQuestResults;
 
-  const QuestRunner({
+  const Quest({
     super.key, 
     required this.sendQuestResults,
   });
 
   @override
-  State<StatefulWidget> createState() => _QuestRunnerState();
+  State<StatefulWidget> createState() => _QuestState();
 }
 
-class _QuestRunnerState extends State<QuestRunner> {
+class _QuestState extends State<Quest> {
   int currentQuest = 0; // 0 indexed. would be better to use 1 indexed but this is easier for different things
   int currentQuestPhase = 0;
   int numFailedVotes = 0;
@@ -85,14 +85,14 @@ class _QuestRunnerState extends State<QuestRunner> {
                 return _Discussion(
                   numOnQuest: questRequirements[globalNumPlayers]![currentQuest + 1]!,
                   twoFailsRequired: twoFailsRequired,
-                  updateQuestRunnerPhase: updateQuestRunnerPhase,
+                  updateQuestPhase: updateQuestPhase,
                 );
               }
                 
               if (currentQuestPhase == 1) {
                 return _Vote(
                   numOnQuest: questRequirements[globalNumPlayers]![currentQuest + 1]!,
-                  updateQuestRunnerPhaseWithPossibleRepeat: updateQuestRunnerPhaseWithPossibleRepeat
+                  updateQuestPhaseWithPossibleRepeat: updateQuestPhaseWithPossibleRepeat
                 );
               }
 
@@ -100,7 +100,7 @@ class _QuestRunnerState extends State<QuestRunner> {
               return _Mission(
                 numOnQuest: questRequirements[globalNumPlayers]![currentQuest + 1]!,
                 twoFailsRequired: twoFailsRequired,
-                updateQuestRunnerPhaseWithQuestVictor: updateQuestRunnerPhaseWithQuestVictor,
+                updateQuestPhaseWithQuestVictor: updateQuestPhaseWithQuestVictor,
               );
             }),
           )
@@ -110,7 +110,7 @@ class _QuestRunnerState extends State<QuestRunner> {
 
   }
   
-  void updateQuestRunnerPhase() {
+  void updateQuestPhase() {
     setState(() {
       currentQuestPhase++;
       if (currentQuestPhase == 3) {
@@ -135,7 +135,7 @@ class _QuestRunnerState extends State<QuestRunner> {
     }
   }
 
-  void updateQuestRunnerPhaseWithPossibleRepeat(bool repeat) {
+  void updateQuestPhaseWithPossibleRepeat(bool repeat) {
     if (repeat) {
       setState(() {
         numFailedVotes++;
@@ -143,18 +143,18 @@ class _QuestRunnerState extends State<QuestRunner> {
       });
 
       if (numFailedVotes == 5) {
-        updateQuestRunnerPhaseWithQuestVictor(Team.evil);
+        updateQuestPhaseWithQuestVictor(Team.evil);
         return;
       }
     } else {
       setState(() {
         numFailedVotes = 0;
       });
-      updateQuestRunnerPhase();
+      updateQuestPhase();
     }
   }
 
-  void updateQuestRunnerPhaseWithQuestVictor(Team questVictor) {
+  void updateQuestPhaseWithQuestVictor(Team questVictor) {
     setState(() {
       questResults[currentQuest] = questVictor;
     });
@@ -176,7 +176,7 @@ class _QuestRunnerState extends State<QuestRunner> {
       return;
     }
 
-    updateQuestRunnerPhase();
+    updateQuestPhase();
   }
 
 }
@@ -184,12 +184,12 @@ class _QuestRunnerState extends State<QuestRunner> {
 class _Discussion extends StatefulWidget {
   final int numOnQuest;
   final bool twoFailsRequired;
-  final Function() updateQuestRunnerPhase;
+  final Function() updateQuestPhase;
 
   const _Discussion({
     required this.numOnQuest,
     required this.twoFailsRequired,
-    required this.updateQuestRunnerPhase,
+    required this.updateQuestPhase,
   });
   
   @override
@@ -222,7 +222,7 @@ class _DiscussionState extends State<_Discussion> {
         EscavalonButton(
           text: "Start vote",
           onPressed: () => {
-            if (finishedSpeaking) widget.updateQuestRunnerPhase()
+            if (finishedSpeaking) widget.updateQuestPhase()
           },
         ),
       ],
@@ -232,7 +232,7 @@ class _DiscussionState extends State<_Discussion> {
   void onTimerFinished() async {
     void startVote() async {
       await Future.delayed(Duration(seconds: 4));
-      widget.updateQuestRunnerPhase();
+      widget.updateQuestPhase();
     }
 
     FlutterTts thisTts = createTts();
@@ -259,11 +259,11 @@ class _DiscussionState extends State<_Discussion> {
 
 class _Vote extends StatefulWidget {
   final int numOnQuest;
-  final Function(bool) updateQuestRunnerPhaseWithPossibleRepeat;
+  final Function(bool) updateQuestPhaseWithPossibleRepeat;
 
   const _Vote({
     required this.numOnQuest,
-    required this.updateQuestRunnerPhaseWithPossibleRepeat,
+    required this.updateQuestPhaseWithPossibleRepeat,
   });
   
   @override
@@ -300,7 +300,7 @@ class _VoteState extends State<_Vote> {
           text: "PASS",
           onPressed: () => {
             if (finishedSpeaking) {
-              widget.updateQuestRunnerPhaseWithPossibleRepeat(false)
+              widget.updateQuestPhaseWithPossibleRepeat(false)
             }
           },
         ),
@@ -309,7 +309,7 @@ class _VoteState extends State<_Vote> {
           text: "FAIL",
           onPressed: () => {
             if (finishedSpeaking) {
-              widget.updateQuestRunnerPhaseWithPossibleRepeat(true)
+              widget.updateQuestPhaseWithPossibleRepeat(true)
             }
           },        
         ),
@@ -349,12 +349,12 @@ class _VoteState extends State<_Vote> {
 class _Mission extends StatefulWidget {
   final int numOnQuest;
   final bool twoFailsRequired;
-  final Function(Team) updateQuestRunnerPhaseWithQuestVictor;
+  final Function(Team) updateQuestPhaseWithQuestVictor;
 
   const _Mission({
     required this.numOnQuest,
     required this.twoFailsRequired,
-    required this.updateQuestRunnerPhaseWithQuestVictor,
+    required this.updateQuestPhaseWithQuestVictor,
   });
   
   @override
@@ -391,7 +391,7 @@ class _MissionState extends State<_Mission> {
           text: "SUCCEED",
           onPressed: () => {
             if (finishedSpeaking) {
-              widget.updateQuestRunnerPhaseWithQuestVictor(Team.good)
+              widget.updateQuestPhaseWithQuestVictor(Team.good)
             }
           },
         ),
@@ -400,7 +400,7 @@ class _MissionState extends State<_Mission> {
           text: "FAIL",
           onPressed: () => {
             if (finishedSpeaking) {
-              widget.updateQuestRunnerPhaseWithQuestVictor(Team.evil)
+              widget.updateQuestPhaseWithQuestVictor(Team.evil)
             }
           },        
         ),
