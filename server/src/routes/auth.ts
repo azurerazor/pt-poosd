@@ -6,7 +6,7 @@ import User from '../models/user.js';
 import { sendEmail } from '../networking/mail.js';
 
 require('dotenv').config();
-const AUTH_KEY = process.env.AUTH_KEY!;
+export const AUTH_KEY = process.env.AUTH_KEY!;
 
 /**
  * Acquires a signed JWT token for a user
