@@ -10,12 +10,10 @@ int _deltaQuestsWon = 0; // positive if good, negative if evil
 
 class QuestRunner extends StatefulWidget {
   final Function((Team, List<Team?>)) sendQuestResults;
-  final FlutterTts flutterTts;
 
   const QuestRunner({
     super.key, 
     required this.sendQuestResults,
-    required this.flutterTts,
   });
 
   @override
@@ -183,7 +181,7 @@ class _QuestRunnerState extends State<QuestRunner> {
 
 }
 
-class _Discussion extends StatelessWidget {
+class _Discussion extends StatefulWidget {
   final int numOnQuest;
   final bool twoFailsRequired;
   final Function() updateQuestRunnerPhase;
@@ -195,13 +193,20 @@ class _Discussion extends StatelessWidget {
   });
   
   @override
+  State<StatefulWidget> createState() => _DiscussionState();
+}
+
+class _DiscussionState extends State<_Discussion> {
+  bool finishedSpeaking = false;
+
+  @override
+  void initState() {
+    super.initState();
+    readScript();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    FlutterTts thisTts = createTts();
-
-    thisTts.speak(
-      "Create a team of $numOnQuest players to go on this mission. ${twoFailsRequired ? "Minions of Mordred, remember that you need two traitors to fail this mission for the entire quest to fail." : ""}"
-    );
-
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -216,7 +221,9 @@ class _Discussion extends StatelessWidget {
 
         EscavalonButton(
           text: "Start vote",
-          onPressed: () => updateQuestRunnerPhase(),
+          onPressed: () => {
+            if (finishedSpeaking) widget.updateQuestRunnerPhase()
+          },
         ),
       ],
     );
@@ -225,7 +232,7 @@ class _Discussion extends StatelessWidget {
   void onTimerFinished() async {
     void startVote() async {
       await Future.delayed(Duration(seconds: 4));
-      updateQuestRunnerPhase();
+      widget.updateQuestRunnerPhase();
     }
 
     FlutterTts thisTts = createTts();
@@ -235,6 +242,19 @@ class _Discussion extends StatelessWidget {
     
     thisTts.speak("Time has run out! Starting voting phase.");
   }
+
+  void readScript() async {
+    FlutterTts thisTts = createTts();
+
+    thisTts.speak(
+      "Create a team of ${widget.numOnQuest} players to go on this mission. ${widget.twoFailsRequired ? "Minions of Mordred, remember that you need two traitors to fail this mission for the entire quest to fail." : ""}"
+    );    
+    
+    setState(() {
+      finishedSpeaking = true;
+    });
+  }
+
 }
 
 class _Vote extends StatefulWidget {

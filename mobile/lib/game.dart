@@ -103,7 +103,6 @@ class _GamePageContentState extends State<_GamePageContent> {
               questResults = results.$2;
               gamePhase = 2;
             }),
-            flutterTts: flutterTts,
           )
         );
       case 2:
