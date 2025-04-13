@@ -48,7 +48,6 @@ const Lobby: React.FC = () => {
                     </div>
                 </div>
 
-
                 <div className="grid grid-rows-2 grid-cols-3 gap-4 gap-x-4 justify-between">
                     
                     {specialRoles.map((role, idx) => (

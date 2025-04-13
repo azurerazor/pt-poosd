@@ -48,6 +48,7 @@ export default function Game() {
           ))}
         </div>
 
+        <h1 className="text-3xl font-bold absolute bottom-35 left-8">Vote Tracker:</h1>
         <div className="absolute bottom-4 left-4">
           {[...Array(5)].map((_, i) => (
             <VoteMission key={i} status={false} />
