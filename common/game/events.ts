@@ -4,7 +4,7 @@ import { Lobby, LobbyState } from "./state";
 /**
  * An event data container passed between the client and server
  */
-export abstract class Event {
+export abstract class GameEvent {
     /**
      * The event type identifier
      */
@@ -65,7 +65,7 @@ export class EventPacket {
 /**
  * Describes an event handler for either side
  */
-export type EventHandler<T extends Event> = (state: Lobby, event: T) => void;
+export type EventHandler<T extends GameEvent> = (state: Lobby, event: T) => void;
 
 /**
  * Describes a sided registry for sending and receiving events
@@ -74,7 +74,7 @@ export abstract class EventBroker {
     /**
      * Maps event type identifiers to concrete event classes
      */
-    private eventTypes: Map<string, new () => Event>;
+    private eventTypes: Map<string, new () => GameEvent>;
 
     /**
      * The registered event handlers
@@ -82,7 +82,7 @@ export abstract class EventBroker {
     private handlers: Map<string, EventHandler<any>[]>;
 
     public constructor() {
-        this.eventTypes = new Map<string, new () => Event>();
+        this.eventTypes = new Map<string, new () => GameEvent>();
         this.handlers = new Map<string, EventHandler<any>[]>();
     }
 
@@ -118,7 +118,7 @@ export abstract class EventBroker {
     /**
      * Registers an event handler for a given event type
      */
-    public register<T extends Event>(type: string, handler: EventHandler<T>): void {
+    public register<T extends GameEvent>(type: string, handler: EventHandler<T>): void {
         if (!this.handlers.has(type)) this.handlers.set(type, []);
         this.handlers.get(type)!.push(handler);
     }
@@ -126,7 +126,7 @@ export abstract class EventBroker {
     /**
      * Dispatches an event to all registered handlers
      */
-    public dispatch(lobby: Lobby, event: Event): void {
+    public dispatch(lobby: Lobby, event: GameEvent): void {
         const handlers = this.handlers.get(event.type);
         handlers?.forEach(handler => handler(lobby, event));
     }
@@ -152,7 +152,7 @@ export abstract class EventBroker {
     /**
      * Sends an event to the other side
      */
-    public send<T extends Event>(event: T): void {
+    public send<T extends GameEvent>(event: T): void {
         // Create the event packet
         const origin = this.getOrigin();
         const packet = new EventPacket(
@@ -171,7 +171,7 @@ export abstract class EventBroker {
  * Triggered on the client when a connection is established and
  * the current state has been fetched from the server
  */
-export class ReadyEvent extends Event {
+export class ReadyEvent extends GameEvent {
     public constructor() { super("ready"); }
 
     public read(json: any): void { }
@@ -186,7 +186,7 @@ export class ReadyEvent extends Event {
  * When received on the client, should show a dialog and leave
  * the lobby page (back to dashboard)
  */
-export class DisconnectEvent extends Event {
+export class DisconnectEvent extends GameEvent {
     public reason: string;
     public constructor(reason: string) {
         super("disconnect");
@@ -212,7 +212,7 @@ export class DisconnectEvent extends Event {
  * If the state changed, might need some sweeping changes to view
  * (e.g. if game started, switch to the game view)
  */
-export class UpdateEvent extends Event {
+export class UpdateEvent extends GameEvent {
     /**
      * The current game state, if updated
      */
@@ -302,7 +302,7 @@ export class UpdateEvent extends Event {
  * When received on the server, if the roleset is valid, an
  * update event is dispatched to all clients
  */
-export class SetRoleListEvent extends Event {
+export class SetRoleListEvent extends GameEvent {
     public roles: Roles;
     public constructor(roles: Roles) {
         super("set_role_list");
@@ -323,7 +323,7 @@ export class SetRoleListEvent extends Event {
  * 
  * When received on the client: shows a vote dialog
  */
-export class TeamProposalEvent extends Event {
+export class TeamProposalEvent extends GameEvent {
     public players: string[];
 
     public constructor() {
@@ -338,7 +338,7 @@ export class TeamProposalEvent extends Event {
 /**
  * Sent from client to the server when voting on a team proposal
  */
-export class TeamVoteEvent extends Event {
+export class TeamVoteEvent extends GameEvent {
     public vote: boolean;
 
     public constructor(vote: boolean) {
@@ -359,7 +359,7 @@ export class TeamVoteEvent extends Event {
  * 
  * players is technically redundant, but included for ease of use
  */
-export class MissionStartEvent extends Event {
+export class MissionStartEvent extends GameEvent {
     public players: string[];
 
     public constructor() {
@@ -376,7 +376,7 @@ export class MissionStartEvent extends Event {
  * Sent from the client to the server when selecting a mission
  * outcome (pass or fail)
  */
-export class MissionChoiceEvent extends Event {
+export class MissionChoiceEvent extends GameEvent {
     public pass: boolean;
 
     public constructor(pass: boolean) {
@@ -397,7 +397,7 @@ export class MissionChoiceEvent extends Event {
  * 
  * Otherwise, all evil players can send a MerlinGuessEvent
  */
-export class AssassinationEvent extends Event {
+export class AssassinationEvent extends GameEvent {
     public constructor() {
         super("assassination");
     }
@@ -415,7 +415,7 @@ export class AssassinationEvent extends Event {
  * 
  * Otherwise, the vote considers all evil players
  */
-export class MerlinGuessEvent extends Event {
+export class MerlinGuessEvent extends GameEvent {
     public guess: string;
 
     public constructor(guess: string) {
@@ -434,7 +434,7 @@ export class MerlinGuessEvent extends Event {
  * the state to RESULTS; a placeholder can be displayed before
  * actual results are received via this event
  */
-export class GameResultEvent extends Event {
+export class GameResultEvent extends GameEvent {
     public winner: Alignment;
 
     public constructor(winner: Alignment) {
