@@ -91,7 +91,6 @@ class _GamePageContentState extends State<_GamePageContent> {
       case 0:
         return Builder(
           builder: (context) => _Night(
-            // TODO: stop exception happenning at end of night
             updateGamePhase: (newPhase) => setState(() {
               gamePhase = newPhase;
             }),
@@ -295,7 +294,6 @@ class _NightState extends State<_Night> {
   @override
   Widget build(BuildContext context) {
     if (scriptIdx == script!.length) {
-      widget.updateGamePhase(1);
       return Text(
         "Night phase complete. Good luck on your quests!",
         style: TextStyle(
@@ -327,6 +325,11 @@ class _NightState extends State<_Night> {
     setState(() {
       scriptIdx++;
     });
+
+    // once we're done with the script, we can move on to the next phase of the game
+    if (scriptIdx == script!.length) {
+      widget.updateGamePhase(1);
+    }
   }
 
 }

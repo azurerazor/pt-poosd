@@ -119,7 +119,7 @@ enum NightPhase {
 List<(NightPhase, String, int)> getNightScript(int numEvil, bool? includesMerlin, bool? includesPercival, bool? includesOberon, bool? includesMordred) {
   List<(NightPhase, String, int)> result = [];
 
-  result.add((NightPhase.start, "Starting Escavalon game. Everybody, close your eyes.", 2));
+  result.add((NightPhase.start, "Starting Escavalon game. Everybody, close your eyes.", 3));
 
   result.addAll(
     _getEvilScript(numEvil, includesOberon)
@@ -137,7 +137,7 @@ List<(NightPhase, String, int)> getNightScript(int numEvil, bool? includesMerlin
     );
   }
 
-  result.add((NightPhase.end, "Everybody, open your eyes. The night is over. Good luck on your quests!", 2));
+  result.add((NightPhase.end, "Everybody, open your eyes. The night is over. Good luck on your quests!", 3));
 
   return result;
 
@@ -158,11 +158,11 @@ List<(NightPhase, String, int)> _getEvilScript(int numEvil, bool? includesOberon
   }
   
   if (numEvil == 0) {
-    firstPart += "You should see no players with their hands raised. ";
+    firstPart += "You should see no other players with their hands raised. ";
   } else if (numEvil == 1) {
-    firstPart += "You should see $numEvil player with their hand raised. ";
+    firstPart += "You should see $numEvil other player with their hand raised. ";
   } else if (numEvil > 1) {
-    firstPart += "You should see $numEvil players with their hands raised. ";
+    firstPart += "You should see $numEvil other players with their hands raised. ";
   }
 
   List<(NightPhase, String, int)> result = [
@@ -176,7 +176,7 @@ List <(NightPhase, String, int)> _getMerlinScript(int numEvil, bool? includesMor
   String firstPart = "Merlin, open your eyes. All Minions of Mordred, ";
 
   if (includesMordred == true) {
-    firstPart += "except Mordred himself, ";
+    firstPart += "except for Mordred himself, ";
   }
 
   firstPart += "keep your eyes closed and raise your hands. ";
