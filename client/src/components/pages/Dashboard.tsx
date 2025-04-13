@@ -29,13 +29,12 @@ export default function Dashboard() {
     };
 
     const handleJoin = () => {
-        //TO-DO check if lobby exists?
-        navigate(`/lobby/${gameCode}`);
+        navigate(`/game/${gameCode}`);
     };
 
     const handleMake = () => {
         //TO-DO get random lobby code and make new Lobby and actually set the websocket up
-        navigate(`/lobby/${gameCode}`);
+        navigate(`/game/${gameCode}`);
     };
 
     return (

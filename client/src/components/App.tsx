@@ -4,8 +4,6 @@ import Login from './pages/Login'
 import NotFound from './pages/NotFound'
 import Signup from './pages/Signup'
 import Dashboard from './pages/Dashboard'
-// import Lobby from './pages/Lobby'
-// import Game from './pages/Game'
 import GameFlow from './pages/GameFlow'
 import Verify from './pages/Verify'
 
