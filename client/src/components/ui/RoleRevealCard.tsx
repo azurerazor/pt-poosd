@@ -19,10 +19,10 @@ const RoleRevealCard: React.FC<Props> = ({ player }) => {
 
   console.log(playersInfo);
   playersInfo.forEach((player) => {
-      if(getRoles(player.role).length == 1){
-        myRole = getRoles(player.role)[0];
+      if(getRoles(player.role!).length == 1){
+        myRole = getRoles(player.role!)[0];
       }else{
-        otherRoles = getRoles(player.role);
+        otherRoles = getRoles(player.role!);
         otherPlayers.push(player);
       }
   });
@@ -33,14 +33,14 @@ const RoleRevealCard: React.FC<Props> = ({ player }) => {
     <div className="card card-side bg-base-100 shadow-sm">
       <figure>
         <img
-          src={myRole.image}
-          alt={myRole.name} 
+          src={myRole!.image}
+          alt={myRole!.name} 
         />
       </figure>
       <div className="card-body w-full">
-        <h1 className="text-xl font-bold flex-row">{myRole.name}</h1>
+        <h1 className="text-xl font-bold flex-row">{myRole!.name}</h1>
         <hr></hr>
-        <h2 className="text-l flex-row mb-12">{myRole.description}</h2>
+        <h2 className="text-l flex-row mb-12">{myRole!.description}</h2>
         <h3 className="text-xl font-bold">Information</h3>
 
       </div>

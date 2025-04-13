@@ -50,7 +50,7 @@ export default function Game() {
         />
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="rounded-lg p-8 max-w-xl w-full text-center">
-            <RoleRevealCard player={lobby.getPlayer(username)} />
+            <RoleRevealCard player={lobby.getPlayer(username)!} />
           </div>
         </div>
         <div className="hero-content w-full text-center m-auto flex-col gap-0 h-screen">
