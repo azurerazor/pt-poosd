@@ -6,7 +6,7 @@ import { ClientLobby } from "../../game/lobby";
 
 
 interface Props {
-    player: Player;
+  player: Player;
 }
 
 const GameAvatar: React.FC<Props> = ({ player }) => {

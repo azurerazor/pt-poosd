@@ -13,7 +13,6 @@ const GameCard: React.FC<Props> = ({ role }) => {
   }
   const visibleVal = isHidden ? 1 : 0;
 
-
   return (
     <div className="flex items-center gap-4 h-[380px]">
       <div className="card join-item bg-base-100 w-60 shadow-sm h-[380px] flex flex-col" onClick={handleClick}>

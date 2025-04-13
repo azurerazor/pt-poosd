@@ -15,6 +15,12 @@ const Lobby: React.FC = () => {
     //TEMP UNTIL LOBBY BACKEND
     lobby.addPlayer("blueol");
     lobby.addPlayer("user2");
+    lobby.addPlayer("user112");
+    lobby.addPlayer("user123");
+    lobby.addPlayer("user124");
+    lobby.addPlayer("user125");
+    lobby.addPlayer("user126");
+    lobby.addPlayer("user127");
     lobby.addPlayer("user3");
     const [players, setPlayers] = useState<Player[]>([]);
 

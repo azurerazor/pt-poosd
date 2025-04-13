@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import GameAvatar from "../ui/GameAvatar";
 import GameMission from "../ui/GameMission";
+import MissionPlayerSelect from "../ui/MissionPlayerSelect";
 import GameCard from "../ui/GameCard";
 import { Roles, getRoleByName } from "../../../../common/game/roles";
 import { Player } from "../../../../common/game/player"
@@ -71,19 +72,37 @@ export default function Game() {
               <GameMission key={i} status={false} />
             ))}
           </div>
-        <h1 className="text-3xl font-bold absolute bottom-35 left-8">Vote Tracker:</h1>
-        <div className="absolute bottom-4 left-4">
-          {[...Array(5)].map((_, i) => (
-            <VoteMission key={i} status={false} />
-          ))}
-        </div>
+        <div className="justify-between">
+          <h1 className="text-3xl font-bold absolute bottom-35 left-8">Vote Tracker:</h1>
+          <div className="absolute bottom-4 left-4">
+            {[...Array(5)].map((_, i) => (
+              <VoteMission key={i} status={false} />
+            ))}
+          </div>
 
-        <div className="absolute bottom-4 right-4 p-2">
-          <GameCard
-            role={getRoleByName("Percival")}
+          <div className="absolute bottom-4">
+            <FunctionButton
+            label="Mission Select"
+            onClick={() => (document.getElementById("MissionSelect") as HTMLDialogElement)?.showModal()}
           />
-        </div>
+          <dialog id="MissionSelect" className="modal">
+            <div className="modal-box join join-horizontal w-auto">
+              {players.map((player) => (
+                <MissionPlayerSelect key={player.username} player={player} />
+              ))}
+            </div>
+            <form method="dialog" className="modal-backdrop">
+              <button>close</button>
+            </form>
+          </dialog>
+          </div>
 
+          <div className="absolute bottom-4 right-4 p-2">
+            <GameCard
+              role={getRoleByName("Percival")}
+            />
+          </div>
+        </div>
         <div className="absolute top-4 left-4 p-2">
           <FunctionButton
             label="Options"
