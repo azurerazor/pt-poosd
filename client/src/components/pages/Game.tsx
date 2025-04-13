@@ -15,6 +15,7 @@ import RoleRevealCard from "../ui/RoleRevealCard"
 export default function Game() {
     const navigate = useNavigate();
     const { username } = useUser();
+    const [showRoleCard, setShowRoleCard] = useState(true);
 
     //TEMP UNTIL LOBBY BACKEND
     let lobby = ClientLobby.getInstance();
@@ -40,19 +41,24 @@ export default function Game() {
 
     return (
       <ContextProvider>
-        <div
-          className="fixed inset-0 z-40"
-          style={{
-            backdropFilter: 'blur(8px)',
-            backgroundColor: 'rgba(0, 0, 0, 0.3)',
-            WebkitBackdropFilter: 'blur(8px)',
-          }}
-        />
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="rounded-lg p-8 max-w-xl w-full text-center">
-            <RoleRevealCard player={lobby.getPlayer(username)!} />
+        {showRoleCard && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center"
+            style={{
+              backdropFilter: 'blur(8px)',
+              backgroundColor: 'rgba(0, 0, 0, 0.3)',
+              WebkitBackdropFilter: 'blur(8px)',
+            }}
+            onClick={() => setShowRoleCard(false)}
+          >
+            <div
+              className="rounded-lg p-8 max-w-xl w-full text-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <RoleRevealCard player={lobby.getPlayer(username)!} />
+            </div>
           </div>
-        </div>
+        )}
         <div className="hero-content w-full text-center m-auto flex-col gap-0 h-screen">
           <div className="join join-vertical lg:join-horizontal absolute top-1">
             {players.map((player) => (
