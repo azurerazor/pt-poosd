@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:mobile/escavalon_material.dart';
 
+import 'gamephases/night.dart';
+
 enum Team { good, evil, }
 
 FlutterSecureStorage? globalToken;
@@ -63,17 +65,12 @@ class _GamePageContent extends StatefulWidget {
 class _GamePageContentState extends State<_GamePageContent> {
   final startTime = DateTime.now();
   Team? winner;
-  int questNum = 1;
-  final Map<Team, int> numVictories = {
-    Team.good: 0,
-    Team.evil: 0,
-  };
 
   int gamePhase = 0; // 0: start, 1: quests, 2: assassinate, 3: end
   List<Team?> questResults = List<Team?>.generate(5, (int idx) => null, growable: false);
 
   Future<bool>? _gameSavedSuccessfully;
-  final bool _gameSaved = false; // TODO: make this less of a mess
+  final bool _gameSaved = false; 
 
   FlutterTts flutterTts = FlutterTts();
 
@@ -90,7 +87,7 @@ class _GamePageContentState extends State<_GamePageContent> {
     switch (gamePhase) {
       case 0:
         return Builder(
-          builder: (context) => _Night(
+          builder: (context) => Night(
             updateGamePhase: (newPhase) => setState(() {
               gamePhase = newPhase;
             }),
@@ -101,7 +98,7 @@ class _GamePageContentState extends State<_GamePageContent> {
         return Text("Questing...");
       case 2:
         // evil already won -- they don't need to try to assassinate Merlin
-        if (numVictories[Team.evil] == 3) {
+        if (winner == Team.evil) {
           setState(() {
             gamePhase = 3;
           });
@@ -109,10 +106,6 @@ class _GamePageContentState extends State<_GamePageContent> {
         // TODO: implement Merlin assassination
         return Text("Assassinating Merlin...");
       case 3:
-
-
-
-
         return endGame(context);
       default:
         throw ErrorDescription("Invalid game phase: $gamePhase");
@@ -255,102 +248,24 @@ class _GamePageContentState extends State<_GamePageContent> {
       },
     );
   }
-}
 
-class _Night extends StatefulWidget {
-  final Function(int) updateGamePhase;
-  final FlutterTts flutterTts;
+  // TODO: send game results to server
+  // time started, winner, numPlayers, special roles used (probably just as 'RoleName':'True/False'), whether each round suceeded/failed
+  // remember to send time as UTC!
+  Future<bool> trySave() async {
+    return true;
+    // final HttpResponse response;
 
-  const _Night({
-    required this.updateGamePhase,
-    required this.flutterTts,
-  });
-
-  @override
-  State<StatefulWidget> createState() => _NightState();
-}
-
-class _NightState extends State<_Night> {
-  int scriptIdx = 0;
-  NightPhase nightPhase = NightPhase.start;
-  List<(NightPhase, String, int)>? script;
-
-  @override
-  void initState() {
-    super.initState();
-    widget.flutterTts.setCompletionHandler(() {
-      updateIndex();
-    });
-
-    script = getNightScript(
-      numEvil[globalNumPlayers] ?? 2,
-      globalRolesSelected["Merlin"],
-      globalRolesSelected["Percival"],
-      globalRolesSelected["Oberon"],
-      globalRolesSelected["Mordred"],
-    );
+    // if (response.statusCode == 201) {
+    //   return true;
+    // } else {
+    //   final dynamic responseBody = jsonDecode(response.body);
+    //   if (responseBody is Map<String, dynamic>) {
+    //     final String errorMessage = responseBody['message'] ?? "Unknown error";
+    //     throw Exception(errorMessage);
+    //   } else {
+    //     throw Exception("Unknown error");
+    //   }
+    // }
   }
-  
-  @override
-  Widget build(BuildContext context) {
-    if (scriptIdx == script!.length) {
-      return Text(
-        "Night phase complete. Good luck on your quests!",
-        style: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-        ),
-        textAlign: TextAlign.center,
-      );
-    }
-
-    speak(script![scriptIdx].$2);
-    return Text(
-      script![scriptIdx].$2,
-      style: TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
-      ),
-      textAlign: TextAlign.center,
-    );
-  }
-  
-  Future<void> speak(String text) async {
-    await widget.flutterTts.speak(text);
-  }
-
-  Future<void> updateIndex() async {
-    await Future.delayed(Duration(seconds: script![scriptIdx].$3));
-
-    setState(() {
-      scriptIdx++;
-    });
-
-    // once we're done with the script, we can move on to the next phase of the game
-    if (scriptIdx == script!.length) {
-      widget.updateGamePhase(1);
-    }
-  }
-
-}
-
-// TODO: send game results to server
-// time started, winner, numPlayers, special roles used (probably just as 'RoleName':'True/False'), whether each round suceeded/failed
-// remember to send time as UTC!
-Future<bool> trySave() async {
-  return true;
-  // final HttpResponse response;
-
-  // if (response.statusCode == 201) {
-  //   return true;
-  // } else {
-  //   final dynamic responseBody = jsonDecode(response.body);
-  //   if (responseBody is Map<String, dynamic>) {
-  //     final String errorMessage = responseBody['message'] ?? "Unknown error";
-  //     throw Exception(errorMessage);
-  //   } else {
-  //     throw Exception("Unknown error");
-  //   }
-  // }
-
 }
