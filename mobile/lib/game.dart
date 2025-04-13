@@ -7,6 +7,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:mobile/escavalon_material.dart';
 
 import 'gamephases/night.dart';
+import 'gamephases/quest.dart';
 
 enum Team { good, evil, }
 
@@ -64,9 +65,10 @@ class _GamePageContent extends StatefulWidget {
 
 class _GamePageContentState extends State<_GamePageContent> {
   final startTime = DateTime.now();
-  Team? winner;
 
   int gamePhase = 0; // 0: start, 1: quests, 2: assassinate, 3: end
+
+  Team? victor;
   List<Team?> questResults = List<Team?>.generate(5, (int idx) => null, growable: false);
 
   Future<bool>? _gameSavedSuccessfully;
@@ -95,10 +97,19 @@ class _GamePageContentState extends State<_GamePageContent> {
           )
         );
       case 1:
-        return Text("Questing...");
+        return Builder(
+          builder: (context) => QuestRunner(
+            sendQuestResults: (results) => setState(() {
+              victor = results.$1;
+              questResults = results.$2;
+              gamePhase = 2;
+            }),
+            flutterTts: flutterTts,
+          )
+        );
       case 2:
         // evil already won -- they don't need to try to assassinate Merlin
-        if (winner == Team.evil) {
+        if (victor == Team.evil) {
           setState(() {
             gamePhase = 3;
           });
@@ -110,13 +121,6 @@ class _GamePageContentState extends State<_GamePageContent> {
       default:
         throw ErrorDescription("Invalid game phase: $gamePhase");
     }
-  }
-
-  void runQuest(BuildContext context) {
-    // TODO: say number of players
-    // TODO: time discussion
-    // TODO: vote for team (repeat until vote passes)
-    // TODO: run quest and return results
   }
 
   // not yet tested
@@ -131,7 +135,7 @@ class _GamePageContentState extends State<_GamePageContent> {
       children: <Widget>[
         EscavalonCard(
           child: Text(
-            "Game Over!\nVictory for:\n${winner == Team.good ? "Good" : "Evil"}",
+            "Game Over!\nVictory for:\n${victor == Team.good ? "Good" : "Evil"}",
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -250,7 +254,7 @@ class _GamePageContentState extends State<_GamePageContent> {
   }
 
   // TODO: send game results to server
-  // time started, winner, numPlayers, special roles used (probably just as 'RoleName':'True/False'), whether each round suceeded/failed
+  // time started, victor, numPlayers, special roles used (probably just as 'RoleName':'True/False'), whether each round suceeded/failed
   // remember to send time as UTC!
   Future<bool> trySave() async {
     return true;
