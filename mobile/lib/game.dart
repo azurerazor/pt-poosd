@@ -8,7 +8,6 @@ import 'package:mobile/escavalon_material.dart';
 
 import 'gamephases/night.dart';
 import 'gamephases/quest.dart';
-import 'gamephases/assassinate.dart';
 
 enum Team { good, evil, }
 
