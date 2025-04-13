@@ -1,5 +1,5 @@
-import * as crypto from 'crypto';
-import { Lobby } from "./state";
+import { Alignment, Roles } from "./roles";
+import { Lobby, LobbyState } from "./state";
 
 /**
  * An event data container passed between the client and server
@@ -48,54 +48,18 @@ export class EventPacket {
     public origin: string;
 
     /**
-     * The RSA-SHA256 signature of this event (sans signature)
-     * 
-     * If sending from the server, this is a plain sha256 hash of the body
-     * If sending from the client, this will be signed with the user's JWT
+     * If sent from the client, this is the JWT token of the authenticated user
+     * If sent from the server, this will be null
      */
-    public signature: string;
+    public token: string | null;
 
-    public constructor(type: string, data: any, origin: string, signature: string) {
+    public constructor(type: string, data: any, origin: string, token: string | null = null) {
         this.type = type;
         this.data = data;
         this.origin = origin;
-        this.signature = signature;
+        this.token = token;
     }
 
-    /**
-     * Creats an event packet and signs it with the given key
-     */
-    public static createAndSign(type: string, data: any, origin: string, key: string | null): EventPacket {
-        // Get the message body to sign
-        const body = JSON.stringify({ type, data, origin });
-
-        if (!key) {
-            // No key; hash the body instead
-            const hash = crypto.hash('sha256', Buffer.from(body), 'base64url');
-            return new EventPacket(type, data, origin, hash);
-        }
-
-        // Sign the body with the key
-        const signature = crypto.sign('sha256', Buffer.from(body), key).toString('base64url');
-        return new EventPacket(type, data, origin, signature);
-    }
-
-    /** 
-     * Verifies the signature of this event packet
-     */
-    public verify(key: string | null): boolean {
-        // Get the message body to verify
-        const body = JSON.stringify({ type: this.type, data: this.data, origin: this.origin });
-
-        if (!key) {
-            // No key; verify the hash instead
-            const hash = crypto.hash('sha256', Buffer.from(body), 'base64url');
-            return hash === this.signature;
-        }
-
-        // Otherwise verify the signature with the key
-        return crypto.verify('sha256', Buffer.from(body), key, Buffer.from(this.signature, 'base64url'));
-    }
 }
 
 /**
@@ -123,19 +87,20 @@ export abstract class EventBroker {
     }
 
     /**
-     * Gets the origin to send with events
+     * Gets the origin for packets sent from this side
      * 
-     * On the client, this is the username of the logged-in user
+     * On the client, this is the username of the authenticated user
      * On the server, this is always "server"
      */
     protected abstract getOrigin(): string;
 
     /**
-     * Gets the JWT signing key if on the client
+     * Gets the token to send with packets from this side
      * 
-     * If called on the server, always returns null
+     * On the client, this is the JWT token of the authenticated user
+     * On the server, this is always null
      */
-    protected abstract getSigningKey(): string | null;
+    protected getToken(): string | null { return null; }
 
     /**
      * Sends an actual event packet to the other side
@@ -149,7 +114,6 @@ export abstract class EventBroker {
      * On the server, returns the lobby the user is in
      */
     protected abstract getActiveLobby(username: string): Lobby | null;
-
 
     /**
      * Registers an event handler for a given event type
@@ -172,13 +136,6 @@ export abstract class EventBroker {
      * dispatches to all registered handlers for a given lobby state
      */
     public receive(packet: EventPacket): void {
-        // Verify the packet signature
-        const key = this.getSigningKey();
-        if (!packet.verify(key)) {
-            console.error("Invalid event signature");
-            return;
-        }
-
         // Get the event type to instantiate
         const eventType = this.eventTypes.get(packet.type);
         if (!eventType) return;
@@ -198,11 +155,11 @@ export abstract class EventBroker {
     public send<T extends Event>(event: T): void {
         // Create the event packet
         const origin = this.getOrigin();
-        const packet = EventPacket.createAndSign(
+        const packet = new EventPacket(
             event.type,
             event.write(),
             origin,
-            this.getSigningKey());
+            this.getToken());
 
         // Send the packet
         const lobby = this.getActiveLobby(origin)!;

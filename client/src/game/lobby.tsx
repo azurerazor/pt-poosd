@@ -1,5 +1,6 @@
 import { Lobby } from "@common/game/state";
 
+
 export class ClientLobby extends Lobby {
     private static instance: ClientLobby | null = null;
 

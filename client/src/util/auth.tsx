@@ -1,10 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { API_URL } from "./api";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { Navigate } from "react-router";
 import Loading from "../components/pages/Loading";
-
-
-import { createContext, useContext } from 'react';
+import { API_URL } from "./api";
 
 type UserContextType = {
   username: string;
