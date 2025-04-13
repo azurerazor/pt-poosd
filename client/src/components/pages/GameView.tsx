@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router';
 import { HiddenContextProvider } from "../../util/hiddenContext";
 import VoteMission from 'components/ui/VoteMission';
 import RoleRevealCard from "../ui/RoleRevealCard"
+import SuccessFailCard from 'components/ui/SuccessFailCard';
 
 type Props = {
   players: Player[];
@@ -71,10 +72,29 @@ export default function GameView({ players, myPlayer }: Props) {
           onClick={() => (document.getElementById("MissionSelect") as HTMLDialogElement)?.showModal()}
         />
         <dialog id="MissionSelect" className="modal">
-          <div className="modal-box join join-horizontal w-auto">
-            {players.map((player) => (
-              <MissionPlayerSelect key={player.username} player={player} />
-            ))}
+          <div className="modal-box">
+          <h1 className="text-xl font-bold flex-row">Select n players:</h1>
+            <div className="join join-horizontal flex flex-row flex-wrap justify-center">
+              {players.map((player) => (
+                <MissionPlayerSelect key={player.username} player={player} />
+              ))}
+            </div>
+            <FunctionButton label="Submit" />
+          </div>
+          <form method="dialog" className="modal-backdrop">
+            <button>close</button>
+          </form>
+        </dialog>
+        </div>
+
+        <div className="absolute bottom-35">
+          <FunctionButton
+          label="Vote Success/Fail"
+          onClick={() => (document.getElementById("SuccessFail") as HTMLDialogElement)?.showModal()}
+        />
+        <dialog id="SuccessFail" className="modal">
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <SuccessFailCard player={myPlayer} players={players} />
           </div>
           <form method="dialog" className="modal-backdrop">
             <button>close</button>

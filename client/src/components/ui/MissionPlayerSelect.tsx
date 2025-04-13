@@ -12,25 +12,11 @@ const MissionPlayerSelect: React.FC<Props> = ({ player }) => {
     setIsGreen((prevStatus) => !prevStatus);
   };
 
-  const greenVal = isGreen ? 0.5 : 0;
-
   return (
     <div onClick={handleClick} className="relative">
       <div className="avatar join-item p-1">
-        <div className="w-24 rounded relative">
+        <div className={`w-24 rounded relative border-6 ${isGreen ? 'border-green-400' : 'border-transparent'}`}>
           <img src={player.avatar} alt={player.username} />
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "green",
-              opacity: greenVal,
-              borderRadius: "0.375rem",
-            }}
-          />
         </div>
       </div>
       <div className="join-item">
