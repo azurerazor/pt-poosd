@@ -38,6 +38,42 @@ const Map<int, Map<int, int>> questRequirements = { // [numPlayers][questNum]
   10: {1: 3, 2: 4, 3: 4, 4: 5, 5: 5},
 };
 
+class EscavalonPage extends StatelessWidget {
+  final Widget child;
+
+  const EscavalonPage({super.key, 
+    required this.child,
+  });
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        title: Text("Escavalon"),
+      ),
+      body: SizedBox.expand(
+        child: Stack(
+            children: <Widget>[
+              Positioned.fill(
+                child: Image.asset(
+                  "assets/paper.jpg",
+                  fit: BoxFit.cover,
+                ),
+              ),
+
+              Container(
+                padding: const EdgeInsets.all(16.0),
+                child: child,
+              )
+            ],
+          )
+      )
+    );
+  }
+
+}
+
 class EscavalonCard extends StatelessWidget {
   final Widget child;
 

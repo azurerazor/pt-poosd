@@ -14,17 +14,8 @@ class Home extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text("Escavalon"),
-        ),
-        body: Center(
-          child: Container ( 
-            padding: const EdgeInsets.all(16.0),
-            child: const _HomeContent(),
-          ),
-        ),
+    return EscavalonPage(
+      child: _HomeContent()
     );
   }
 }
@@ -163,6 +154,8 @@ class _HomeContentState extends State<_HomeContent> {
         builder: (context) => LoginPage()
       )
     );
+
+    if (info == null) return;
 
     setState(() {
       _username = info[0];

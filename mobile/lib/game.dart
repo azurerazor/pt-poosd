@@ -40,19 +40,7 @@ class GamePage extends StatelessWidget {
     globalNumPlayers = numPlayers;
     globalRolesSelected = rolesSelected;
 
-    return Scaffold(
-      appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text("Escavalon"),
-        ),
-        body: Center(
-          child: 
-            Container(
-              padding: const EdgeInsets.all(16.0), 
-              child: _GamePageContent()
-            )
-        ),
-    );
+    return EscavalonPage(child: Expanded(child: _GamePageContent()));
   }
 }
 
