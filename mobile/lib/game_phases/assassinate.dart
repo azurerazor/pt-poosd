@@ -1,8 +1,7 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:mobile/escavalon_material.dart';
+
+import 'quest_phase_templates.dart';
 
 class Assassinate extends StatefulWidget {
   final bool includesAssassin;
@@ -39,49 +38,18 @@ class _AssassinateState extends State<Assassinate> {
         endingScript: "Time has run out! Starting assassination."
       );
     } else {
-      return buildTrueAssassinationPhase();
+      return VoteTemplate(
+        displayText: "${widget.includesAssassin ? "Assassin, decide!" : "Minions, vote!"}\nDid you successfully assassinate Merlin?", 
+        succeedText: "YES", 
+        failText: "NO", 
+        script: getAssassinateScript(), 
+        onSucceed: () => widget.sendAssassinationResults(true), 
+        onFail: ()=> widget.sendAssassinationResults(false),
+      );
     }
   }
 
-  Widget buildTrueAssassinationPhase() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Text(
-          "${widget.includesAssassin ? "Assassin, decide!" : "Minions, vote!"}\nDid you successfully assassinate Merlin?",
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-          textAlign: TextAlign.center,
-        ),
-
-        SizedBox(height: 20,),
-
-        EscavalonButton(
-          text: "YES",
-          onPressed: () => {
-            if (finishedSpeaking) {
-              widget.sendAssassinationResults(true)
-            }
-          },
-        ),
-        
-        EscavalonButton(
-          text: "NO",
-          onPressed: () => {
-            if (finishedSpeaking) {
-              widget.sendAssassinationResults(false)
-            }
-          },        
-        ),
-      ],
-    );
-  }
-
-  void readAssassinateScript() async {
-    FlutterTts thisTts = createTts();
-
+  List<(String, int)> getAssassinateScript() {
     List<(String, int)> script = []; 
 
     if (widget.includesAssassin) {
@@ -92,22 +60,8 @@ class _AssassinateState extends State<Assassinate> {
       script.add(("1.", 1));
     }
 
-    script.add(("Assassinated player, are you Merlin?", 5));
+    script.add(("Assassinated player, are you Merlin?", 0));
 
-    for (var line in script) {
-      await thisTts.speak(line.$1);
-      Completer<void> completer = Completer<void>();
-      
-      thisTts.setCompletionHandler(() {
-        completer.complete();
-      });
-      await completer.future;
-
-      await Future.delayed(Duration(seconds: line.$2)); 
-    }
-
-    setState(() {
-      finishedSpeaking = true;
-    });
+    return script;
   }
 }

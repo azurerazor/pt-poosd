@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:mobile/escavalon_material.dart';
 import 'package:mobile/game.dart';
-import 'package:mobile/game_phases/assassinate.dart';
-import 'vote.dart';
-import 'mission.dart';
+
+import 'assassinate.dart';
+import 'quest_phase_templates.dart';
 
 int _deltaQuestsWon = 0; // positive if good, negative if evil
 
@@ -50,7 +50,7 @@ class _QuestState extends State<Quest> {
                       textAlign: TextAlign.center,
                     ),
                     Text(
-                      "Size of quest: ${questRequirements[globalNumPlayers]![currentQuest + 1]}\n${twoFailsRequired ? "Two traitors" : "One traitor"} required for mission to fail.\nNumber of failed proposals: $numFailedVotes.",
+                      "Size of quest: ${questRequirements[globalNumPlayers]![currentQuest + 1]}\n${twoFailsRequired ? "Two traitors" : "One traitor"} required for mission to fail.\nNumber of failed proposals: $numFailedVotes",
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -91,17 +91,24 @@ class _QuestState extends State<Quest> {
               }
                 
               if (currentQuestPhase == 1) {
-                return Vote(
-                  numOnQuest: questRequirements[globalNumPlayers]![currentQuest + 1]!,
-                  updateQuestPhaseWithPossibleRepeat: updateQuestPhaseWithPossibleRepeat
+                return VoteTemplate(
+                  displayText: "Leader, propose a team.\nThen have everyone vote.\nDid the vote pass or fail?", 
+                  succeedText: "PASS", 
+                  failText: "FAIL", 
+                  script: getVoteScript(questRequirements[globalNumPlayers]![currentQuest + 1]!), 
+                  onSucceed: () => updateQuestPhaseWithPossibleRepeat(false), 
+                  onFail: () => updateQuestPhaseWithPossibleRepeat(true),
                 );
               }
 
               if (currentQuestPhase == 2) {
-                return Mission(
-                  numOnQuest: questRequirements[globalNumPlayers]![currentQuest + 1]!,
-                  twoFailsRequired: twoFailsRequired,
-                  updateQuestPhaseWithQuestVictor: updateQuestPhaseWithQuestVictor,
+                return VoteTemplate(
+                  displayText: "Distribute vote cards.\nThen, reveal the votes.\nDid the quest succeed?", 
+                  succeedText: "SUCCEED", 
+                  failText: "FAIL", 
+                  script: getMissionScript(twoFailsRequired), 
+                  onSucceed: () => updateQuestPhaseWithQuestVictor(Team.good), 
+                  onFail: () => updateQuestPhaseWithQuestVictor(Team.evil), 
                 );
               }
 
@@ -161,6 +168,7 @@ class _QuestState extends State<Quest> {
       });
 
       if (numFailedVotes == 5) {
+        numFailedVotes = 0;
         updateQuestPhaseWithQuestVictor(Team.evil);
         return;
       }
