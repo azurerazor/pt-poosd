@@ -8,34 +8,9 @@ export enum GameState {
     LOBBY = "lobby",
 
     /**
-     * Displaying roles/information
+     * In a game
      */
-    ROLE_REVEAL = "role_reveal",
-
-    /**
-     * Selecting a team
-     */
-    TEAM_SELECTION = "team_selection",
-
-    /**
-     * Voting on a team
-     */
-    TEAM_VOTE = "team_vote",
-
-    /**
-     * Performing a mission
-     */
-    MISSION = "mission",
-
-    /**
-     * Guessing Merlin
-     */
-    MERLIN_GUESS = "merlin_guess",
-
-    /**
-     * Game over / displaying results
-     */
-    RESULTS = "results",
+    IN_GAME = "in_game",
 }
 
 export enum Outcome {

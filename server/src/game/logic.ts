@@ -29,7 +29,7 @@ export function bootstrapEvents(): void {
 
         // Update the state
         lobby.state = {
-            state: GameState.ROLE_REVEAL,
+            state: GameState.IN_GAME,
             round: 0,
             outcomes: [Outcome.NONE, Outcome.NONE, Outcome.NONE, Outcome.NONE, Outcome.NONE],
             team: [],

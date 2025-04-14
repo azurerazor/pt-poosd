@@ -61,6 +61,7 @@ export class ClientEventBroker extends EventBroker {
         this.instance = new ClientEventBroker(username, token, socket);
 
         // Handle connection error
+        // FIXME: Verify connect_error and disconnect handling
         socket.on('connect_error', (err: Error) => {
             console.error("Connection error:", err);
 
@@ -76,12 +77,13 @@ export class ClientEventBroker extends EventBroker {
             ClientEventBroker.instance!.receive(packet);
         });
 
-        // The first time we receive an event, send a ready event
-        // The server will then respond with ready
-        socket.once('event', (packet: EventPacket) => {
-            console.log("Sending ready ping");
-            ClientEventBroker.instance!.send(new ReadyEvent());
-        });
+        // FIXME: send a ready event after every update
+        // // The first time we receive an event, send a ready event
+        // // The server will then respond with ready
+        // socket.once('event', (packet: EventPacket) => {
+        //     console.log("Sending ready ping");
+        //     ClientEventBroker.instance!.send(new ReadyEvent());
+        // });
 
         // Handle disconnection
         socket.on('disconnect', () => {
