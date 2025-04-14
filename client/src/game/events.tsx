@@ -1,4 +1,4 @@
-import { GameEvent, EventBroker, EventPacket, DisconnectEvent } from "@common/game/events";
+import { DisconnectEvent, EventBroker, EventPacket, GameEvent, ReadyEvent } from "@common/game/events";
 import { Lobby } from "@common/game/state";
 import { ClientLobby } from "./lobby";
 import { acquireSocket } from "./socket";
@@ -37,6 +37,16 @@ export class ClientEventBroker extends EventBroker {
     }
 
     /**
+     * Gets the singleton instance of the client event broker
+     */
+    public static getInstance(): ClientEventBroker {
+        if (this.instance === null) {
+            throw new Error("ClientEventBroker not initialized");
+        }
+        return this.instance;
+    }
+
+    /**
      * Initializes the client event broker with the given username and token
      * Opens a socket connection; then we wait to receive either ready or disconnect
      * 
@@ -50,16 +60,43 @@ export class ClientEventBroker extends EventBroker {
         // Set up the event broker
         this.instance = new ClientEventBroker(username, token, socket);
 
-        // Register event callbacks
-        socket.on("event", this.instance!.receive);
-        socket.on("disconnect", () => {
+        // Handle connection error
+        socket.on('connect_error', (err: Error) => {
+            console.error("Connection error:", err);
+
             // Dispatch a disconnect event so the client will clean up
-            this.instance!.dispatch(
+            ClientEventBroker.instance!.dispatch(
+                ClientLobby.getInstance(),
+                new DisconnectEvent(err.message));
+        });
+
+        // Register event callbacks
+        socket.on('event', (packet: EventPacket) => {
+            console.log("Received event:", packet);
+            ClientEventBroker.instance!.receive(packet);
+        });
+
+        // The first time we receive an event, send a ready event
+        // The server will then respond with ready
+        socket.once('event', (packet: EventPacket) => {
+            console.log("Sending ready ping");
+            ClientEventBroker.instance!.send(new ReadyEvent());
+        });
+
+        // Handle disconnection
+        socket.on('disconnect', () => {
+            // Dispatch a disconnect event so the client will clean up
+            console.log("Lost socket connection");
+            ClientEventBroker.instance!.dispatch(
                 ClientLobby.getInstance(),
                 new DisconnectEvent("Lost connection"));
         });
 
         return this.instance;
+    }
+
+    public dispatch(lobby: Lobby, event: GameEvent): void {
+        super.dispatch(lobby, event);
     }
 
     /**

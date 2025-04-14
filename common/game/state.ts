@@ -1,5 +1,5 @@
 import { Player } from "./player";
-import { getRoles, role_requirements, Roles } from "./roles";
+import { getRoles, role_requirements, Roles, servant } from "./roles";
 
 export enum GameState {
     /**
@@ -132,7 +132,10 @@ export class Lobby {
         this.host = host;
         this.state = new LobbyState();
 
-        this.players = new Map<string, Player>([[host, new Player(host, true)]]);
+        const player = new Player(host, true);
+        player.isConnected = false;
+
+        this.players = new Map<string, Player>([[host, player]]);
         this.onClose = onClose;
     }
 
@@ -347,7 +350,7 @@ export class Lobby {
 
         // Get the requested player's role object
         const player = this.getPlayer(username)!;
-        const role = player.getPossibleRoles()![0];
+        const role = player.role ? player.getPossibleRoles()![0] : servant;
 
         // Loop through all players
         for (const [name, player] of this.players) {
@@ -369,6 +372,8 @@ export class Lobby {
             if (role.canSeeRoles(player.role!)) {
                 newPlayer.role = player.role;
             }
+
+            res.set(name, newPlayer);
         }
 
         return res;

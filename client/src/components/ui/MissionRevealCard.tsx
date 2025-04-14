@@ -16,6 +16,8 @@ const MissionRevealCard: React.FC<Props> = ({ outcomes, onClose }) => {
 
   const successCard = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Ace_of_spades.svg/1200px-Ace_of_spades.svg.png";
   const failCard = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/Playing_card_heart_A.svg/1200px-Playing_card_heart_A.svg.png";
+  
+  // TO-DO make this based on the fails array in GameFlow
   const verdict = succy > fail ? "Success" : "Fail";
 
   return (

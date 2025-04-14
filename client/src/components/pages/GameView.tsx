@@ -12,7 +12,7 @@ import { HiddenContextProvider } from "../../util/hiddenContext";
 import VoteMission from '../ui/VoteMission';
 import RoleRevealCard from "../ui/RoleRevealCard"
 import {quests, fails} from "./GameFlow"
-import { LobbyState, Outcome } from "../../../../common/game/state";
+import { LobbyState, Outcome, GameState } from "../../../../common/game/state";
 import SuccessFailCard from '../ui/SuccessFailCard';
 import MissionVoteCard from '../ui/MissionVoteCard';
 import MissionRevealCard from '../ui/MissionRevealCard';
@@ -25,15 +25,32 @@ type Props = {
   successFail: Outcome;
   setSuccessFail: React.Dispatch<React.SetStateAction<Outcome>>;
   outcomes: Outcome[];
+  gameState: GameState;
+  changeState: boolean;
+  setChangeState: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam, successFail, setSuccessFail, outcomes }: Props) {
+export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam, successFail, setSuccessFail, outcomes, gameState, changeState, setChangeState }: Props) {
   const navigate = useNavigate();
-  const [showRoleCard, setShowRoleCard] = useState(true);
-  console.log(players);
+  const [showRoleCard, setShowRoleCard] = useState(false);
+  const grayscaleVal = !myPlayer.isLeader ? 100 : 0;
+
   const handleLeave = () => {
     navigate(`/dashboard`);
   };
+
+  useEffect(() => {
+    if (gameState === GameState.ROLE_REVEAL) {
+      setShowRoleCard(true);
+
+      const timer = setTimeout(() => {
+        setShowRoleCard(false);
+        setChangeState(true);
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [gameState]);
 
   return (
     <HiddenContextProvider>
@@ -100,10 +117,12 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
          */
         }
         <div className="absolute bottom-4">
-          <FunctionButton
-          label="Mission Select"
-          onClick={() => (document.getElementById("MissionSelect") as HTMLDialogElement)?.showModal()}
-        />
+          <div style={{ filter: `grayscale(${grayscaleVal}%)` }}>
+            <FunctionButton
+              label="Mission Select"
+              onClick={() => { if(myPlayer.isLeader) (document.getElementById("MissionSelect") as HTMLDialogElement)?.showModal() }}
+            />
+          </div>
         <dialog id="MissionSelect" className="modal">
           <div className="modal-box">
           <h1 className="text-xl font-bold flex-row">Select n players:</h1>

@@ -6,7 +6,7 @@ import { Player } from "../../../../common/game/player";
 import { useUser } from '../../util/auth';
 import { ClientLobby } from "../../game/lobby";
 import Loading from "./Loading";
-import { Outcome } from "../../../../common/game/state";
+import { Outcome, GameState } from "../../../../common/game/state";
 
 export const quests = [
   [],[],[],[],[],
@@ -41,6 +41,8 @@ export default function GameFlow() {
   const [selectedTeam, setSelectedTeam] = useState<string[]>([]);
   const [successFail, setSuccessFail] = useState<Outcome>(Outcome.NONE);
   const [outcomes, setOutcomes] = useState<Outcome[]>([]);
+  const [gameState, setGameState] = useState<GameState>(GameState.LOBBY)
+  const [changeState, setChangeState] = useState(false);
 
   //TEMP UNTIL BACKEND
   useEffect(() => {
@@ -68,6 +70,7 @@ export default function GameFlow() {
         lobby.setPlayerRoles("user3", Roles.MERLIN | Roles.MORGANA);
         lobby.setPlayerRoles("azure", Roles.MORGANA | Roles.MERLIN);
         lobby.setLeader("the_host");
+        setGameState(GameState.ROLE_REVEAL);
         setGameReady(true);
         setIsLoading(false);
       };
@@ -104,6 +107,9 @@ export default function GameFlow() {
           successFail={successFail}
           setSuccessFail={setSuccessFail}
           outcomes={outcomes}
+          gameState={gameState}
+          changeState={changeState}
+          setChangeState={setChangeState}
         />
       )}
     </div>

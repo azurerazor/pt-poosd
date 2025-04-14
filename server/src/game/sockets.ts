@@ -1,10 +1,10 @@
-import jwt from 'jsonwebtoken';
-import { AUTH_KEY } from '../routes/auth';
-import { Server, Socket } from 'socket.io';
-import { EventPacket, ReadyEvent, UpdateEvent } from '@common/game/events';
-import { ServerEventBroker } from './events';
-import { deleteLobby, getActiveLobby, setActiveLobby } from './lobbies';
+import { EventPacket, UpdateEvent } from '@common/game/events';
 import { GameState, Lobby } from '@common/game/state';
+import jwt from 'jsonwebtoken';
+import { Server, Socket } from 'socket.io';
+import { AUTH_KEY } from '../routes/auth';
+import { ServerEventBroker } from './events';
+import { getActiveLobby, setActiveLobby } from './lobbies';
 
 /**
  * Map of usernames to their sockets
@@ -44,7 +44,7 @@ export function initializeSockets(server: Server): void {
             // If the player is in an active lobby, refuse this connection
             const activeLobby = getActiveLobby(user);
             if (activeLobby && activeLobby.id !== lobby) {
-                return next(new Error("Handshake failed: already in a lobby"));
+                return next(new Error(`Handshake failed: already in a lobby (${activeLobby.id})`));
             }
 
             // Check if the user is already connected
@@ -144,11 +144,15 @@ export function initializeSockets(server: Server): void {
         updatePlayers(lobby);
 
         // Handle events
-        socket.on('event', ServerEventBroker.getInstance().receive);
+        socket.on('event', (packet: EventPacket) => {
+            ServerEventBroker.getInstance().receive(packet);
+        });
 
-        // Send the ready event
-        ServerEventBroker.getInstance()
-            .sendTo(lobby, socket, new ReadyEvent());
+        // Reply with ready when we receive it from the client
+        socket.on('event', (packet: EventPacket) => {
+            if (packet.type !== 'ready') return;
+            socket.emit('event', new EventPacket('ready', {}, 'server', null));
+        });
     });
 }
 
@@ -164,7 +168,13 @@ export async function updatePlayers(lobby: Lobby, extra: (event: UpdateEvent) =>
             .setPlayers(lobby.getPlayerMapFor(username))
             .setPlayerOrder(lobby.playerOrder);
         extra(event);
-        socket.emit('event', event);
+
+        const packet = new EventPacket(
+            event.type,
+            event.write(),
+            'server',
+        );
+        socket.emit('event', packet);
     });
 }
 

@@ -8,11 +8,15 @@ import GameFlow from './pages/GameFlow'
 import Verify from './pages/Verify'
 
 import ProtectedRoute from 'util/auth';
+import TestPage from './pages/TestPage'
 
 function App() {
     return (
         <BrowserRouter>
             <Routes>
+                { /* Test page */ }
+                <Route path='/test' element={<ProtectedRoute element={<TestPage />} />} />
+
                 {/* Main (non-game) pages */}
                 <Route path='/' Component={Login} />
                 <Route path='/login' Component={Login} />
