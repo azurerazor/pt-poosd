@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:mobile/escavalon_material.dart';
 
-import 'gamephases/night.dart';
-import 'gamephases/quest.dart';
+import 'game_phases/night.dart';
+import 'game_phases/quest.dart';
 
 enum Team { good, evil, }
 
