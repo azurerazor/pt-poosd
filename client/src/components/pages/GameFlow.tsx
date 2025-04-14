@@ -57,16 +57,14 @@ export default function GameFlow() {
   const [outcomes, setOutcomes] = useState<Outcome[]>([]);
   const [round, setRound] = useState(-1);
 
-  // Other useStates used by children
+  // Other useStates used to wait for async stuff
   const [gameReady, setGameReady] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [changeView, setChangeView] = useState(false);
-  const [changeState, setChangeState] = useState(false);
   const [showRoleCard, setShowRoleCard] = useState(false);
-
   const [hasReceivedFirstUpdate, setHasReceivedFirstUpdate] = useState(false);
-  const [updating, setUpdating] = useState(false);
   const [hasResolvedPlayer, setHasResolvedPlayer] = useState(false);
+  const [updating, setUpdating] = useState(false);
 
   // Update all the necessary useStates whenever socket updates
   useEffect(() => {
@@ -189,9 +187,6 @@ export default function GameFlow() {
           successFail={successFail}
           setSuccessFail={setSuccessFail}
           outcomes={outcomes}
-          gameState={gameState}
-          changeState={changeState}
-          setChangeState={setChangeState}
           round={round}
           showRoleCard={showRoleCard}
         />

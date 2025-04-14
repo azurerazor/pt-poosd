@@ -26,13 +26,11 @@ type Props = {
   successFail: Outcome;
   setSuccessFail: React.Dispatch<React.SetStateAction<Outcome>>;
   outcomes: Outcome[];
-  gameState: GameState;
-  changeState: boolean;
-  setChangeState: React.Dispatch<React.SetStateAction<boolean>>;
   round: number;
+  showRoleCard: boolean;
 };
 
-export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam, successFail, setSuccessFail, outcomes, gameState, changeState, setChangeState, round, showRoleCard }: Props) {
+export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam, successFail, setSuccessFail, outcomes, round, showRoleCard }: Props) {
   const navigate = useNavigate();
   const [selectedGuys, setSelectedGuys] = useState(0);
   const grayscaleVal = !myPlayer.isLeader ? 100 : 0;
@@ -56,7 +54,6 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
             backgroundColor: 'rgba(0, 0, 0, 0.3)',
             WebkitBackdropFilter: 'blur(8px)',
           }}
-          onClick={() => setShowRoleCard(false)}
         >
           <div
             className="rounded-lg p-8 max-w-xl w-full text-center"
