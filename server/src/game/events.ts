@@ -1,5 +1,7 @@
 import { EventBroker, EventPacket, GameEvent } from "@common/game/events";
 import { Lobby } from "@common/game/state";
+import jwt from "jsonwebtoken";
+import { AUTH_KEY } from "../routes/auth";
 import { getActiveLobby } from "./lobbies";
 import { ServerLobby } from "./lobby";
 import { getSocket } from "./sockets";
@@ -50,5 +52,31 @@ export class ServerEventBroker extends EventBroker {
     protected getActiveLobby(username: string): Lobby | null {
         const lobby = getActiveLobby(username);
         return lobby;
+    }
+
+    public receive(packet: EventPacket): void {
+        // Validate the packet
+        const username = packet.origin;
+        const token = packet.token!;
+
+        jwt.verify(token, AUTH_KEY, (err: any, data: any) => {
+            if (err) {
+                console.error("Invalid token:", err);
+                return;
+            }
+
+            if (!data.username) {
+                console.error("Invalid token data:", data);
+                return;
+            }
+
+            if (data.username !== username) {
+                console.error("Token does not match username:", data.username, username);
+                return;
+            }
+
+            // All good
+            super.receive(packet);
+        });
     }
 }

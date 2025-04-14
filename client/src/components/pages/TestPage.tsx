@@ -1,4 +1,4 @@
-import { ReadyEvent, UpdateEvent } from "@common/game/events";
+import { MissionChoiceEvent, ReadyEvent, StartGameEvent, UpdateEvent } from "@common/game/events";
 import { ClientEventBroker } from "game/events";
 import { ClientLobby } from "game/lobby";
 import { useEffect, useRef } from "react";
@@ -24,8 +24,6 @@ export default function TestPage() {
         if (initialized.current) return;
         initialized.current = true;
 
-        // Get the username and token
-
         ClientLobby.initialize(lobbyId);
         ClientEventBroker.initialize(username, token);
 
@@ -36,6 +34,10 @@ export default function TestPage() {
         ClientEventBroker.on('update', (lobby: ClientLobby, event: UpdateEvent) => {
             console.log("Updating state:", event);
         });
+
+        setTimeout(() => {
+            ClientEventBroker.getInstance().send(new StartGameEvent());
+        }, 5 * 1000);
     }, []);
 
     return (

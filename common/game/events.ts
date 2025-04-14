@@ -10,6 +10,11 @@ export abstract class GameEvent {
      */
     public type: string;
 
+    /**
+     * The origin of this event
+     */
+    public origin: string = "";
+
     public constructor(type: string) {
         this.type = type;
     }
@@ -144,6 +149,7 @@ export abstract class EventBroker {
 
         // Rebuild the event
         const event = new eventType();
+        event.origin = packet.origin;
         event.read(packet.data);
 
         // Get the active lobby state and dispatch the event
