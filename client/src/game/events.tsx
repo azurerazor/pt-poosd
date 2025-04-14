@@ -77,21 +77,13 @@ export class ClientEventBroker extends EventBroker {
             ClientEventBroker.instance!.receive(packet);
         });
 
-        // FIXME: send a ready event after every update
-        // // The first time we receive an event, send a ready event
-        // // The server will then respond with ready
-        // socket.once('event', (packet: EventPacket) => {
-        //     console.log("Sending ready ping");
-        //     ClientEventBroker.instance!.send(new ReadyEvent());
-        // });
-
         // Handle disconnection
         socket.on('disconnect', () => {
             // Dispatch a disconnect event so the client will clean up
             console.log("Lost socket connection");
             ClientEventBroker.instance!.dispatch(
                 ClientLobby.getInstance(),
-                new DisconnectEvent("Lost connection"));
+                new DisconnectEvent("Socket closed"));
         });
 
         return this.instance;

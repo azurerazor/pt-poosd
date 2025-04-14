@@ -54,6 +54,11 @@ export function initializeSockets(server: Server): void {
                 existingSocket.disconnect(true);
             }
 
+            const lobbyObj = getActiveLobby(user);
+            if (!lobbyObj) {
+                return next(new Error(`Handshake failed: invalid lobby ID (${lobby})`));
+            }
+
             // Set the player's active lobby
             setActiveLobby(user, lobby);
 
@@ -68,13 +73,14 @@ export function initializeSockets(server: Server): void {
             // All good
             next();
         } catch (err) {
+            console.log("Error validating socket handshake token:", err);
             next(new Error("Handshake failed: invalid token"));
         }
     });
 
     io!.on('connection', (socket: Socket) => {
         const user: string = socket.data.username;
-        console.log(`User ${user} connected`);
+        console.log(`User ${user} opened a socket connection`);
 
         // Handle disconnection
         socket.on('disconnect', async () => {
@@ -91,6 +97,14 @@ export function initializeSockets(server: Server): void {
             // If a game is not active, the user gets removed entirely
             if (lobby.state.state === GameState.LOBBY) {
                 lobby.removePlayer(user);
+
+                // If the lobby is now empty, close it
+                if (lobby.getConnectedPlayerCount() === 0) {
+                    console.log(`Lobby ${lobby.id} is empty, removing`);
+                    lobby.close();
+
+                    return;
+                }
             } else {
                 // Otherwise, keep the player in the lobby but disconnect them
                 if (!lobby.getPlayer(user)) return;
@@ -119,8 +133,9 @@ export function initializeSockets(server: Server): void {
 
         // Join the lobby, then update all players (now including this one)
         const lobby = getActiveLobby(user);
+        console.log("Active lobby for user", user, "is:", lobby);
         if (!lobby) {
-            console.log(`User ${user} connected but not in a lobby! Disconnecting...`);
+            console.log(`User ${user} connected but lobby is null`);
             socket.disconnect(true);
             return;
         }

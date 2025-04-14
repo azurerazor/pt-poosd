@@ -13,7 +13,8 @@ export function acquireSocket(lobby_id: string, token: string): SocketIOClient.S
         query: {
             lobby: lobby_id,
             token: token,
-        }
+        },
+        forceNew: true,
     });
 
     return sock;

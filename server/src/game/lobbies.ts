@@ -1,4 +1,5 @@
 import { ServerLobby } from "./lobby";
+import { getSocket } from "./sockets";
 
 /**
  * In-memory store for lobbies mapped by ID
@@ -9,6 +10,13 @@ const lobbies: Map<string, ServerLobby> = new Map();
  * Maps player names to their active lobby IDs
  */
 const playerLobbies: Map<string, string> = new Map();
+
+/**
+ * Gets the lobby with the given ID, or null if it doesn't exist
+ */
+export function getLobbyById(lobbyId: string): ServerLobby | null {
+    return lobbies.get(lobbyId) || null;
+}
 
 /**
  * Gets the active lobby for a given player, or null if one is not alive
@@ -54,6 +62,11 @@ export function deleteLobby(lobbyId: string): void {
             playerLobbies.delete(player.username);
         }
     }
+
+    // Disconnect sockets from the room
+    getSocket()
+        .in(lobbyId)
+        .socketsLeave(lobbyId);
 }
 
 /**
