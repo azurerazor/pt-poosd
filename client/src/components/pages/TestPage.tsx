@@ -1,4 +1,4 @@
-import { MissionChoiceEvent, ReadyEvent, StartGameEvent, UpdateEvent } from "@common/game/events";
+import { ReadyEvent, StartGameEvent, UpdateEvent } from "@common/game/events";
 import { ClientEventBroker } from "game/events";
 import { ClientLobby } from "game/lobby";
 import { useEffect, useRef } from "react";

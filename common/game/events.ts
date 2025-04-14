@@ -362,7 +362,7 @@ export class SetRoleListEvent extends GameEvent {
  * 
  * When received on the client: shows a vote dialog
  */
-export class TeamProposalEvent extends GameEvent {
+export class TeamVoteEvent extends GameEvent {
     public players: string[];
 
     public constructor(players: string[] = []) {
@@ -377,7 +377,7 @@ export class TeamProposalEvent extends GameEvent {
 /**
  * Sent from client to the server when voting on a team proposal
  */
-export class TeamVoteEvent extends GameEvent {
+export class TeamVoteChoiceEvent extends GameEvent {
     public vote: boolean;
 
     public constructor(vote: boolean = true) {
@@ -398,7 +398,7 @@ export class TeamVoteEvent extends GameEvent {
  * 
  * players is technically redundant, but included for ease of use
  */
-export class MissionStartEvent extends GameEvent {
+export class MissionEvent extends GameEvent {
     public players: string[];
 
     public constructor(players: string[] = []) {
@@ -454,7 +454,7 @@ export class AssassinationEvent extends GameEvent {
  * 
  * Otherwise, the vote considers all evil players
  */
-export class MerlinGuessEvent extends GameEvent {
+export class AssasinationChoiceEvent extends GameEvent {
     public guess: string;
 
     public constructor(guess: string = "") {
@@ -493,10 +493,10 @@ EventBroker.registerEvent("disconnect", DisconnectEvent);
 EventBroker.registerEvent("update", UpdateEvent);
 EventBroker.registerEvent("start_game", StartGameEvent);
 EventBroker.registerEvent("set_role_list", SetRoleListEvent);
-EventBroker.registerEvent("team_proposal", TeamProposalEvent);
 EventBroker.registerEvent("team_vote", TeamVoteEvent);
-EventBroker.registerEvent("mission_start", MissionStartEvent);
+EventBroker.registerEvent("team_vote_choice", TeamVoteChoiceEvent);
+EventBroker.registerEvent("mission", MissionEvent);
 EventBroker.registerEvent("mission_choice", MissionChoiceEvent);
 EventBroker.registerEvent("assassination", AssassinationEvent);
-EventBroker.registerEvent("merlin_guess", MerlinGuessEvent);
+EventBroker.registerEvent("assassination_choice", AssasinationChoiceEvent);
 EventBroker.registerEvent("game_result", GameResultEvent);
