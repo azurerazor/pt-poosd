@@ -1,6 +1,5 @@
 import { EventBroker, EventPacket, GameEvent } from "@common/game/events";
 import { Lobby } from "@common/game/state";
-import { Socket } from "socket.io";
 import { getActiveLobby } from "./lobbies";
 import { ServerLobby } from "./lobby";
 import { getSocket } from "./sockets";
@@ -41,18 +40,6 @@ export class ServerEventBroker extends EventBroker {
             callback(clientState, event);
         });
         return this;
-    }
-
-    /**
-     * Sends an event to only a specific client socket
-     */
-    public sendTo<T extends GameEvent>(lobby: Lobby, socket: Socket, event: T): void {
-        socket.emit("event", new EventPacket(
-            event.type,
-            event.write(),
-            this.getOrigin(),
-            this.getToken()
-        ));
     }
 
     protected sendPacket(lobby: Lobby, packet: EventPacket): void {
