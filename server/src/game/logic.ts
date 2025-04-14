@@ -15,13 +15,21 @@ export function bootstrapEvents(): void {
     });
 
     ServerEventBroker.on('start_game', (lobby: ServerLobby, event: StartGameEvent) => {
+        // Check that the event is from the host
         if (event.origin !== lobby.host) {
             console.error("Received start_game event from non-host:", event.origin);
             return;
         }
 
+        // Check that the lobby is in the correct state
         if (lobby.state.state !== GameState.LOBBY) {
             console.error("Received start_game event in invalid state:", lobby.state.state);
+            return;
+        }
+
+        // Check that there are enough players to start
+        if (lobby.getPlayerCount() < 5) {
+            console.error("Received start_game event with too few players:", lobby.getPlayerCount());
             return;
         }
 
@@ -36,7 +44,7 @@ export function bootstrapEvents(): void {
         lobby.state = {
             state: GameState.IN_GAME,
             round: 0,
-            outcomes: [Outcome.NONE, Outcome.NONE, Outcome.NONE, Outcome.NONE, Outcome.NONE],
+            outcomes: [-1, -1, -1, -1, -1],
             team: [],
         };
 
