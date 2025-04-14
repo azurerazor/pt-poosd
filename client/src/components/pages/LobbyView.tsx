@@ -19,7 +19,6 @@ type Props = {
 
 export default function LobbyView({ players, changeView, setChangeView, lobbyId, enabledRoles, setEnabledRoles, myPlayer }: Props) {
     let specialRoles = getRoles(Roles.SPECIAL_ROLES);
-    console.log("THIS IS MY PLAYER LOBBY ", myPlayer);
     return (
         <RolesetContextProvider>
             <div className="flex justify-center gap-4 p-4 h-screen">
