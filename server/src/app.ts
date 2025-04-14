@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 
 import http from 'http';
 import { Server } from 'socket.io';
+import { bootstrapEvents } from './game/logic.js';
 import { initializeSockets } from './game/sockets.js';
 import { login, logout, register, verifyEmail } from './routes/auth.js';
 import game from './routes/game.js';
@@ -41,6 +42,7 @@ const ioServer = new Server(httpServer, {
     }
 });
 initializeSockets(ioServer);
+bootstrapEvents();
 
 // Auth routes
 app.post('/api/register', register);
