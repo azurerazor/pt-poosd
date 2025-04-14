@@ -160,7 +160,7 @@ export abstract class EventBroker {
     /**
      * Sends an event to the other side
      */
-    public send<T extends GameEvent>(event: T): void {
+    public sendTo<T extends GameEvent>(lobby: Lobby, event: T): void {
         // Create the event packet
         const origin = this.getOrigin();
         const packet = new EventPacket(
@@ -170,7 +170,6 @@ export abstract class EventBroker {
             this.getToken());
 
         // Send the packet
-        const lobby = this.getActiveLobby(origin)!;
         this.sendPacket(lobby, packet);
     }
 }

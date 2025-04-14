@@ -102,6 +102,23 @@ export class ClientEventBroker extends EventBroker {
     }
 
     /**
+     * Sends an event to the other side
+     */
+    public send<T extends GameEvent>(event: T): void {
+        // Create the event packet
+        const origin = this.getOrigin();
+        const packet = new EventPacket(
+            event.type,
+            event.write(),
+            origin,
+            this.getToken());
+
+        // Send the packet
+        const lobby = this.getActiveLobby(origin)!;
+        this.sendPacket(lobby, packet);
+    }
+
+    /**
      * Registers a client-side handler on the singleton event broker
      */
     public static on<T extends GameEvent>(event: string, callback: ClientEventHandler<T>): ClientEventBroker {
