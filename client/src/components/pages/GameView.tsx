@@ -18,7 +18,7 @@ import MissionVoteCard from '../ui/MissionVoteCard';
 import MissionRevealCard from '../ui/MissionRevealCard';
 
 type Props = {
-  players: Player[];
+  players: Map<string, Player>;
   myPlayer: Player;
   selectedTeam: string[];
   setSelectedTeam: React.Dispatch<React.SetStateAction<string[]>>;
@@ -32,6 +32,7 @@ type Props = {
 
 export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam, successFail, setSuccessFail, outcomes, gameState, changeState, setChangeState }: Props) {
   const navigate = useNavigate();
+  console.log("THIS IS MY PLAYER*******************************", myPlayer);
   const [showRoleCard, setShowRoleCard] = useState(false);
   const grayscaleVal = !myPlayer.isLeader ? 100 : 0;
 
@@ -84,7 +85,7 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
          */
         }
         <div className="join join-vertical lg:join-horizontal absolute top-1">
-          {players.map((player) => (
+          {Array.from(players.entries()).map(([username, player], idx) => (
             <GameAvatar key={player.username} player={player} myPlayer={myPlayer} />
           ))}
         </div>
@@ -95,7 +96,7 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
         }
         <div className="join join-vertical lg:join-horizontal">
           {[...Array(5)].map((_, i) => (
-            <GameMission key={i} status={Outcome.NONE} pcount={quests[players.length][i]} numFails={fails[players.length][i]} />
+            <GameMission key={i} status={Outcome.NONE} pcount={quests[players.size][i]} numFails={fails[players.size][i]} />
           ))}
         </div>
       <div className="justify-between">
@@ -127,7 +128,7 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
           <div className="modal-box">
           <h1 className="text-xl font-bold flex-row">Select n players:</h1>
             <div className="join join-horizontal flex flex-row flex-wrap justify-center">
-              {players.map((player) => (
+              {Array.from(players.entries()).map(([username, player], idx) => (
                 <MissionPlayerSelect key={player.username} player={player} />
               ))}
             </div>

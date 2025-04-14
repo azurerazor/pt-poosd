@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { MissionChoiceEvent, ReadyEvent, StartGameEvent, UpdateEvent, SetRoleListEvent } from "@common/game/events";
+import { ClientEventBroker } from "game/events";
 import LobbyView from "./LobbyView";
 import GameView from "./GameView";
-import { Roles } from "../../../../common/game/roles";
+import { Roles, getRoleByName } from "../../../../common/game/roles";
 import { Player } from "../../../../common/game/player";
 import { useUser } from '../../util/auth';
 import { ClientLobby } from "../../game/lobby";
@@ -29,48 +31,83 @@ export const fails = [
 ];
 
 export default function GameFlow() {
-  const [players, setPlayers] = useState<Player[]>([]);
-  const [gameReady, setGameReady] = useState(false);
-  const [lobbyId, setLobbyId] = useState("");
-  const [enabledRoles, setEnabledRoles] = useState(Roles.NONE);
-  const [myPlayer, setMyPlayer] = useState(new Player("TEMP",false));
+  // Get lobby ID from query params
+  const urlParams = new URLSearchParams(window.location.search);
+  const lobbyId = urlParams.get("id") || "none";
+
+  // Get the username and token
   const { username } = useUser();
-  const lobby = ClientLobby.getInstance();
-  const [isLoading, setIsLoading] = useState(false);
-  const [changeView, setChangeView] = useState(false);
+  const token = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('token='))!
+      .split('=')[1];
+
+  // State
+  const initialized = useRef(false);
+
+  // All useStates passed to children when updated in socket
+  const [players, setPlayers] = useState<Map<string, Player>>(new Map());
+  const [enabledRoles, setEnabledRoles] = useState(Roles.NONE);
+  const [myPlayer, setMyPlayer] = useState<Player>();
+  
+  // useStates that should be sent to socket
+  const [gameState, setGameState] = useState<GameState>(GameState.LOBBY);
   const [selectedTeam, setSelectedTeam] = useState<string[]>([]);
   const [successFail, setSuccessFail] = useState<Outcome>(Outcome.NONE);
   const [outcomes, setOutcomes] = useState<Outcome[]>([]);
-  const [gameState, setGameState] = useState<GameState>(GameState.LOBBY)
+  const [round, setRound] = useState(-1);
+
+  // Other useStates used by children
+  const [gameReady, setGameReady] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [changeView, setChangeView] = useState(false);
   const [changeState, setChangeState] = useState(false);
 
-  //TEMP UNTIL BACKEND
+  const [updating, setUpdating] = useState(false);
+
+  //NEW BACKEND DROPPED
   useEffect(() => {
-    lobby.addPlayer("blueol");
-    lobby.addPlayer("user2");
-    lobby.addPlayer("user3");
-    lobby.addPlayer("user123");
-    lobby.addPlayer("user124");
-    lobby.addPlayer("user125");
-    lobby.addPlayer("user126");
-    lobby.addPlayer("user127");
-    lobby.addPlayer("azure");
-    setSelectedTeam(["blueol", "azure", "user2"]);
-    setMyPlayer(lobby.getPlayer(username)!);
-    setPlayers(lobby.getConnectedPlayers());
-    setLobbyId(lobby.id);
+    if (initialized.current) return;
+    initialized.current = true;
+
+    ClientLobby.initialize(lobbyId);
+    ClientEventBroker.initialize(username, token);
+
+    ClientEventBroker.on('ready', (lobby: ClientLobby, event: ReadyEvent) => {
+        alert("ready!");
+        console.log("READY EVENT", event);
+    });
+
+    ClientEventBroker.on('update', (lobby: ClientLobby, event: UpdateEvent) => {
+        setUpdating(true);
+        const updateGuys = async () => {        
+          if(event.players){
+            setPlayers(event.players);
+          }
+          if (event.enabledRoles) {
+            const roleList = Array.from(event.enabledRoles).reduce((acc, name) => {
+              return acc | getRoleByName(name).role;
+            }, Roles.NONE);
+            setEnabledRoles(roleList);
+          }
+          if(event.state){
+            setGameState(event.state.state);
+            setOutcomes(event.state.outcomes!);
+            setSelectedTeam(event.state.team!);
+            setRound(event.state.round);
+          }
+          setUpdating(false);
+        };
+
+      updateGuys();
+    });
   }, []);
 
   useEffect(() => {
     if (changeView) {
       setIsLoading(true);
+      ClientEventBroker.getInstance().send(new StartGameEvent());
       const initializeGame = async () => {        
-        lobby.setEnabledRoles(Roles.ANY);
-        lobby.setPlayerRoles("blueol", Roles.PERCIVAL);
-        lobby.setPlayerRoles("user3", Roles.MERLIN | Roles.MORGANA);
-        lobby.setPlayerRoles("azure", Roles.MORGANA | Roles.MERLIN);
-        lobby.setLeader("the_host");
-        setGameState(GameState.ROLE_REVEAL);
         setGameReady(true);
         setIsLoading(false);
       };
@@ -80,10 +117,19 @@ export default function GameFlow() {
   }, [changeView]);
 
   useEffect(() => {
-    console.log("YIPPEE!", successFail);
+    setMyPlayer(players.get(username));
+  }, [players]);
+
+  useEffect(() => {
+    ClientEventBroker.getInstance().send(new MissionChoiceEvent(successFail !== Outcome.FAILURE));
   }, [successFail]);
 
-  if(isLoading){
+  useEffect(() => {
+    ClientEventBroker.getInstance().send(new SetRoleListEvent(enabledRoles));
+    console.log(enabledRoles, "UPDATED");
+  }, [enabledRoles]);
+
+  if(isLoading || updating){
     return <Loading />;
   }
 
@@ -96,12 +142,13 @@ export default function GameFlow() {
           setChangeView={setChangeView}
           lobbyId={lobbyId}
           enabledRoles={enabledRoles}
-          myPlayer={myPlayer}
+          setEnabledRoles={setEnabledRoles}
+          myPlayer={myPlayer!}
         />
       ) : (
         <GameView
           players={players}
-          myPlayer={myPlayer}
+          myPlayer={myPlayer!}
           selectedTeam={selectedTeam}
           setSelectedTeam={setSelectedTeam}
           successFail={successFail}

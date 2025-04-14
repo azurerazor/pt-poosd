@@ -2,32 +2,27 @@ import { useState, useEffect } from "react";
 import { Role, role_dependencies, role_requirements, Roles } from "../../../../common/game/roles";
 import { ClientLobby } from "../../game/lobby";
 import { Player } from "../../../../common/game/player";
-import { useRolesetContext } from "util/rolesetContext";
 
 interface Props {
     role: Role;
     myPlayer: Player;
+    enabledRoles: Roles;
+    setEnabledRoles: React.Dispatch<React.SetStateAction<Roles>>;
     status: boolean;
 }
 
-const FaceCard: React.FC<Props> = ({ role, myPlayer, status = true }) => {
-  const lobby = ClientLobby.getInstance();
-  const {roles, setRoles} = useRolesetContext();
-  const isGrayScale = (roles & role.role) === 0;
+const FaceCard: React.FC<Props> = ({ role, myPlayer, enabledRoles, setEnabledRoles, status = true }) => {
+  const isGrayScale = (enabledRoles & role.role) === 0;
 
   const handleClick = () => {
     if(!myPlayer.isHost)return;
-    if ((roles & role.role) === 0) {
+    if ((enabledRoles & role.role) === 0) {
       // turn on requirements
-      setRoles((r: Roles) => (r | role.role | role_requirements[role.role]));
+      setEnabledRoles((r: Roles) => (r | role.role | role_requirements[role.role]));
     } else {
-      setRoles((r: Roles) => (r & (~role_dependencies[role.role]) & (~role.role)));
+      setEnabledRoles((r: Roles) => (r & (~role_dependencies[role.role]) & (~role.role)));
     }
   }
-
-  useEffect(() => {
-    lobby.setEnabledRoles(roles);
-  }, [roles]);
 
   let grayScaleVal = isGrayScale ? 100 : 0;
 

@@ -29,12 +29,31 @@ export default function Dashboard() {
     };
 
     const handleJoin = () => {
-        navigate(`/game/${gameCode}`);
+        navigate(`/game?id=${gameCode}`);
     };
 
-    const handleMake = () => {
-        //TO-DO get random lobby code and make new Lobby and actually set the websocket up
-        navigate(`/game/${gameCode}`);
+    const handleMake = async () => {
+        try {
+            const res = await fetch(`${API_URL}/api/game/create`,{
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            });
+
+            if (res.status !== 201) {
+                throw new Error(res.statusText);
+            }
+
+            const data = await res.json();
+
+            setGameCode(data.code);
+            console.log(data.code);
+            navigate(`/game?id=${data.code}`);
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     return (

@@ -6,6 +6,8 @@ interface Props {
 }
 
 const GameCard: React.FC<Props> = ({ role }) => {
+  if(role === undefined)return;
+  
   const { isHidden, setIsHidden } = useHiddenContext();
 
   const handleClick = () => {
