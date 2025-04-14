@@ -206,6 +206,28 @@ export class DisconnectEvent extends GameEvent {
 }
 
 /**
+ * Sent from the client (only valid from the host) to update
+ * the set of enabled roles
+ * 
+ * When received on the server, an update event is dispatched
+ * to clients:
+ *  - If the new role list was valid, the update will contain
+ *    the new role list
+ *  - Otherwise, the update will contain the old role list
+ *    (so as to resync the host's role set display)
+ */
+export class SetRoleListEvent extends GameEvent {
+    public roles: Roles;
+    public constructor(roles: Roles = Roles.DEFAULT_ROLES) {
+        super("set_role_list");
+        this.roles = roles;
+    }
+
+    public read(json: any): void { this.roles = json.roles; }
+    public write(): any { return { roles: this.roles }; }
+}
+
+/**
  * Triggered on the client after the lobby state has changed
  * and the view should update
  * 
@@ -331,25 +353,15 @@ export class StartGameEvent extends GameEvent {
 }
 
 /**
- * Sent from the client (only valid from the host) to update
- * the set of enabled roles
- * 
- * When received on the server, an update event is dispatched
- * to clients:
- *  - If the new role list was valid, the update will contain
- *    the new role list
- *  - Otherwise, the update will contain the old role list
- *    (so as to resync the host's role set display)
+ * Sent to all clients when the game starts and roles should be
+ * revealed. The client will already have received an update event
+ * (and responded with ready) containing the player's information.
  */
-export class SetRoleListEvent extends GameEvent {
-    public roles: Roles;
-    public constructor(roles: Roles = Roles.DEFAULT_ROLES) {
-        super("set_role_list");
-        this.roles = roles;
-    }
+export class RoleRevealEvent extends GameEvent {
+    public constructor() { super("role_reveal"); }
 
-    public read(json: any): void { this.roles = json.roles; }
-    public write(): any { return { roles: this.roles }; }
+    public read(json: any): void { }
+    public write(): any { return {}; }
 }
 
 /**
@@ -490,9 +502,10 @@ export class GameResultEvent extends GameEvent {
  */
 EventBroker.registerEvent("ready", ReadyEvent);
 EventBroker.registerEvent("disconnect", DisconnectEvent);
+EventBroker.registerEvent("set_role_list", SetRoleListEvent);
 EventBroker.registerEvent("update", UpdateEvent);
 EventBroker.registerEvent("start_game", StartGameEvent);
-EventBroker.registerEvent("set_role_list", SetRoleListEvent);
+EventBroker.registerEvent("role_reveal", RoleRevealEvent);
 EventBroker.registerEvent("team_vote", TeamVoteEvent);
 EventBroker.registerEvent("team_vote_choice", TeamVoteChoiceEvent);
 EventBroker.registerEvent("mission", MissionEvent);
