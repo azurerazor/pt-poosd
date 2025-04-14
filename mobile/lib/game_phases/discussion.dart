@@ -73,13 +73,15 @@ class _DiscussionState extends State<Discussion> {
 
   void readScript() async {
     FlutterTts thisTts = createTts();
+    thisTts.setCompletionHandler(
+      () => setState(() {
+        finishedSpeaking = true;
+      })
+    );
 
     thisTts.speak(
       "Create a team of ${widget.numOnQuest} players to go on this mission. ${widget.twoFailsRequired ? "Minions of Mordred, remember that you need two traitors to fail this mission for the entire quest to fail." : ""}"
     );    
     
-    setState(() {
-      finishedSpeaking = true;
-    });
   }
 }
