@@ -69,7 +69,7 @@ class _VoteState extends State<Vote> {
   void readScript() async {
     FlutterTts thisTts = createTts();
 
-    List<(String, int)> script = [("Leader, propose a team of $widget.numOnQuest players.", 30)];
+    List<(String, int)> script = [("Leader, propose a team of ${widget.numOnQuest} players.", 30)];
     script.add(("Everybody, in 3", 1));
     script.add(("2", 1));
     script.add(("1", 1));
