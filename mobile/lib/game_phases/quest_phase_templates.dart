@@ -3,6 +3,89 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:mobile/escavalon_material.dart';
 
+class DiscussionTemplate extends StatefulWidget {
+  final VoidCallback endDiscussion;
+  final String continueText, startingScript, endingScript;
+
+  const DiscussionTemplate({
+    super.key,
+    required this.endDiscussion,
+    required this.continueText,
+    required this.startingScript,
+    required this.endingScript,
+  });
+
+  @override
+  State<StatefulWidget> createState() => _DiscussionTemplateState();
+}
+
+class _DiscussionTemplateState extends State<DiscussionTemplate> {
+  bool isSpeaking = false;
+
+  @override
+  void initState() {
+    super.initState();
+    startDiscussion();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        ExtendableCountDownTimer(
+          initialDuration: Duration(minutes: 7),
+          extensionDuration: Duration(minutes: 5),
+          onTimerFinished: endDiscussion,
+          extendButtonText: "Extend discussion by 5 minutes",
+        ),
+
+        SizedBox(height: 20),
+
+        EscavalonButton(
+          text: widget.continueText,
+          onPressed: () => {
+            if (!isSpeaking) widget.endDiscussion()
+          },
+        ),
+      ],
+    );
+  }
+  
+  void startDiscussion() async {
+    setState(() {
+      isSpeaking = true;
+    });
+
+    FlutterTts thisTts = createTts();
+    thisTts.setCompletionHandler(
+      () => setState(() {
+        isSpeaking = false;
+      })
+    );
+
+    thisTts.speak(widget.startingScript);    
+  }
+  
+  void endDiscussion() async {
+    setState(() {
+      isSpeaking = true;
+    });
+
+    void startVote() async {
+      await Future.delayed(Duration(seconds: 2));
+      widget.endDiscussion();
+    }
+
+    FlutterTts thisTts = createTts();
+    thisTts.setCompletionHandler(() {
+      startVote();
+    });
+    
+    thisTts.speak(widget.endingScript);
+  }
+}
+
 class VoteTemplate extends StatefulWidget {
   final String displayText, succeedText, failText;
   final List<(String, int)> script;

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/escavalon_material.dart';
-
 import 'quest_phase_templates.dart';
 
 class Assassinate extends StatefulWidget {

@@ -13,12 +13,12 @@ const Map<int, int> numEvil = {
 };
 
 const Map<String, String> roleDescriptions = {
-  "Merlin": "Merlin is an optional Character on the Side of Good. He knows who the Evil players are, but if he is killed, the Evil players win. Adding Merlin into the game will mkae the Good side more powerful and win more ofen.",
+  "Merlin": "Merlin is an optional Character on the Side of Good. He knows who the Evil players are, but if he is killed, the Evil players win. Adding Merlin into the game will make the Good side more powerful and win more often.",
   "Percival": "Percival is an optional Character on the Side of Good. Pervival's special power is knowledge of Merlin at the start of the game. Using Percival's knowledge wisely is key to protecting Merlin's identity. Adding Percival into the game will make the Good side more powerful and win more often.",
   "Assassin": "Assassin is an optional Character on the Side of Evil. They make the final decision on who to kill at the end of the game. If they kill Merlin, the Evil players win.",
-  "Morgana": "Morgana is an optional Character on the Side of Evil. Morgana's special power",  
-  "Oberon": "Oberon is an optional Character on the Side of Evil. He does not know who the Evil players are, but if he is killed, the Good players win.",
-  "Mordred": "Mordred is an optional Character on the Side of Evil. He appears as Good to Merlin, but if he is killed, the Good players win.",
+  "Morgana": "Morgana is an optional Character on the Side of Evil. Morgana's special power is that she appears as Merlin to Percival at the start of the game. Adding Morgana into the game will make the Evil side more powerful and win more ofen.",  
+  "Oberon": "Oberon is an optional Character on the Side of Evil. He does not know who the Evil players are. Adding Oberon into the game will make the Good side more powerful and win more often.",
+  "Mordred": "Mordred is an optional Character on the Side of Evil. He appears as Good to Merlin. Adding Mordred into the game will make the Evil side more powerful and win more ofen.",
 };
 
 // source: https://api.flutter.dev/flutter/dart-ui/ColorFilter/ColorFilter.matrix.html
@@ -178,87 +178,4 @@ FlutterTts createTts() {
   result.setSpeechRate(0.5);
   result.setVolume(1.0);
   return result;
-}
-
-class DiscussionTemplate extends StatefulWidget {
-  final VoidCallback endDiscussion;
-  final String continueText, startingScript, endingScript;
-
-  const DiscussionTemplate({
-    super.key,
-    required this.endDiscussion,
-    required this.continueText,
-    required this.startingScript,
-    required this.endingScript,
-  });
-
-  @override
-  State<StatefulWidget> createState() => _DiscussionTemplateState();
-}
-
-class _DiscussionTemplateState extends State<DiscussionTemplate> {
-  bool isSpeaking = false;
-
-  @override
-  void initState() {
-    super.initState();
-    startDiscussion();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        ExtendableCountDownTimer(
-          initialDuration: Duration(minutes: 7),
-          extensionDuration: Duration(minutes: 5),
-          onTimerFinished: endDiscussion,
-          extendButtonText: "Extend discussion by 5 minutes",
-        ),
-
-        SizedBox(height: 20),
-
-        EscavalonButton(
-          text: widget.continueText,
-          onPressed: () => {
-            if (!isSpeaking) widget.endDiscussion()
-          },
-        ),
-      ],
-    );
-  }
-  
-  void startDiscussion() async {
-    setState(() {
-      isSpeaking = true;
-    });
-
-    FlutterTts thisTts = createTts();
-    thisTts.setCompletionHandler(
-      () => setState(() {
-        isSpeaking = false;
-      })
-    );
-
-    thisTts.speak(widget.startingScript);    
-  }
-  
-  void endDiscussion() async {
-    setState(() {
-      isSpeaking = true;
-    });
-
-    void startVote() async {
-      await Future.delayed(Duration(seconds: 2));
-      widget.endDiscussion();
-    }
-
-    FlutterTts thisTts = createTts();
-    thisTts.setCompletionHandler(() {
-      startVote();
-    });
-    
-    thisTts.speak(widget.endingScript);
-  }
 }
