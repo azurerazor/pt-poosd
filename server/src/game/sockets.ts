@@ -5,6 +5,7 @@ import { Server, Socket } from 'socket.io';
 import { AUTH_KEY } from '../routes/auth';
 import { ServerEventBroker } from './events';
 import { getActiveLobby, setActiveLobby } from './lobbies';
+import { ServerLobby } from './lobby';
 
 /**
  * Map of usernames to their sockets
@@ -147,12 +148,6 @@ export function initializeSockets(server: Server): void {
         socket.on('event', (packet: EventPacket) => {
             ServerEventBroker.getInstance().receive(packet);
         });
-
-        // Reply with ready when we receive it from the client
-        socket.on('event', (packet: EventPacket) => {
-            if (packet.type !== 'ready') return;
-            socket.emit('event', new EventPacket('ready', {}, 'server', null));
-        });
     });
 }
 
@@ -160,7 +155,11 @@ export function initializeSockets(server: Server): void {
  * Updates all players in a lobby with their copy of the new player map
  * Also update other fields if provided in the callback
  */
-export async function updatePlayers(lobby: Lobby, extra: (event: UpdateEvent) => void = _ => { }): Promise<void> {
+export async function updatePlayers(lobby: ServerLobby, extra: (event: UpdateEvent) => void = _ => { }): Promise<void> {
+    // Clear the ready map for the active lobby
+    lobby.clearReady();
+
+    // Update all sockets in the lobby
     const sockets = await io!.in(lobby.id).fetchSockets();
     sockets.forEach(socket => {
         const username = socket.data.username;
