@@ -16,6 +16,7 @@ import { LobbyState, Outcome, GameState } from "../../../../common/game/state";
 import SuccessFailCard from '../ui/SuccessFailCard';
 import MissionVoteCard from '../ui/MissionVoteCard';
 import MissionRevealCard from '../ui/MissionRevealCard';
+import AssassinationScreen from 'components/ui/AssassinationScreen';
 
 type Props = {
   players: Map<string, Player>;
@@ -179,6 +180,11 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
         </dialog>
         </div>
 
+        {
+        /**
+         * Screen for displaying result of mission
+         */
+        }
         <div className="absolute bottom-20">
           <FunctionButton
             label="Reveal Mission"
@@ -187,6 +193,26 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
           <dialog id="RevealMission" className="modal">
             <div className="fixed inset-0 z-50 flex items-center justify-center">
               <MissionRevealCard outcomes={outcomes} />
+            </div>
+            <form method="dialog" className="modal-backdrop">
+              <button>close</button>
+            </form>
+          </dialog>
+        </div>
+
+        {
+        /**
+         * Assassination screen
+         */
+        }
+        <div className="absolute top-50">
+          <FunctionButton
+            label="Assassination"
+            onClick={() => (document.getElementById("AssassinationScreen") as HTMLDialogElement)?.showModal()}
+          />
+          <dialog id="AssassinationScreen" className="modal">
+            <div className="fixed inset-0 z-50 flex items-center justify-center">
+              <AssassinationScreen player={myPlayer} players={players} setSuccessFail={setSuccessFail}/>
             </div>
             <form method="dialog" className="modal-backdrop">
               <button>close</button>
