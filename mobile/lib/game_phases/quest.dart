@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:mobile/escavalon_material.dart';
 import 'package:mobile/game.dart';
-import 'discussion.dart';
-import 'vote.dart';
-import 'mission.dart';
+
+import 'assassinate.dart';
+import 'quest_phase_templates.dart';
 
 int _deltaQuestsWon = 0; // positive if good, negative if evil
 
@@ -22,7 +22,7 @@ class Quest extends StatefulWidget {
 
 class _QuestState extends State<Quest> {
   int currentQuest = 0; // 0 indexed. would be better to use 1 indexed but this is easier for different things
-  int currentQuestPhase = 0;
+  int currentQuestPhase = 0; // 0 - discussion, 1 - vote, 2 - mission, -1 - assassinate
   int numFailedVotes = 0;
   List<Team?> questResults = List<Team?>.generate(5, (int idx) => null, growable: false);
   bool twoFailsRequired = false;
@@ -50,7 +50,7 @@ class _QuestState extends State<Quest> {
                       textAlign: TextAlign.center,
                     ),
                     Text(
-                      "Size of quest: ${questRequirements[globalNumPlayers]![currentQuest + 1]}\n${twoFailsRequired ? "Two traitors" : "One traitor"} required for mission to fail.\nNumber of failed proposals: $numFailedVotes.",
+                      "Size of quest: ${questRequirements[globalNumPlayers]![currentQuest + 1]}\n${twoFailsRequired ? "Two traitors" : "One traitor"} required for mission to fail.\nNumber of failed proposals: $numFailedVotes",
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -82,26 +82,45 @@ class _QuestState extends State<Quest> {
           child: Center(
             child: Builder(builder: (context) {
               if (currentQuestPhase == 0) {
-                return Discussion(
-                  numOnQuest: questRequirements[globalNumPlayers]![currentQuest + 1]!,
-                  twoFailsRequired: twoFailsRequired,
-                  updateQuestPhase: updateQuestPhase,
+                return DiscussionTemplate(
+                  endDiscussion: updateQuestPhase, 
+                  continueText: "Start vote", 
+                  startingScript: "Create a team of ${questRequirements[globalNumPlayers]![currentQuest + 1]!} players to go on this mission. ${twoFailsRequired ? "Minions of Mordred, remember that you need two traitors to fail this mission for the entire quest to fail." : ""}", 
+                  endingScript: "Time has run out! Starting voting phase."
                 );
               }
                 
               if (currentQuestPhase == 1) {
-                return Vote(
-                  numOnQuest: questRequirements[globalNumPlayers]![currentQuest + 1]!,
-                  updateQuestPhaseWithPossibleRepeat: updateQuestPhaseWithPossibleRepeat
+                return VoteTemplate(
+                  displayText: "Leader, propose a team.\nThen have everyone vote.\nDid the vote pass or fail?", 
+                  succeedText: "PASS", 
+                  failText: "FAIL", 
+                  script: getVoteScript(questRequirements[globalNumPlayers]![currentQuest + 1]!), 
+                  onSucceed: () => updateQuestPhaseWithPossibleRepeat(false), 
+                  onFail: () => updateQuestPhaseWithPossibleRepeat(true),
                 );
               }
 
-              // otherwise we're running the quest
-              return Mission(
-                numOnQuest: questRequirements[globalNumPlayers]![currentQuest + 1]!,
-                twoFailsRequired: twoFailsRequired,
-                updateQuestPhaseWithQuestVictor: updateQuestPhaseWithQuestVictor,
+              if (currentQuestPhase == 2) {
+                return VoteTemplate(
+                  displayText: "Distribute vote cards.\nThen, reveal the votes.\nDid the quest succeed?", 
+                  succeedText: "SUCCEED", 
+                  failText: "FAIL", 
+                  script: getMissionScript(twoFailsRequired), 
+                  onSucceed: () => updateQuestPhaseWithQuestVictor(Team.good), 
+                  onFail: () => updateQuestPhaseWithQuestVictor(Team.evil), 
+                );
+              }
+
+              // otherwise we're assassinating merlin
+              return Assassinate(
+                includesAssassin: globalRolesSelected["Assassin"]!, 
+                sendAssassinationResults: (bool assassinationSuccessful) => widget.sendQuestResults((
+                  assassinationSuccessful ? Team.evil : Team.good,
+                  questResults
+                ))
               );
+
             }),
           )
         ),
@@ -126,12 +145,18 @@ class _QuestState extends State<Quest> {
     });
 
     if (currentQuest == 5) {
-      widget.sendQuestResults(
-        (
-          (_deltaQuestsWon > 0) ? Team.good : Team.evil, 
-          questResults
-        ),
-      );
+      if (_deltaQuestsWon > 0) {
+        setState(() {
+          currentQuestPhase = -1;  // assassinating merlin
+        });
+      } else {
+        widget.sendQuestResults(
+          (
+            Team.evil, 
+            questResults
+          ),
+        );
+      }
     }
   }
 
@@ -143,6 +168,7 @@ class _QuestState extends State<Quest> {
       });
 
       if (numFailedVotes == 5) {
+        numFailedVotes = 0;
         updateQuestPhaseWithQuestVictor(Team.evil);
         return;
       }
@@ -166,12 +192,18 @@ class _QuestState extends State<Quest> {
     }
 
     if (_deltaQuestsWon.abs() >= 3) {
-      widget.sendQuestResults(
-        (
-          (_deltaQuestsWon > 0) ? Team.good : Team.evil, 
-          questResults
-        ),
-      );
+      if (_deltaQuestsWon > 0) {
+        setState(() {
+          currentQuestPhase = -1; // assassinating merlin
+        });
+      } else {
+        widget.sendQuestResults(
+          (
+            Team.evil, 
+            questResults
+          ),
+        );
+      }
 
       return;
     }

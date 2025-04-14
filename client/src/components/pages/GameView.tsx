@@ -16,9 +16,10 @@ import { LobbyState, Outcome, GameState } from "../../../../common/game/state";
 import SuccessFailCard from '../ui/SuccessFailCard';
 import MissionVoteCard from '../ui/MissionVoteCard';
 import MissionRevealCard from '../ui/MissionRevealCard';
+import AssassinationScreen from 'components/ui/AssassinationScreen';
 
 type Props = {
-  players: Player[];
+  players: Map<string, Player>;
   myPlayer: Player;
   selectedTeam: string[];
   setSelectedTeam: React.Dispatch<React.SetStateAction<string[]>>;
@@ -32,6 +33,7 @@ type Props = {
 
 export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam, successFail, setSuccessFail, outcomes, gameState, changeState, setChangeState }: Props) {
   const navigate = useNavigate();
+  console.log("THIS IS MY PLAYER*******************************", myPlayer);
   const [showRoleCard, setShowRoleCard] = useState(false);
   const grayscaleVal = !myPlayer.isLeader ? 100 : 0;
 
@@ -84,7 +86,7 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
          */
         }
         <div className="join join-vertical lg:join-horizontal absolute top-1">
-          {players.map((player) => (
+          {Array.from(players.entries()).map(([username, player], idx) => (
             <GameAvatar key={player.username} player={player} myPlayer={myPlayer} />
           ))}
         </div>
@@ -95,7 +97,7 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
         }
         <div className="join join-vertical lg:join-horizontal">
           {[...Array(5)].map((_, i) => (
-            <GameMission key={i} status={Outcome.NONE} pcount={quests[players.length][i]} numFails={fails[players.length][i]} />
+            <GameMission key={i} status={Outcome.NONE} pcount={quests[players.size][i]} numFails={fails[players.size][i]} />
           ))}
         </div>
       <div className="justify-between">
@@ -127,7 +129,7 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
           <div className="modal-box">
           <h1 className="text-xl font-bold flex-row">Select n players:</h1>
             <div className="join join-horizontal flex flex-row flex-wrap justify-center">
-              {players.map((player) => (
+              {Array.from(players.entries()).map(([username, player], idx) => (
                 <MissionPlayerSelect key={player.username} player={player} />
               ))}
             </div>
@@ -178,6 +180,11 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
         </dialog>
         </div>
 
+        {
+        /**
+         * Screen for displaying result of mission
+         */
+        }
         <div className="absolute bottom-20">
           <FunctionButton
             label="Reveal Mission"
@@ -186,6 +193,26 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
           <dialog id="RevealMission" className="modal">
             <div className="fixed inset-0 z-50 flex items-center justify-center">
               <MissionRevealCard outcomes={outcomes} />
+            </div>
+            <form method="dialog" className="modal-backdrop">
+              <button>close</button>
+            </form>
+          </dialog>
+        </div>
+
+        {
+        /**
+         * Assassination screen
+         */
+        }
+        <div className="absolute top-50">
+          <FunctionButton
+            label="Assassination"
+            onClick={() => (document.getElementById("AssassinationScreen") as HTMLDialogElement)?.showModal()}
+          />
+          <dialog id="AssassinationScreen" className="modal">
+            <div className="fixed inset-0 z-50 flex items-center justify-center">
+              <AssassinationScreen player={myPlayer} players={players} setSuccessFail={setSuccessFail}/>
             </div>
             <form method="dialog" className="modal-backdrop">
               <button>close</button>

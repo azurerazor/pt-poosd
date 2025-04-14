@@ -6,11 +6,13 @@ import { useState } from 'react';
 
 interface Props {
   selectedTeam: string[];
-  players: Player[];
+  players: Map<string, Player>;
 }
 
 const MissionVoteCard: React.FC<Props> = ({ selectedTeam, players }) => {
-    const selectedPlayers = players.filter((p) => selectedTeam.includes(p.username));
+    const selectedPlayers = Array.from(players)
+      .filter(([_, player]) => selectedTeam.includes(player.username))
+      .map(([_, player]) => player);
     const accept = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/SMirC-thumbsup.svg/2048px-SMirC-thumbsup.svg.png";
     const reject = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/SMirC-thumbsdown.svg/1200px-SMirC-thumbsdown.svg.png";
 

@@ -5,12 +5,14 @@ import RoleRevealInfo from "./RoleRevealInfo";
 
 interface Props {
   player: Player;
-  players: Player[];
+  players: Map<string, Player>;
   onClose?: () => void;
 }
 
 const RoleRevealCard: React.FC<Props> = ({ player, players, onClose }) => {
-  const playersInfo = players.filter((p) => p.role);
+  const playersInfo = Array.from(players)
+    .filter(([_, player]) => player.role)
+    .map(([_, player]) => player);
   
   const myRole = getRoles(player.role!)[0];
   let otherRoles: Role[] = [];

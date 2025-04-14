@@ -7,12 +7,14 @@ import { useState } from 'react';
 
 interface Props {
     player: Player;
-    players: Player[];
+    players: Map<string, Player>;
     setSuccessFail: React.Dispatch<React.SetStateAction<Outcome>>;
 }
 
 const SuccessFailCard: React.FC<Props> = ({ player, players, setSuccessFail}) => {
-    const playersInfo = players.filter((p) => p.role);
+    const playersInfo = Array.from(players)
+        .filter(([_, player]) => player.role)
+        .map(([_, player]) => player);
 
     const myRole = getRoles(player.role!)[0];
     let otherRoles = [];
@@ -25,10 +27,10 @@ const SuccessFailCard: React.FC<Props> = ({ player, players, setSuccessFail}) =>
     }
     });
 
-    if (myRole === null) return;
-
     let successCard = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Ace_of_spades.svg/1200px-Ace_of_spades.svg.png";
     let failCard = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/Playing_card_heart_A.svg/1200px-Playing_card_heart_A.svg.png";
+
+    if(myRole === undefined)return;
 
     if (myRole.isGood()) {
         failCard = successCard;

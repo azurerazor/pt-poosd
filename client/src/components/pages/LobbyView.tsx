@@ -8,17 +8,18 @@ import { RolesetContextProvider } from 'util/rolesetContext';
 import FunctionButton from '../misc/FunctionButton';
 
 type Props = {
-  players: Player[];
+  players: Map<string, Player>;
   changeView: boolean;
   setChangeView: React.Dispatch<React.SetStateAction<boolean>>;
   lobbyId: string;
   enabledRoles: Roles;
+  setEnabledRoles: React.Dispatch<React.SetStateAction<Roles>>;
   myPlayer: Player;
 };
 
-export default function LobbyView({ players, changeView, setChangeView, lobbyId, enabledRoles, myPlayer }: Props) {
+export default function LobbyView({ players, changeView, setChangeView, lobbyId, enabledRoles, setEnabledRoles, myPlayer }: Props) {
     let specialRoles = getRoles(Roles.SPECIAL_ROLES);
-
+    console.log("THIS IS MY PLAYER LOBBY ", myPlayer);
     return (
         <RolesetContextProvider>
             <div className="flex justify-center gap-4 p-4 h-screen">
@@ -26,10 +27,10 @@ export default function LobbyView({ players, changeView, setChangeView, lobbyId,
                     <div className="flex flex-col gap-2">
                         <h2 className="text-xl font-bold">Lobby Code: {lobbyId}</h2>
                         <hr className="mb-2" />
-                        {players.map((player, idx) => (
+                        {Array.from(players.entries()).map(([username, player], idx) => (
                             <PlayerProfile
-                                key = {idx}
-                                player = {player}
+                                key={idx}
+                                player={player}
                             />
                         ))}
 
@@ -51,6 +52,8 @@ export default function LobbyView({ players, changeView, setChangeView, lobbyId,
                         <FaceCard
                             key = {idx}
                             role = {role}
+                            enabledRoles = {enabledRoles}
+                            setEnabledRoles = {setEnabledRoles}
                             myPlayer = {myPlayer}
                             status = {role.is(enabledRoles)}
                         />

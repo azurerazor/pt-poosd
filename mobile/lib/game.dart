@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:mobile/escavalon_material.dart';
 
-import 'gamephases/night.dart';
-import 'gamephases/quest.dart';
+import 'game_phases/night.dart';
+import 'game_phases/quest.dart';
 
 enum Team { good, evil, }
 
@@ -66,7 +66,7 @@ class _GamePageContent extends StatefulWidget {
 class _GamePageContentState extends State<_GamePageContent> {
   final startTime = DateTime.now();
 
-  int gamePhase = 0; // 0: start, 1: quests, 2: assassinate, 3: end
+  int gamePhase = 0; // 0: start, 1: quests (+ killing merlin), 2: end
 
   Team? victor;
   List<Team?> questResults = List<Team?>.generate(5, (int idx) => null, growable: false);
@@ -90,8 +90,8 @@ class _GamePageContentState extends State<_GamePageContent> {
       case 0:
         return Builder(
           builder: (context) => Night(
-            updateGamePhase: (newPhase) => setState(() {
-              gamePhase = newPhase;
+            updateGamePhase: () => setState(() {
+              gamePhase++;
             }),
           )
         );
@@ -101,20 +101,11 @@ class _GamePageContentState extends State<_GamePageContent> {
             sendQuestResults: (results) => setState(() {
               victor = results.$1;
               questResults = results.$2;
-              gamePhase = 2;
+              gamePhase++;
             }),
           )
         );
       case 2:
-        // evil already won -- they don't need to try to assassinate Merlin
-        if (victor == Team.evil) {
-          setState(() {
-            gamePhase = 3;
-          });
-        }
-        // TODO: implement Merlin assassination
-        return Text("Assassinating Merlin...");
-      case 3:
         return endGame(context);
       default:
         throw ErrorDescription("Invalid game phase: $gamePhase");
