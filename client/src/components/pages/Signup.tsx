@@ -16,6 +16,8 @@ export default function Signup() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
+    const [signupErr, setSignupErr] = useState("");
+
     function handleSignup(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
@@ -35,12 +37,13 @@ export default function Signup() {
             return response.json();
         })
         .then(_ => {
-            alert("Signup successful!");
+            // alert("Signup successful!");
             navigate('/login');
         })
         .catch(err => {
             console.error(err);
-            alert("Signup failed: " + err.message);
+            // alert("Signup failed: " + err.message);
+            setSignupErr("Signup failed: " + err.message);
         });
     }
 
@@ -80,6 +83,7 @@ export default function Signup() {
                     />
                     <Submit value="Sign up" />
                 </form>
+                <h4 className="text-bold text-red-600">{signupErr}</h4>
             </FormCard>
         </div>
 
