@@ -5,7 +5,7 @@ import 'package:mobile/escavalon_material.dart';
 import 'package:mobile/game.dart';
 
 class Night extends StatefulWidget {
-  final Function(int) updateGamePhase;
+  final VoidCallback updateGamePhase;
 
   const Night({
     super.key, 
@@ -76,7 +76,7 @@ class _NightState extends State<Night> {
 
     // once we're done with the script, we can move on to the next phase of the game
     if (scriptIdx == script!.length) {
-      widget.updateGamePhase(1);
+      widget.updateGamePhase();
     }
   }
 
