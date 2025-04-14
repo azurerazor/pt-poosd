@@ -56,6 +56,7 @@ export default function GameFlow() {
   const [successFail, setSuccessFail] = useState<Outcome>(Outcome.NONE);
   const [outcomes, setOutcomes] = useState<Outcome[]>([]);
   const [round, setRound] = useState(-1);
+  const [order, setOrder] = useState<string[]>([]);
 
   // Other useStates used to wait for async stuff
   const [gameReady, setGameReady] = useState(false);
@@ -96,6 +97,7 @@ export default function GameFlow() {
             setSelectedTeam(event.state.team!);
             setRound(event.state.round);
           }
+          if(event.playerOrder)setOrder(event.playerOrder);
           setUpdating(false);
           setHasReceivedFirstUpdate(true);
         };
@@ -108,7 +110,7 @@ export default function GameFlow() {
 
       const timer = setTimeout(() => {
         setShowRoleCard(false);
-      }, 5000);
+      }, 10*1000);
 
       return () => clearTimeout(timer);
     });
@@ -189,6 +191,7 @@ export default function GameFlow() {
           outcomes={outcomes}
           round={round}
           showRoleCard={showRoleCard}
+          order={order}
         />
       )}
     </div>

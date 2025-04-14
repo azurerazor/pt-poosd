@@ -28,12 +28,17 @@ type Props = {
   outcomes: Outcome[];
   round: number;
   showRoleCard: boolean;
+  order: string[];
 };
 
-export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam, successFail, setSuccessFail, outcomes, round, showRoleCard }: Props) {
+export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam, successFail, setSuccessFail, outcomes, round, showRoleCard, order }: Props) {
   const navigate = useNavigate();
   const [selectedGuys, setSelectedGuys] = useState(0);
   const grayscaleVal = !myPlayer.isLeader ? 100 : 0;
+  const orderedPlayers = order
+    .map((username) => players.get(username))
+    .filter((p): p is Player => p !== undefined);
+  console.log(order, orderedPlayers);
 
   const handleLeave = () => {
     navigate(`/dashboard`);
@@ -70,7 +75,7 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
          */
         }
         <div className="join join-vertical lg:join-horizontal absolute top-1">
-          {Array.from(players.entries()).map(([username, player], idx) => (
+          {orderedPlayers.map((player, idx) => (
             <GameAvatar key={player.username} player={player} myPlayer={myPlayer} />
           ))}
         </div>
@@ -113,7 +118,7 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
           <div className="modal-box">
           <h1 className="text-xl font-bold flex-row">Select {quests[players.size][round]} players:</h1>
             <div className="join join-horizontal flex flex-row flex-wrap justify-center">
-              {Array.from(players.entries()).map(([username, player], idx) => (
+              {orderedPlayers.map((player, idx) => (
                 <MissionPlayerSelect 
                   key={player.username}
                   player={player}
