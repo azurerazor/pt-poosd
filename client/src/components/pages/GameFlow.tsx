@@ -62,10 +62,13 @@ export default function GameFlow() {
   const [isLoading, setIsLoading] = useState(false);
   const [changeView, setChangeView] = useState(false);
   const [changeState, setChangeState] = useState(false);
+  const [showRoleCard, setShowRoleCard] = useState(false);
 
+  const [hasReceivedFirstUpdate, setHasReceivedFirstUpdate] = useState(false);
   const [updating, setUpdating] = useState(false);
+  const [hasResolvedPlayer, setHasResolvedPlayer] = useState(false);
 
-  //NEW BACKEND DROPPED
+  // Update all the necessary useStates whenever socket updates
   useEffect(() => {
     if (initialized.current) return;
     initialized.current = true;
@@ -74,7 +77,6 @@ export default function GameFlow() {
     ClientEventBroker.initialize(username, token);
 
     ClientEventBroker.on('ready', (lobby: ClientLobby, event: ReadyEvent) => {
-        alert("ready!");
         console.log("READY EVENT", event);
     });
 
@@ -97,12 +99,24 @@ export default function GameFlow() {
             setRound(event.state.round);
           }
           setUpdating(false);
+          setHasReceivedFirstUpdate(true);
         };
 
       updateGuys();
     });
+
+    ClientEventBroker.on('role_reveal', (lobby: ClientLobby, event: UpdateEvent) => {
+      setShowRoleCard(true);
+
+      const timer = setTimeout(() => {
+        setShowRoleCard(false);
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    });
   }, []);
 
+  // Change the page from Lobby to Game
   useEffect(() => {
     if (changeView) {
       setIsLoading(true);
@@ -116,17 +130,38 @@ export default function GameFlow() {
     }
   }, [changeView]);
 
+  // If the game is started change the page
   useEffect(() => {
-    setMyPlayer(players.get(username));
+    if(gameState !== GameState.LOBBY){
+      setChangeView(true);
+    }
+  }, [gameState])
+
+  // If done updating send a ready event to socket
+  useEffect(() => {
+    const foundPlayer = players.get(username);
+
+    if (!updating && hasReceivedFirstUpdate && foundPlayer) {
+      setMyPlayer(foundPlayer);
+      ClientEventBroker.getInstance().send(new ReadyEvent());
+    }
+  }, [players, updating, hasReceivedFirstUpdate]);
+
+  // update which player you are after players list updated
+  useEffect(() => {
+    const foundPlayer = players.get(username);
+    setMyPlayer(foundPlayer);
+    setHasResolvedPlayer(!!foundPlayer);
   }, [players]);
 
+  // Send a mission choice event whenever you make a choice
   useEffect(() => {
     ClientEventBroker.getInstance().send(new MissionChoiceEvent(successFail !== Outcome.FAILURE));
   }, [successFail]);
 
+  // Send a roleListEvent whenever the role list changes
   useEffect(() => {
     ClientEventBroker.getInstance().send(new SetRoleListEvent(enabledRoles));
-    console.log(enabledRoles, "UPDATED");
   }, [enabledRoles]);
 
   if(isLoading || updating){
@@ -157,6 +192,8 @@ export default function GameFlow() {
           gameState={gameState}
           changeState={changeState}
           setChangeState={setChangeState}
+          round={round}
+          showRoleCard={showRoleCard}
         />
       )}
     </div>

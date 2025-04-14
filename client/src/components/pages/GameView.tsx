@@ -29,30 +29,17 @@ type Props = {
   gameState: GameState;
   changeState: boolean;
   setChangeState: React.Dispatch<React.SetStateAction<boolean>>;
+  round: number;
 };
 
-export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam, successFail, setSuccessFail, outcomes, gameState, changeState, setChangeState }: Props) {
+export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam, successFail, setSuccessFail, outcomes, gameState, changeState, setChangeState, round, showRoleCard }: Props) {
   const navigate = useNavigate();
-  console.log("THIS IS MY PLAYER*******************************", myPlayer);
-  const [showRoleCard, setShowRoleCard] = useState(false);
+  const [selectedGuys, setSelectedGuys] = useState(0);
   const grayscaleVal = !myPlayer.isLeader ? 100 : 0;
 
   const handleLeave = () => {
     navigate(`/dashboard`);
   };
-
-  useEffect(() => {
-    if (gameState === GameState.ROLE_REVEAL) {
-      setShowRoleCard(true);
-
-      const timer = setTimeout(() => {
-        setShowRoleCard(false);
-        setChangeState(true);
-      }, 5000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [gameState]);
 
   return (
     <HiddenContextProvider>
@@ -127,10 +114,16 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
           </div>
         <dialog id="MissionSelect" className="modal">
           <div className="modal-box">
-          <h1 className="text-xl font-bold flex-row">Select n players:</h1>
+          <h1 className="text-xl font-bold flex-row">Select {quests[players.size][round]} players:</h1>
             <div className="join join-horizontal flex flex-row flex-wrap justify-center">
               {Array.from(players.entries()).map(([username, player], idx) => (
-                <MissionPlayerSelect key={player.username} player={player} />
+                <MissionPlayerSelect 
+                  key={player.username}
+                  player={player}
+                  selectedGuys={selectedGuys}
+                  setSelectedGuys={setSelectedGuys}
+                  numberOfGuys={quests[players.size][round]}
+                />
               ))}
             </div>
             <FunctionButton label="Submit" />
