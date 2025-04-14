@@ -58,4 +58,34 @@ export class Player {
         this.isHost = host;
         this.role = role;
     }
+
+    /**
+     * Writes the player to a JSON object
+     */
+    public toJSON(): object {
+        return {
+            username: this.username,
+            isHost: this.isHost,
+            isLeader: this.isLeader,
+            isConnected: this.isConnected,
+            avatar: this.avatar,
+            role: this.role,
+        };
+    }
+
+    /**
+     * Creates a player from a JSON object
+     */
+    public static fromJSON(json: any): Player {
+        const player = new Player(
+            json.username,
+            json.isHost,
+            json.role as Roles | null,
+        );
+        player.isLeader = json.isLeader;
+        player.isConnected = json.isConnected;
+        player.avatar = json.avatar;
+
+        return player;
+    }
 }

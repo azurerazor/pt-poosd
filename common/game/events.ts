@@ -74,17 +74,19 @@ export abstract class EventBroker {
     /**
      * Maps event type identifiers to concrete event classes
      */
-    private eventTypes: Map<string, new () => GameEvent>;
+    protected static eventTypes: Map<string, new () => GameEvent> = new Map();
+
+    /**
+     * Registers an event type with a concrete class
+     */
+    public static registerEvent(type: string, event: new () => GameEvent): void {
+        this.eventTypes.set(type, event);
+    }
 
     /**
      * The registered event handlers
      */
-    private handlers: Map<string, EventHandler<any>[]>;
-
-    public constructor() {
-        this.eventTypes = new Map<string, new () => GameEvent>();
-        this.handlers = new Map<string, EventHandler<any>[]>();
-    }
+    private handlers: Map<string, EventHandler<any>[]> = new Map();
 
     /**
      * Gets the origin for packets sent from this side
@@ -137,7 +139,7 @@ export abstract class EventBroker {
      */
     public receive(packet: EventPacket): void {
         // Get the event type to instantiate
-        const eventType = this.eventTypes.get(packet.type);
+        const eventType = EventBroker.eventTypes.get(packet.type);
         if (!eventType) return;
 
         // Rebuild the event
@@ -188,13 +190,13 @@ export class ReadyEvent extends GameEvent {
  */
 export class DisconnectEvent extends GameEvent {
     public reason: string;
-    public constructor(reason: string) {
+    public constructor(reason: string = "") {
         super("disconnect");
         this.reason = reason;
     }
 
     public read(json: any): void { this.reason = json.reason; }
-    public write(): any { return { reason: this.reason }; }
+    public write(): any { return { reason: this.reason! }; }
 }
 
 /**
@@ -280,7 +282,12 @@ export class UpdateEvent extends GameEvent {
         this.leader = json.leader || null;
         this.state = json.state || null;
         this.enabledRoles = json.enabled_roles || null;
-        this.players = json.players || null;
+        if (json.players) {
+            this.players = new Map<string, any>();
+            for (const [username, player] of Object.entries(json.players)) {
+                this.players.set(username, player);
+            }
+        }
     }
 
     public write(): any {
@@ -290,7 +297,12 @@ export class UpdateEvent extends GameEvent {
         if (this.leader) json.leader = this.leader;
         if (this.state) json.state = this.state;
         if (this.enabledRoles) json.enabled_roles = this.enabledRoles;
-        if (this.players) json.players = this.players;
+        if (this.players) {
+            json.players = {};
+            for (const [username, player] of this.players.entries()) {
+                json.players[username] = player.toJSON();
+            }
+        }
         return json;
     }
 }
@@ -304,7 +316,7 @@ export class UpdateEvent extends GameEvent {
  */
 export class SetRoleListEvent extends GameEvent {
     public roles: Roles;
-    public constructor(roles: Roles) {
+    public constructor(roles: Roles = Roles.DEFAULT_ROLES) {
         super("set_role_list");
         this.roles = roles;
     }
@@ -326,9 +338,9 @@ export class SetRoleListEvent extends GameEvent {
 export class TeamProposalEvent extends GameEvent {
     public players: string[];
 
-    public constructor() {
+    public constructor(players: string[] = []) {
         super("team_proposal");
-        this.players = [];
+        this.players = players;
     }
 
     public read(json: any): void { this.players = json.players; }
@@ -341,7 +353,7 @@ export class TeamProposalEvent extends GameEvent {
 export class TeamVoteEvent extends GameEvent {
     public vote: boolean;
 
-    public constructor(vote: boolean) {
+    public constructor(vote: boolean = true) {
         super("team_vote");
         this.vote = vote;
     }
@@ -362,9 +374,9 @@ export class TeamVoteEvent extends GameEvent {
 export class MissionStartEvent extends GameEvent {
     public players: string[];
 
-    public constructor() {
+    public constructor(players: string[] = []) {
         super("mission_start");
-        this.players = [];
+        this.players = players;
     }
 
     public read(json: any): void { this.players = json.players; }
@@ -379,7 +391,7 @@ export class MissionStartEvent extends GameEvent {
 export class MissionChoiceEvent extends GameEvent {
     public pass: boolean;
 
-    public constructor(pass: boolean) {
+    public constructor(pass: boolean = false) {
         super("mission_choice");
         this.pass = pass;
     }
@@ -418,7 +430,7 @@ export class AssassinationEvent extends GameEvent {
 export class MerlinGuessEvent extends GameEvent {
     public guess: string;
 
-    public constructor(guess: string) {
+    public constructor(guess: string = "") {
         super("merlin_guess");
         this.guess = guess;
     }
@@ -437,7 +449,7 @@ export class MerlinGuessEvent extends GameEvent {
 export class GameResultEvent extends GameEvent {
     public winner: Alignment;
 
-    public constructor(winner: Alignment) {
+    public constructor(winner: Alignment = Alignment.GOOD) {
         super("game_result");
         this.winner = winner;
     }
@@ -445,3 +457,18 @@ export class GameResultEvent extends GameEvent {
     public read(json: any): void { this.winner = json.winner; }
     public write(): any { return { winner: this.winner }; }
 }
+
+/**
+ * Register all event types with the event broker
+ */
+EventBroker.registerEvent("ready", ReadyEvent);
+EventBroker.registerEvent("disconnect", DisconnectEvent);
+EventBroker.registerEvent("update", UpdateEvent);
+EventBroker.registerEvent("set_role_list", SetRoleListEvent);
+EventBroker.registerEvent("team_proposal", TeamProposalEvent);
+EventBroker.registerEvent("team_vote", TeamVoteEvent);
+EventBroker.registerEvent("mission_start", MissionStartEvent);
+EventBroker.registerEvent("mission_choice", MissionChoiceEvent);
+EventBroker.registerEvent("assassination", AssassinationEvent);
+EventBroker.registerEvent("merlin_guess", MerlinGuessEvent);
+EventBroker.registerEvent("game_result", GameResultEvent);
