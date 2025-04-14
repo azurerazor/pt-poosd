@@ -49,7 +49,6 @@ export default function Dashboard() {
             const data = await res.json();
 
             setGameCode(data.code);
-            console.log(data.code);
             navigate(`/game?id=${data.code}`);
         } catch (err) {
             console.error(err);

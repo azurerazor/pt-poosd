@@ -5,6 +5,7 @@ import { Server, Socket } from 'socket.io';
 import { AUTH_KEY } from '../routes/auth';
 import { ServerEventBroker } from './events';
 import { getActiveLobby, setActiveLobby } from './lobbies';
+import { ServerLobby } from './lobby';
 
 /**
  * Map of usernames to their sockets
@@ -53,6 +54,11 @@ export function initializeSockets(server: Server): void {
                 existingSocket.disconnect(true);
             }
 
+            const lobbyObj = getActiveLobby(user);
+            if (!lobbyObj) {
+                return next(new Error(`Handshake failed: invalid lobby ID (${lobby})`));
+            }
+
             // Set the player's active lobby
             setActiveLobby(user, lobby);
 
@@ -67,13 +73,14 @@ export function initializeSockets(server: Server): void {
             // All good
             next();
         } catch (err) {
+            console.log("Error validating socket handshake token:", err);
             next(new Error("Handshake failed: invalid token"));
         }
     });
 
     io!.on('connection', (socket: Socket) => {
         const user: string = socket.data.username;
-        console.log(`User ${user} connected`);
+        console.log(`User ${user} opened a socket connection`);
 
         // Handle disconnection
         socket.on('disconnect', async () => {
@@ -90,6 +97,14 @@ export function initializeSockets(server: Server): void {
             // If a game is not active, the user gets removed entirely
             if (lobby.state.state === GameState.LOBBY) {
                 lobby.removePlayer(user);
+
+                // If the lobby is now empty, close it
+                if (lobby.getConnectedPlayerCount() === 0) {
+                    console.log(`Lobby ${lobby.id} is empty, removing`);
+                    lobby.close();
+
+                    return;
+                }
             } else {
                 // Otherwise, keep the player in the lobby but disconnect them
                 if (!lobby.getPlayer(user)) return;
@@ -118,8 +133,9 @@ export function initializeSockets(server: Server): void {
 
         // Join the lobby, then update all players (now including this one)
         const lobby = getActiveLobby(user);
+        console.log("Active lobby for user", user, "is:", lobby);
         if (!lobby) {
-            console.log(`User ${user} connected but not in a lobby! Disconnecting...`);
+            console.log(`User ${user} connected but lobby is null`);
             socket.disconnect(true);
             return;
         }
@@ -147,12 +163,6 @@ export function initializeSockets(server: Server): void {
         socket.on('event', (packet: EventPacket) => {
             ServerEventBroker.getInstance().receive(packet);
         });
-
-        // Reply with ready when we receive it from the client
-        socket.on('event', (packet: EventPacket) => {
-            if (packet.type !== 'ready') return;
-            socket.emit('event', new EventPacket('ready', {}, 'server', null));
-        });
     });
 }
 
@@ -160,7 +170,11 @@ export function initializeSockets(server: Server): void {
  * Updates all players in a lobby with their copy of the new player map
  * Also update other fields if provided in the callback
  */
-export async function updatePlayers(lobby: Lobby, extra: (event: UpdateEvent) => void = _ => { }): Promise<void> {
+export async function updatePlayers(lobby: ServerLobby, extra: (event: UpdateEvent) => void = _ => { }): Promise<void> {
+    // Clear the ready map for the active lobby
+    lobby.clearReady();
+
+    // Update all sockets in the lobby
     const sockets = await io!.in(lobby.id).fetchSockets();
     sockets.forEach(socket => {
         const username = socket.data.username;

@@ -1,4 +1,4 @@
-import { StartGameEvent, UpdateEvent } from "@common/game/events";
+import { ReadyEvent, RoleRevealEvent, StartGameEvent, UpdateEvent } from "@common/game/events";
 import { Alignment, getRoles, minion } from "@common/game/roles";
 import { GameState, Outcome } from "@common/game/state";
 import { ServerEventBroker } from "./events";
@@ -9,6 +9,11 @@ import { updatePlayers } from "./sockets";
  * Bootstraps event listeners for primary game logic on the server
  */
 export function bootstrapEvents(): void {
+    ServerEventBroker.on('ready', (lobby: ServerLobby, event: ReadyEvent) => {
+        const username = event.origin;
+        lobby.setReady(username);
+    });
+
     ServerEventBroker.on('start_game', (lobby: ServerLobby, event: StartGameEvent) => {
         if (event.origin !== lobby.host) {
             console.error("Received start_game event from non-host:", event.origin);
@@ -29,7 +34,7 @@ export function bootstrapEvents(): void {
 
         // Update the state
         lobby.state = {
-            state: GameState.ROLE_REVEAL,
+            state: GameState.IN_GAME,
             round: 0,
             outcomes: [Outcome.NONE, Outcome.NONE, Outcome.NONE, Outcome.NONE, Outcome.NONE],
             team: [],
@@ -64,6 +69,12 @@ export function bootstrapEvents(): void {
             event
                 .setState(lobby.state)
                 .setLeader(lobby.leader!);
+        });
+
+        // Wait until everyone is ready, then send the role reveal event
+        lobby.onReady(l => {
+            // All players have been updated and responded ready; trigger the role reveal
+            ServerEventBroker.getInstance().sendTo(l, new RoleRevealEvent());
         });
     });
 }

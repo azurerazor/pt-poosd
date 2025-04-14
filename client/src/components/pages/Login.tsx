@@ -14,6 +14,8 @@ export default function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
+    const [loginErr, setLoginErr] = useState("");
+
     function handleLogin(event: React.FormEvent<HTMLFormElement>) {
         fetch(`${API_URL}/api/login`,{
             method: 'POST',
@@ -31,12 +33,13 @@ export default function Login() {
             return response.json();
         })
         .then(_ => {
-            alert("Successfully logged in!");
+            // alert("Successfully logged in!");
             navigate('/dashboard');
         })
         .catch(err => {
             console.error(err);
-            alert("Login failed: " + err.message);
+            // alert("Login failed: " + err.message);
+            setLoginErr("Login failed: " + err.message);
         });
 
         event.preventDefault();
@@ -71,6 +74,7 @@ export default function Login() {
                     />
                     <Submit value="Log in" />
                 </form>
+                <h4 className="text-bold text-red-600">{loginErr}</h4>
             </FormCard>
         </div>
 

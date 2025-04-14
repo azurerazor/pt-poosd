@@ -2,13 +2,19 @@ import { useState } from "react";
 import { Player } from "../../../../common/game/player";
 
 interface Props {
-  player: Player
+  player: Player;
+  selectedGuys: number;
+  setSelectedGuys: React.Dispatch<React.SetStateAction<number>>;
+  numberOfGuys: number;
 }
 
-const MissionPlayerSelect: React.FC<Props> = ({ player }) => {
+const MissionPlayerSelect: React.FC<Props> = ({ player, selectedGuys, setSelectedGuys, numberOfGuys }) => {
   const [isGreen, setIsGreen] = useState(false);
 
   const handleClick = () => {
+    if(!isGreen && selectedGuys == numberOfGuys)return;
+    if(isGreen)setSelectedGuys((prevGuys) => prevGuys-1);
+    else setSelectedGuys((prevGuys) => prevGuys+1);
     setIsGreen((prevStatus) => !prevStatus);
   };
 

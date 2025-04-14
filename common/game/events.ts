@@ -160,7 +160,7 @@ export abstract class EventBroker {
     /**
      * Sends an event to the other side
      */
-    public send<T extends GameEvent>(event: T): void {
+    public sendTo<T extends GameEvent>(lobby: Lobby, event: T): void {
         // Create the event packet
         const origin = this.getOrigin();
         const packet = new EventPacket(
@@ -170,7 +170,6 @@ export abstract class EventBroker {
             this.getToken());
 
         // Send the packet
-        const lobby = this.getActiveLobby(origin)!;
         this.sendPacket(lobby, packet);
     }
 }
@@ -203,6 +202,28 @@ export class DisconnectEvent extends GameEvent {
 
     public read(json: any): void { this.reason = json.reason; }
     public write(): any { return { reason: this.reason! }; }
+}
+
+/**
+ * Sent from the client (only valid from the host) to update
+ * the set of enabled roles
+ * 
+ * When received on the server, an update event is dispatched
+ * to clients:
+ *  - If the new role list was valid, the update will contain
+ *    the new role list
+ *  - Otherwise, the update will contain the old role list
+ *    (so as to resync the host's role set display)
+ */
+export class SetRoleListEvent extends GameEvent {
+    public roles: Roles;
+    public constructor(roles: Roles = Roles.DEFAULT_ROLES) {
+        super("set_role_list");
+        this.roles = roles;
+    }
+
+    public read(json: any): void { this.roles = json.roles; }
+    public write(): any { return { roles: this.roles }; }
 }
 
 /**
@@ -331,25 +352,15 @@ export class StartGameEvent extends GameEvent {
 }
 
 /**
- * Sent from the client (only valid from the host) to update
- * the set of enabled roles
- * 
- * When received on the server, an update event is dispatched
- * to clients:
- *  - If the new role list was valid, the update will contain
- *    the new role list
- *  - Otherwise, the update will contain the old role list
- *    (so as to resync the host's role set display)
+ * Sent to all clients when the game starts and roles should be
+ * revealed. The client will already have received an update event
+ * (and responded with ready) containing the player's information.
  */
-export class SetRoleListEvent extends GameEvent {
-    public roles: Roles;
-    public constructor(roles: Roles = Roles.DEFAULT_ROLES) {
-        super("set_role_list");
-        this.roles = roles;
-    }
+export class RoleRevealEvent extends GameEvent {
+    public constructor() { super("role_reveal"); }
 
-    public read(json: any): void { this.roles = json.roles; }
-    public write(): any { return { roles: this.roles }; }
+    public read(json: any): void { }
+    public write(): any { return {}; }
 }
 
 /**
@@ -362,7 +373,7 @@ export class SetRoleListEvent extends GameEvent {
  * 
  * When received on the client: shows a vote dialog
  */
-export class TeamProposalEvent extends GameEvent {
+export class TeamVoteEvent extends GameEvent {
     public players: string[];
 
     public constructor(players: string[] = []) {
@@ -377,7 +388,7 @@ export class TeamProposalEvent extends GameEvent {
 /**
  * Sent from client to the server when voting on a team proposal
  */
-export class TeamVoteEvent extends GameEvent {
+export class TeamVoteChoiceEvent extends GameEvent {
     public vote: boolean;
 
     public constructor(vote: boolean = true) {
@@ -398,7 +409,7 @@ export class TeamVoteEvent extends GameEvent {
  * 
  * players is technically redundant, but included for ease of use
  */
-export class MissionStartEvent extends GameEvent {
+export class MissionEvent extends GameEvent {
     public players: string[];
 
     public constructor(players: string[] = []) {
@@ -454,7 +465,7 @@ export class AssassinationEvent extends GameEvent {
  * 
  * Otherwise, the vote considers all evil players
  */
-export class MerlinGuessEvent extends GameEvent {
+export class AssasinationChoiceEvent extends GameEvent {
     public guess: string;
 
     public constructor(guess: string = "") {
@@ -490,13 +501,14 @@ export class GameResultEvent extends GameEvent {
  */
 EventBroker.registerEvent("ready", ReadyEvent);
 EventBroker.registerEvent("disconnect", DisconnectEvent);
+EventBroker.registerEvent("set_role_list", SetRoleListEvent);
 EventBroker.registerEvent("update", UpdateEvent);
 EventBroker.registerEvent("start_game", StartGameEvent);
-EventBroker.registerEvent("set_role_list", SetRoleListEvent);
-EventBroker.registerEvent("team_proposal", TeamProposalEvent);
+EventBroker.registerEvent("role_reveal", RoleRevealEvent);
 EventBroker.registerEvent("team_vote", TeamVoteEvent);
-EventBroker.registerEvent("mission_start", MissionStartEvent);
+EventBroker.registerEvent("team_vote_choice", TeamVoteChoiceEvent);
+EventBroker.registerEvent("mission", MissionEvent);
 EventBroker.registerEvent("mission_choice", MissionChoiceEvent);
 EventBroker.registerEvent("assassination", AssassinationEvent);
-EventBroker.registerEvent("merlin_guess", MerlinGuessEvent);
+EventBroker.registerEvent("assassination_choice", AssasinationChoiceEvent);
 EventBroker.registerEvent("game_result", GameResultEvent);

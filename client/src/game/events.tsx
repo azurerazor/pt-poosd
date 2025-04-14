@@ -61,6 +61,7 @@ export class ClientEventBroker extends EventBroker {
         this.instance = new ClientEventBroker(username, token, socket);
 
         // Handle connection error
+        // FIXME: Verify connect_error and disconnect handling
         socket.on('connect_error', (err: Error) => {
             console.error("Connection error:", err);
 
@@ -76,20 +77,13 @@ export class ClientEventBroker extends EventBroker {
             ClientEventBroker.instance!.receive(packet);
         });
 
-        // The first time we receive an event, send a ready event
-        // The server will then respond with ready
-        socket.once('event', (packet: EventPacket) => {
-            console.log("Sending ready ping");
-            ClientEventBroker.instance!.send(new ReadyEvent());
-        });
-
         // Handle disconnection
         socket.on('disconnect', () => {
             // Dispatch a disconnect event so the client will clean up
             console.log("Lost socket connection");
             ClientEventBroker.instance!.dispatch(
                 ClientLobby.getInstance(),
-                new DisconnectEvent("Lost connection"));
+                new DisconnectEvent("Socket closed"));
         });
 
         return this.instance;
@@ -97,6 +91,23 @@ export class ClientEventBroker extends EventBroker {
 
     public dispatch(lobby: Lobby, event: GameEvent): void {
         super.dispatch(lobby, event);
+    }
+
+    /**
+     * Sends an event to the other side
+     */
+    public send<T extends GameEvent>(event: T): void {
+        // Create the event packet
+        const origin = this.getOrigin();
+        const packet = new EventPacket(
+            event.type,
+            event.write(),
+            origin,
+            this.getToken());
+
+        // Send the packet
+        const lobby = this.getActiveLobby(origin)!;
+        this.sendPacket(lobby, packet);
     }
 
     /**
