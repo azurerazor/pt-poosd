@@ -51,7 +51,8 @@ export default function LobbyView({ players, changeView, setChangeView, lobbyId,
                         <FaceCard
                             key = {idx}
                             role = {role}
-                            status={role.is(enabledRoles)}
+                            myPlayer = {myPlayer}
+                            status = {role.is(enabledRoles)}
                         />
                     ))}
 

@@ -97,13 +97,12 @@ class _GamePageContentState extends State<_GamePageContent> {
         );
       case 1:
         return Builder(
-          builder: (context) => QuestRunner(
+          builder: (context) => Quest(
             sendQuestResults: (results) => setState(() {
               victor = results.$1;
               questResults = results.$2;
               gamePhase = 2;
             }),
-            flutterTts: flutterTts,
           )
         );
       case 2:

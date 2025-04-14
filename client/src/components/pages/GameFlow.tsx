@@ -6,6 +6,7 @@ import { Player } from "../../../../common/game/player";
 import { useUser } from '../../util/auth';
 import { ClientLobby } from "../../game/lobby";
 import Loading from "./Loading";
+import { Outcome } from "../../../../common/game/state";
 
 export const quests = [
   [],[],[],[],[],
@@ -37,6 +38,9 @@ export default function GameFlow() {
   const lobby = ClientLobby.getInstance();
   const [isLoading, setIsLoading] = useState(false);
   const [changeView, setChangeView] = useState(false);
+  const [selectedTeam, setSelectedTeam] = useState<string[]>([]);
+  const [successFail, setSuccessFail] = useState<Outcome>(Outcome.NONE);
+  const [outcomes, setOutcomes] = useState<Outcome[]>([]);
 
   //TEMP UNTIL BACKEND
   useEffect(() => {
@@ -49,7 +53,7 @@ export default function GameFlow() {
     lobby.addPlayer("user126");
     lobby.addPlayer("user127");
     lobby.addPlayer("azure");
-
+    setSelectedTeam(["blueol", "azure", "user2"]);
     setMyPlayer(lobby.getPlayer(username)!);
     setPlayers(lobby.getConnectedPlayers());
     setLobbyId(lobby.id);
@@ -62,9 +66,8 @@ export default function GameFlow() {
         lobby.setEnabledRoles(Roles.ANY);
         lobby.setPlayerRoles("blueol", Roles.PERCIVAL);
         lobby.setPlayerRoles("user3", Roles.MERLIN | Roles.MORGANA);
-        lobby.setPlayerRoles("azure", Roles.MORGANA);
+        lobby.setPlayerRoles("azure", Roles.MORGANA | Roles.MERLIN);
         lobby.setLeader("the_host");
-
         setGameReady(true);
         setIsLoading(false);
       };
@@ -72,6 +75,10 @@ export default function GameFlow() {
       initializeGame();
     }
   }, [changeView]);
+
+  useEffect(() => {
+    console.log("YIPPEE!", successFail);
+  }, [successFail]);
 
   if(isLoading){
     return <Loading />;
@@ -91,7 +98,12 @@ export default function GameFlow() {
       ) : (
         <GameView
           players={players}
-          myPlayer={myPlayer}          
+          myPlayer={myPlayer}
+          selectedTeam={selectedTeam}
+          setSelectedTeam={setSelectedTeam}
+          successFail={successFail}
+          setSuccessFail={setSuccessFail}
+          outcomes={outcomes}
         />
       )}
     </div>

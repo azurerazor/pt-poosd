@@ -3,27 +3,34 @@ import GameAvatar from "../ui/GameAvatar";
 import GameMission from "../ui/GameMission";
 import MissionPlayerSelect from "../ui/MissionPlayerSelect";
 import GameCard from "../ui/GameCard";
-import { Roles, getRoleByName } from "../../../../common/game/roles";
+import { Roles, getRoleByName, getRoles } from "../../../../common/game/roles";
 import { Player } from "../../../../common/game/player"
 import FunctionButton from "../misc/FunctionButton";
 import { useUser } from '../../util/auth';
 import { useNavigate } from 'react-router';
 import { HiddenContextProvider } from "../../util/hiddenContext";
-import VoteMission from 'components/ui/VoteMission';
+import VoteMission from '../ui/VoteMission';
 import RoleRevealCard from "../ui/RoleRevealCard"
-import SuccessFailCard from 'components/ui/SuccessFailCard';
 import {quests, fails} from "./GameFlow"
+import { LobbyState, Outcome } from "../../../../common/game/state";
+import SuccessFailCard from '../ui/SuccessFailCard';
+import MissionVoteCard from '../ui/MissionVoteCard';
+import MissionRevealCard from '../ui/MissionRevealCard';
 
 type Props = {
   players: Player[];
   myPlayer: Player;
+  selectedTeam: string[];
+  setSelectedTeam: React.Dispatch<React.SetStateAction<string[]>>;
+  successFail: Outcome;
+  setSuccessFail: React.Dispatch<React.SetStateAction<Outcome>>;
+  outcomes: Outcome[];
 };
 
-let _A = [null, true, false]; // silly debug array for the GameMissions
-
-export default function GameView({ players, myPlayer }: Props) {
+export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam, successFail, setSuccessFail, outcomes }: Props) {
   const navigate = useNavigate();
   const [showRoleCard, setShowRoleCard] = useState(true);
+  const grayscaleVal = !myPlayer.isLeader ? 100 : 0;
 
   const handleLeave = () => {
     navigate(`/dashboard`);
@@ -31,6 +38,11 @@ export default function GameView({ players, myPlayer }: Props) {
 
   return (
     <HiddenContextProvider>
+      {
+      /**
+       * Display's the player's role and information about it at the start of the game
+       */
+      }
       {showRoleCard && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center"
@@ -50,17 +62,32 @@ export default function GameView({ players, myPlayer }: Props) {
         </div>
       )}
       <div className="hero-content w-full text-center m-auto flex-col gap-0 h-screen">
+        {
+        /**
+         * Displays the list of players on the top of the screen
+         */
+        }
         <div className="join join-vertical lg:join-horizontal absolute top-1">
           {players.map((player) => (
             <GameAvatar key={player.username} player={player} myPlayer={myPlayer} />
           ))}
         </div>
+        {
+        /**
+         * Displays each quest and whether they have succeeded, failed, or haven't been completed
+         */
+        }
         <div className="join join-vertical lg:join-horizontal">
           {[...Array(5)].map((_, i) => (
-            <GameMission key={i} status={null} pcount={quests[players.length][i]} numFails={fails[players.length][i]} />
+            <GameMission key={i} status={Outcome.NONE} pcount={quests[players.length][i]} numFails={fails[players.length][i]} />
           ))}
         </div>
       <div className="justify-between">
+        {
+        /**
+         * Displays the vote tracker
+         */
+        }
         <h1 className="text-3xl font-bold absolute bottom-35 left-8">Vote Tracker:</h1>
         <div className="absolute bottom-4 left-4">
           {[...Array(5)].map((_, i) => (
@@ -68,11 +95,18 @@ export default function GameView({ players, myPlayer }: Props) {
           ))}
         </div>
 
+        {
+        /**
+         * Button and menu for selecting the team for the current quest
+         */
+        }
         <div className="absolute bottom-4">
-          <FunctionButton
-          label="Mission Select"
-          onClick={() => (document.getElementById("MissionSelect") as HTMLDialogElement)?.showModal()}
-        />
+          <div style={{ filter: `grayscale(${grayscaleVal}%)` }}>
+            <FunctionButton
+              label="Mission Select"
+              onClick={() => (document.getElementById("MissionSelect") as HTMLDialogElement)?.showModal()}
+            />
+          </div>
         <dialog id="MissionSelect" className="modal">
           <div className="modal-box">
           <h1 className="text-xl font-bold flex-row">Select n players:</h1>
@@ -88,7 +122,12 @@ export default function GameView({ players, myPlayer }: Props) {
           </form>
         </dialog>
         </div>
-
+        {
+        /**
+         * very broken success/fail menu
+         * the button currently exists exclusively for testing
+         */
+        }
         <div className="absolute bottom-35">
           <FunctionButton
           label="Vote Success/Fail"
@@ -96,7 +135,26 @@ export default function GameView({ players, myPlayer }: Props) {
         />
         <dialog id="SuccessFail" className="modal">
           <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <SuccessFailCard player={myPlayer} players={players} />
+            <SuccessFailCard player={myPlayer} players={players} setSuccessFail={setSuccessFail} />
+          </div>
+          <form method="dialog" className="modal-backdrop">
+            <button>close</button>
+          </form>
+        </dialog>
+        </div>
+        {
+        /**
+         * Voting on mission
+         */
+        }
+        <div className="absolute bottom-60">
+          <FunctionButton
+          label="Vote on Mission"
+          onClick={() => (document.getElementById("MissionVote") as HTMLDialogElement)?.showModal()}
+        />
+        <dialog id="MissionVote" className="modal">
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <MissionVoteCard selectedTeam={selectedTeam} players={players} />
           </div>
           <form method="dialog" className="modal-backdrop">
             <button>close</button>
@@ -104,9 +162,29 @@ export default function GameView({ players, myPlayer }: Props) {
         </dialog>
         </div>
 
+        <div className="absolute bottom-20">
+          <FunctionButton
+            label="Reveal Mission"
+            onClick={() => (document.getElementById("RevealMission") as HTMLDialogElement)?.showModal()}
+          />
+          <dialog id="RevealMission" className="modal">
+            <div className="fixed inset-0 z-50 flex items-center justify-center">
+              <MissionRevealCard outcomes={outcomes} />
+            </div>
+            <form method="dialog" className="modal-backdrop">
+              <button>close</button>
+            </form>
+          </dialog>
+        </div>
+
+        {
+        /**
+         * Displays the player's role with a toggleable card
+         */
+        }
         <div className="absolute bottom-4 right-4 p-2">
           <GameCard
-            role={getRoleByName("Percival")}
+            role={getRoles(myPlayer.role!)[0]}
           />
         </div>
       </div>

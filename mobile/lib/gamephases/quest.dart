@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 
 import 'package:mobile/escavalon_material.dart';
 import 'package:mobile/game.dart';
+import 'discussion.dart';
+import 'vote.dart';
+import 'mission.dart';
 
 int _deltaQuestsWon = 0; // positive if good, negative if evil
 
-class QuestRunner extends StatefulWidget {
+class Quest extends StatefulWidget {
   final Function((Team, List<Team?>)) sendQuestResults;
-  final FlutterTts flutterTts;
 
-  const QuestRunner({
+  const Quest({
     super.key, 
     required this.sendQuestResults,
-    required this.flutterTts,
   });
 
   @override
-  State<StatefulWidget> createState() => _QuestRunnerState();
+  State<StatefulWidget> createState() => _QuestState();
 }
 
-class _QuestRunnerState extends State<QuestRunner> {
+class _QuestState extends State<Quest> {
   int currentQuest = 0; // 0 indexed. would be better to use 1 indexed but this is easier for different things
   int currentQuestPhase = 0;
   int numFailedVotes = 0;
@@ -50,7 +50,7 @@ class _QuestRunnerState extends State<QuestRunner> {
                       textAlign: TextAlign.center,
                     ),
                     Text(
-                      "Size of quest: ${questRequirements[globalNumPlayers]![currentQuest + 1]}\n${twoFailsRequired ? "Two traitors" : "One traitor"} required for mission to fail.",
+                      "Size of quest: ${questRequirements[globalNumPlayers]![currentQuest + 1]}\n${twoFailsRequired ? "Two traitors" : "One traitor"} required for mission to fail.\nNumber of failed proposals: $numFailedVotes.",
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -59,7 +59,7 @@ class _QuestRunnerState extends State<QuestRunner> {
 
               SizedBox(height: 20,),
 
-              Row(
+              EscavalonCard(child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: List.generate(
                   5,
@@ -73,7 +73,7 @@ class _QuestRunnerState extends State<QuestRunner> {
                     return Icon(Icons.question_mark);
                   },
                 ),
-              ),
+              )),
             ],
           ),
         ),
@@ -82,25 +82,25 @@ class _QuestRunnerState extends State<QuestRunner> {
           child: Center(
             child: Builder(builder: (context) {
               if (currentQuestPhase == 0) {
-                return _Discussion(
+                return Discussion(
                   numOnQuest: questRequirements[globalNumPlayers]![currentQuest + 1]!,
                   twoFailsRequired: twoFailsRequired,
-                  updateQuestRunnerPhase: updateQuestRunnerPhase,
+                  updateQuestPhase: updateQuestPhase,
                 );
               }
                 
               if (currentQuestPhase == 1) {
-                return _Vote(
+                return Vote(
                   numOnQuest: questRequirements[globalNumPlayers]![currentQuest + 1]!,
-                  updateQuestRunnerPhaseWithPossibleRepeat: updateQuestRunnerPhaseWithPossibleRepeat
+                  updateQuestPhaseWithPossibleRepeat: updateQuestPhaseWithPossibleRepeat
                 );
               }
 
               // otherwise we're running the quest
-              return _Mission(
+              return Mission(
                 numOnQuest: questRequirements[globalNumPlayers]![currentQuest + 1]!,
                 twoFailsRequired: twoFailsRequired,
-                updateQuestRunnerPhaseWithQuestVictor: updateQuestRunnerPhaseWithQuestVictor,
+                updateQuestPhaseWithQuestVictor: updateQuestPhaseWithQuestVictor,
               );
             }),
           )
@@ -110,7 +110,7 @@ class _QuestRunnerState extends State<QuestRunner> {
 
   }
   
-  void updateQuestRunnerPhase() {
+  void updateQuestPhase() {
     setState(() {
       currentQuestPhase++;
       if (currentQuestPhase == 3) {
@@ -135,7 +135,7 @@ class _QuestRunnerState extends State<QuestRunner> {
     }
   }
 
-  void updateQuestRunnerPhaseWithPossibleRepeat(bool repeat) {
+  void updateQuestPhaseWithPossibleRepeat(bool repeat) {
     if (repeat) {
       setState(() {
         numFailedVotes++;
@@ -143,18 +143,18 @@ class _QuestRunnerState extends State<QuestRunner> {
       });
 
       if (numFailedVotes == 5) {
-        updateQuestRunnerPhaseWithQuestVictor(Team.evil);
+        updateQuestPhaseWithQuestVictor(Team.evil);
         return;
       }
     } else {
       setState(() {
         numFailedVotes = 0;
       });
-      updateQuestRunnerPhase();
+      updateQuestPhase();
     }
   }
 
-  void updateQuestRunnerPhaseWithQuestVictor(Team questVictor) {
+  void updateQuestPhaseWithQuestVictor(Team questVictor) {
     setState(() {
       questResults[currentQuest] = questVictor;
     });
@@ -176,95 +176,8 @@ class _QuestRunnerState extends State<QuestRunner> {
       return;
     }
 
-    updateQuestRunnerPhase();
+    updateQuestPhase();
   }
 
 }
 
-class _Discussion extends StatelessWidget {
-  final int numOnQuest;
-  final bool twoFailsRequired;
-  final Function() updateQuestRunnerPhase;
-
-  const _Discussion({
-    required this.numOnQuest,
-    required this.twoFailsRequired,
-    required this.updateQuestRunnerPhase,
-  });
-  
-  @override
-  Widget build(BuildContext context) {
-    FlutterTts thisTts = createTts();
-
-    thisTts.speak(
-      "Create a team of $numOnQuest players to go on this mission. ${twoFailsRequired ? "Minions of Mordred, remember that you need two traitors to fail this mission for the entire quest to fail." : ""}"
-    );
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        ExtendableCountDownTimer(
-          initialDuration: Duration(minutes: 7),
-          extensionDuration: Duration(minutes: 5),
-          onTimerFinished: onTimerFinished,
-          extendButtonText: "Extend discussion by 5 minutes",
-        ),
-
-        SizedBox(height: 20),
-
-        EscavalonButton(
-          text: "Start vote",
-          onPressed: () => updateQuestRunnerPhase(),
-        ),
-      ],
-    );
-  }
-
-  void onTimerFinished() async {
-    void startVote() async {
-      await Future.delayed(Duration(seconds: 4));
-      updateQuestRunnerPhase();
-    }
-
-    FlutterTts thisTts = createTts();
-    thisTts.setCompletionHandler(() {
-      startVote();
-    });
-    
-    thisTts.speak("Time has run out! Starting voting phase.");
-  }
-}
-
-// TODO: implement vote
-class _Vote extends StatelessWidget {
-  final int numOnQuest;
-  final Function(bool) updateQuestRunnerPhaseWithPossibleRepeat;
-
-  const _Vote({
-    required this.numOnQuest,
-    required this.updateQuestRunnerPhaseWithPossibleRepeat,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Text("Voting phase: $numOnQuest");
-  }
-}
-
-// TODO: implement mission
-class _Mission extends StatelessWidget {
-  final int numOnQuest;
-  final bool twoFailsRequired;
-  final Function(Team) updateQuestRunnerPhaseWithQuestVictor;
-
-  const _Mission({
-    required this.numOnQuest,
-    required this.twoFailsRequired,
-    required this.updateQuestRunnerPhaseWithQuestVictor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Text("Mission phase: $numOnQuest, $twoFailsRequired");
-  }
-}
