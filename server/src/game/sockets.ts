@@ -56,7 +56,7 @@ export function initializeSockets(server: Server): void {
 
             const lobbyObj = getActiveLobby(user);
             if (!lobbyObj) {
-                return next(new Error(`Handshake failed: invalid lobby ID (${lobby})`));
+                return next(new Error(`Handshake failed: lobby closed or invalid lobby ID`));
             }
 
             // Set the player's active lobby
