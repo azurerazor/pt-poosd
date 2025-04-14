@@ -28,13 +28,15 @@ const AssassinationScreen: React.FC<Props> = ({ player, players, setSuccessFail}
     }
     });
 
+    const [selected, setSelected] = useState(-1);
+
     return (
         <div className="card bg-base-100 shadow-sm">
         <div className="card-body w-full">
             <h1 className="text-xl font-bold flex-row">Pick who you think is Merlin:</h1>
             <div className="join join-horizontal flex flex-row flex-wrap justify-center">
                 {Array.from(players.entries()).map(([username, player], idx) => (
-                    <AssassinationPlayerSelect key={player.username} player={player} id={idx} />
+                    <AssassinationPlayerSelect key={player.username} player={player} id={idx} selected={selected} setSelected={setSelected} />
                 ))}
             </div>
             <div className="flex-row"><FunctionButton label="Submit" /></div>
