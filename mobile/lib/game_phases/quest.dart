@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:mobile/escavalon_material.dart';
 import 'package:mobile/game.dart';
 import 'package:mobile/game_phases/assassinate.dart';
-import 'discussion.dart';
 import 'vote.dart';
 import 'mission.dart';
 
@@ -83,10 +82,11 @@ class _QuestState extends State<Quest> {
           child: Center(
             child: Builder(builder: (context) {
               if (currentQuestPhase == 0) {
-                return Discussion(
-                  numOnQuest: questRequirements[globalNumPlayers]![currentQuest + 1]!,
-                  twoFailsRequired: twoFailsRequired,
-                  updateQuestPhase: updateQuestPhase,
+                return DiscussionTemplate(
+                  endDiscussion: updateQuestPhase, 
+                  continueText: "Start vote", 
+                  startingScript: "Create a team of ${questRequirements[globalNumPlayers]![currentQuest + 1]!} players to go on this mission. ${twoFailsRequired ? "Minions of Mordred, remember that you need two traitors to fail this mission for the entire quest to fail." : ""}", 
+                  endingScript: "Time has run out! Starting voting phase."
                 );
               }
                 

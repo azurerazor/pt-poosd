@@ -25,43 +25,22 @@ class _AssassinateState extends State<Assassinate> {
   @override
   void initState() {
     super.initState();
-    readIntroScript();
   }
 
   @override
   Widget build(BuildContext context) {
     if (discussing) {
-      return buildDiscussionPhase();
+      return DiscussionTemplate(
+        endDiscussion: () => setState(() {
+          discussing = false;
+        }), 
+        continueText: "Assassinate!", 
+        startingScript: "Minions of Mordred, you still have a chance to win! Victory is yours if you successfully assassinate Merlin. ${widget.includesAssassin ? "Assassin, you will make the final decision about who to kill." : "Once you are done discussing, you will vote on who to kill. If there is a tie, nobody gets killed."} ", 
+        endingScript: "Time has run out! Starting assassination."
+      );
     } else {
       return buildTrueAssassinationPhase();
     }
-  }
-
-  Widget buildDiscussionPhase() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        ExtendableCountDownTimer(
-          initialDuration: Duration(minutes: 7),
-          extensionDuration: Duration(minutes: 5),
-          onTimerFinished: onTimerFinished,
-          extendButtonText: "Extend Discussion by 5 minutes",
-        ),
-
-        SizedBox(height: 20),
-
-        EscavalonButton(
-          text: "Assassinate!",
-          onPressed: () => {
-            if (finishedSpeaking) {
-              setState(() {
-                discussing = false;
-              })
-            }
-          },
-        ),
-      ],
-    );
   }
 
   Widget buildTrueAssassinationPhase() {
@@ -98,37 +77,6 @@ class _AssassinateState extends State<Assassinate> {
         ),
       ],
     );
-  }
-
-  void onTimerFinished() async {
-    setState(() {
-      finishedSpeaking = false;
-    });
-
-    void startVote() async {
-      await Future.delayed(Duration(seconds: 2));
-      setState(() {
-        discussing = false;
-      });
-    }
-
-    FlutterTts thisTts = createTts();
-    thisTts.setCompletionHandler(() {
-      startVote();
-    });
-    
-    thisTts.speak("Time has run out! Starting assassination.");
-  }
-
-  void readIntroScript() async {
-    FlutterTts thisTts = createTts();
-    thisTts.setCompletionHandler(
-      () => setState(() {
-        finishedSpeaking = true;
-      })
-    );
-
-    thisTts.speak("Minions of Mordred, you still have a chance to win! Victory is yours if you successfully assassinate Merlin. ${widget.includesAssassin ? "Assassin, you will make the final decision about who to kill." : "Once you are done discussing, you will vote on who to kill. If there is a tie, nobody gets killed."} ");    
   }
 
   void readAssassinateScript() async {
