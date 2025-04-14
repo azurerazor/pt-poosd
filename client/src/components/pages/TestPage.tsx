@@ -1,4 +1,4 @@
-import { ReadyEvent } from "@common/game/events";
+import { ReadyEvent, UpdateEvent } from "@common/game/events";
 import { ClientEventBroker } from "game/events";
 import { ClientLobby } from "game/lobby";
 import { useEffect, useRef } from "react";
@@ -31,6 +31,10 @@ export default function TestPage() {
 
         ClientEventBroker.on('ready', (lobby: ClientLobby, event: ReadyEvent) => {
             alert("ready!");
+        });
+
+        ClientEventBroker.on('update', (lobby: ClientLobby, event: UpdateEvent) => {
+            console.log("Updating state:", event);
         });
     }, []);
 

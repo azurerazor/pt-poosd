@@ -44,7 +44,7 @@ export function initializeSockets(server: Server): void {
             // If the player is in an active lobby, refuse this connection
             const activeLobby = getActiveLobby(user);
             if (activeLobby && activeLobby.id !== lobby) {
-                return next(new Error("Handshake failed: already in a lobby"));
+                return next(new Error(`Handshake failed: already in a lobby (${activeLobby.id})`));
             }
 
             // Check if the user is already connected

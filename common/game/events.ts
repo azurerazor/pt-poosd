@@ -308,11 +308,32 @@ export class UpdateEvent extends GameEvent {
 }
 
 /**
+ * Sent from the client (only valid from the host) to trigger
+ * the start of the game
+ * 
+ * If preconditions are not met (e.g. not enough players),
+ * nothing will happen
+ * 
+ * Otherwise an update event will be sent to all clients with
+ * the new game state
+ */
+export class StartGameEvent extends GameEvent {
+    public constructor() { super("start_game"); }
+
+    public read(json: any): void { }
+    public write(): any { return {}; }
+}
+
+/**
  * Sent from the client (only valid from the host) to update
  * the set of enabled roles
  * 
- * When received on the server, if the roleset is valid, an
- * update event is dispatched to all clients
+ * When received on the server, an update event is dispatched
+ * to clients:
+ *  - If the new role list was valid, the update will contain
+ *    the new role list
+ *  - Otherwise, the update will contain the old role list
+ *    (so as to resync the host's role set display)
  */
 export class SetRoleListEvent extends GameEvent {
     public roles: Roles;
@@ -464,6 +485,7 @@ export class GameResultEvent extends GameEvent {
 EventBroker.registerEvent("ready", ReadyEvent);
 EventBroker.registerEvent("disconnect", DisconnectEvent);
 EventBroker.registerEvent("update", UpdateEvent);
+EventBroker.registerEvent("start_game", StartGameEvent);
 EventBroker.registerEvent("set_role_list", SetRoleListEvent);
 EventBroker.registerEvent("team_proposal", TeamProposalEvent);
 EventBroker.registerEvent("team_vote", TeamVoteEvent);
