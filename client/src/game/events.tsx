@@ -37,6 +37,16 @@ export class ClientEventBroker extends EventBroker {
     }
 
     /**
+     * Gets the singleton instance of the client event broker
+     */
+    public static getInstance(): ClientEventBroker {
+        if (this.instance === null) {
+            throw new Error("ClientEventBroker not initialized");
+        }
+        return this.instance;
+    }
+
+    /**
      * Initializes the client event broker with the given username and token
      * Opens a socket connection; then we wait to receive either ready or disconnect
      * 
