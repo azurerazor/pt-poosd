@@ -30,7 +30,8 @@ type Props = {
 export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam, successFail, setSuccessFail, outcomes }: Props) {
   const navigate = useNavigate();
   const [showRoleCard, setShowRoleCard] = useState(true);
-  console.log(players);
+  const grayscaleVal = !myPlayer.isLeader ? 100 : 0;
+
   const handleLeave = () => {
     navigate(`/dashboard`);
   };
@@ -100,10 +101,12 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
          */
         }
         <div className="absolute bottom-4">
-          <FunctionButton
-          label="Mission Select"
-          onClick={() => (document.getElementById("MissionSelect") as HTMLDialogElement)?.showModal()}
-        />
+          <div style={{ filter: `grayscale(${grayscaleVal}%)` }}>
+            <FunctionButton
+              label="Mission Select"
+              onClick={() => (document.getElementById("MissionSelect") as HTMLDialogElement)?.showModal()}
+            />
+          </div>
         <dialog id="MissionSelect" className="modal">
           <div className="modal-box">
           <h1 className="text-xl font-bold flex-row">Select n players:</h1>
