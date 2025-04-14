@@ -22,7 +22,7 @@ router.get('/create', async (req: Request, res: Response) => {
     const lobby = new ServerLobby(lobbyId, user);
     putLobby(lobby);
 
-    console.log(`Lobby ${lobbyId} created by ${user.username}`);
+    console.log(`Lobby ${lobbyId} created by ${user}`);
 
     // Set a timer to delete this lobby after 5 minutes
     // if nobody has joined
