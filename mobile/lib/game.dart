@@ -107,14 +107,6 @@ class _GamePageContentState extends State<_GamePageContent> {
         );
       case 2:
         return endGame(context);
-        // // evil already won -- they don't need to try to assassinate Merlin
-        // if (victor == Team.evil) {
-        //   setState(() {
-        //     gamePhase = 3;
-        //   });
-        // }
-        // // TODO: implement Merlin assassination
-        // return Text("Assassinating Merlin...");
       default:
         throw ErrorDescription("Invalid game phase: $gamePhase");
     }

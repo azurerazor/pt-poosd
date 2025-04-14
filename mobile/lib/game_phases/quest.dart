@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:mobile/escavalon_material.dart';
 import 'package:mobile/game.dart';
+import 'package:mobile/game_phases/assassinate.dart';
 import 'discussion.dart';
 import 'vote.dart';
 import 'mission.dart';
@@ -22,7 +23,7 @@ class Quest extends StatefulWidget {
 
 class _QuestState extends State<Quest> {
   int currentQuest = 0; // 0 indexed. would be better to use 1 indexed but this is easier for different things
-  int currentQuestPhase = 0;
+  int currentQuestPhase = 0; // 0 - discussion, 1 - vote, 2 - mission, -1 - assassinate
   int numFailedVotes = 0;
   List<Team?> questResults = List<Team?>.generate(5, (int idx) => null, growable: false);
   bool twoFailsRequired = false;
@@ -96,12 +97,23 @@ class _QuestState extends State<Quest> {
                 );
               }
 
-              // otherwise we're running the quest
-              return Mission(
-                numOnQuest: questRequirements[globalNumPlayers]![currentQuest + 1]!,
-                twoFailsRequired: twoFailsRequired,
-                updateQuestPhaseWithQuestVictor: updateQuestPhaseWithQuestVictor,
+              if (currentQuestPhase == 2) {
+                return Mission(
+                  numOnQuest: questRequirements[globalNumPlayers]![currentQuest + 1]!,
+                  twoFailsRequired: twoFailsRequired,
+                  updateQuestPhaseWithQuestVictor: updateQuestPhaseWithQuestVictor,
+                );
+              }
+
+              // otherwise we're assassinating merlin
+              return Assassinate(
+                includesAssassin: globalRolesSelected["Assassin"]!, 
+                sendAssassinationResults: (bool assassinationSuccessful) => widget.sendQuestResults((
+                  assassinationSuccessful ? Team.evil : Team.good,
+                  questResults
+                ))
               );
+
             }),
           )
         ),
@@ -126,12 +138,18 @@ class _QuestState extends State<Quest> {
     });
 
     if (currentQuest == 5) {
-      widget.sendQuestResults(
-        (
-          (_deltaQuestsWon > 0) ? Team.good : Team.evil, 
-          questResults
-        ),
-      );
+      if (_deltaQuestsWon > 0) {
+        setState(() {
+          currentQuestPhase = -1;  // assassinating merlin
+        });
+      } else {
+        widget.sendQuestResults(
+          (
+            Team.evil, 
+            questResults
+          ),
+        );
+      }
     }
   }
 
@@ -166,12 +184,18 @@ class _QuestState extends State<Quest> {
     }
 
     if (_deltaQuestsWon.abs() >= 3) {
-      widget.sendQuestResults(
-        (
-          (_deltaQuestsWon > 0) ? Team.good : Team.evil, 
-          questResults
-        ),
-      );
+      if (_deltaQuestsWon > 0) {
+        setState(() {
+          currentQuestPhase = -1; // assassinating merlin
+        });
+      } else {
+        widget.sendQuestResults(
+          (
+            Team.evil, 
+            questResults
+          ),
+        );
+      }
 
       return;
     }
