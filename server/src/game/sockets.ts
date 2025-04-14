@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import { Server, Socket } from 'socket.io';
 import { AUTH_KEY } from '../routes/auth';
 import { ServerEventBroker } from './events';
-import { getActiveLobby, setActiveLobby } from './lobbies';
+import { getActiveLobby, getLobbyById, setActiveLobby } from './lobbies';
 import { ServerLobby } from './lobby';
 
 /**
@@ -34,7 +34,7 @@ export function initializeSockets(server: Server): void {
         const lobby: string = socket.handshake.query.lobby as string;
         const token: string = socket.handshake.query.token as string;
         if (!lobby || !token) {
-            return next(new Error("Handshake failed: missing lobby ID or auth token"));
+            return next(new Error("Missing lobby ID or auth token"));
         }
 
         try {
@@ -45,7 +45,7 @@ export function initializeSockets(server: Server): void {
             // If the player is in an active lobby, refuse this connection
             const activeLobby = getActiveLobby(user);
             if (activeLobby && activeLobby.id !== lobby) {
-                return next(new Error(`Handshake failed: already in a lobby (${activeLobby.id})`));
+                return next(new Error(`Already in a lobby (${activeLobby.id})`));
             }
 
             // Check if the user is already connected
@@ -54,9 +54,15 @@ export function initializeSockets(server: Server): void {
                 existingSocket.disconnect(true);
             }
 
-            const lobbyObj = getActiveLobby(user);
+            // Get the lobby object
+            const lobbyObj = getLobbyById(lobby);
             if (!lobbyObj) {
-                return next(new Error(`Handshake failed: lobby closed or invalid lobby ID`));
+                return next(new Error(`Lobby closed or invalid lobby ID`));
+            }
+
+            // Check if the lobby is full 
+            if (!lobbyObj.getPlayer(user) && lobbyObj.getPlayerCount() > 10) {
+                return next(new Error("Lobby is full"));
             }
 
             // Set the player's active lobby
@@ -74,7 +80,7 @@ export function initializeSockets(server: Server): void {
             next();
         } catch (err) {
             console.log("Error validating socket handshake token:", err);
-            next(new Error("Handshake failed: invalid token"));
+            next(new Error("Invalid token"));
         }
     });
 
