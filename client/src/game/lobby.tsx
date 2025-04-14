@@ -15,10 +15,6 @@ export class ClientLobby extends Lobby {
     }
 
     public static getInstance(): ClientLobby {
-        // TODO: Placeholder; initializes a fake lobby connection
-        if (this.instance === null) {
-            this.instance = new ClientLobby("abcdef", "the_host", () => { });
-        }
-        return this.instance;
+        return this.instance!;
     }
 }
