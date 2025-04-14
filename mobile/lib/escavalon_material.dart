@@ -49,8 +49,32 @@ class EscavalonPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        title: Text("Escavalon"),
+        backgroundColor: Colors.brown,
+        title: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset("assets/logo.png"),
+            SizedBox(height: 10,)
+          ],
+        ),
+        flexibleSpace: Opacity(
+          opacity: 0.5,
+          child: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: const AssetImage('assets/paper_darker.jpg'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        ),
+        shape: Border(
+          bottom: BorderSide(
+            color: Theme.of(context).primaryColor,
+            width: 2.0,
+          ),
+        ),
+        automaticallyImplyLeading: false,
       ),
       body: SizedBox.expand(
         child: Stack(
@@ -64,7 +88,7 @@ class EscavalonPage extends StatelessWidget {
 
               Container(
                 padding: const EdgeInsets.all(16.0),
-                child: child,
+                child: child
               )
             ],
           )
@@ -89,7 +113,10 @@ class EscavalonCard extends StatelessWidget {
         child: Card(
           shape: BeveledRectangleBorder(
             borderRadius: BorderRadius.circular(10),
-          ),  
+            side: BorderSide(color: Theme.of(context).primaryColor,)
+          ),
+          shadowColor: Colors.transparent,
+          color: Colors.brown.withValues(alpha: .25),
           child: Container(
             padding: const EdgeInsets.all(16.0),
             child: child,
@@ -117,12 +144,20 @@ class EscavalonButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
+      child: OutlinedButton(
+        style: OutlinedButton.styleFrom(
           shape: BeveledRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
+
+          side: BorderSide(
+            color: Theme.of(context).primaryColor,
+          ),
+
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          shadowColor: Colors.transparent,
+          backgroundColor: Colors.brown.withValues(alpha: .25)
+
         ),
         onPressed: onPressed,
         child: Builder(

@@ -130,9 +130,14 @@ class _RegisterFormState extends State<_RegisterForm> {
                       }
                     },
                   ),
+                  
+                  SizedBox(height: 20,)
+
                 ],
               )
             ),
+
+            SizedBox(height: 20,),
 
             Builder(
               builder: (context) {

@@ -71,7 +71,7 @@ class _HomeContentState extends State<_HomeContent> {
         EscavalonButton(
           text: 'Open Web App', 
           onPressed: () {
-            _lauchWebApp();
+            launchUrl(_url);
           }
         ),
 
@@ -80,10 +80,6 @@ class _HomeContentState extends State<_HomeContent> {
             if (_username != null) { 
               return Column(
                 children: <Widget>[
-                  EscavalonButton(
-                    text: "History", 
-                    onPressed: ()=>{}
-                  ),
                   EscavalonButton(
                     text: 'Logout', 
                     onPressed: () {
@@ -162,12 +158,4 @@ class _HomeContentState extends State<_HomeContent> {
       webTokenStorage = info[1];
     });
   } 
-}
-
-// launches the web app in the default browser
-// currently forces user to login into web app even if they are logged in on mobile
-Future<void> _lauchWebApp() async {
-  if (!await launchUrl(_url)) {
-    throw Exception('Failed to launch $_url');
-  }
 }
