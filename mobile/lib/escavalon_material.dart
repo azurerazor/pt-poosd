@@ -13,12 +13,12 @@ const Map<int, int> numEvil = {
 };
 
 const Map<String, String> roleDescriptions = {
-  "Merlin": "Merlin is an optional Character on the Side of Good. He knows who the Evil players are, but if he is killed, the Evil players win. Adding Merlin into the game will mkae the Good side more powerful and win more ofen.",
+  "Merlin": "Merlin is an optional Character on the Side of Good. He knows who the Evil players are, but if he is killed, the Evil players win. Adding Merlin into the game will make the Good side more powerful and win more often.",
   "Percival": "Percival is an optional Character on the Side of Good. Pervival's special power is knowledge of Merlin at the start of the game. Using Percival's knowledge wisely is key to protecting Merlin's identity. Adding Percival into the game will make the Good side more powerful and win more often.",
   "Assassin": "Assassin is an optional Character on the Side of Evil. They make the final decision on who to kill at the end of the game. If they kill Merlin, the Evil players win.",
-  "Morgana": "Morgana is an optional Character on the Side of Evil. Morgana's special power",  
-  "Oberon": "Oberon is an optional Character on the Side of Evil. He does not know who the Evil players are, but if he is killed, the Good players win.",
-  "Mordred": "Mordred is an optional Character on the Side of Evil. He appears as Good to Merlin, but if he is killed, the Good players win.",
+  "Morgana": "Morgana is an optional Character on the Side of Evil. Morgana's special power is that she appears as Merlin to Percival at the start of the game. Adding Morgana into the game will make the Evil side more powerful and win more ofen.",  
+  "Oberon": "Oberon is an optional Character on the Side of Evil. He does not know who the Evil players are. Adding Oberon into the game will make the Good side more powerful and win more often.",
+  "Mordred": "Mordred is an optional Character on the Side of Evil. He appears as Good to Merlin. Adding Mordred into the game will make the Evil side more powerful and win more ofen.",
 };
 
 // source: https://api.flutter.dev/flutter/dart-ui/ColorFilter/ColorFilter.matrix.html
@@ -38,6 +38,66 @@ const Map<int, Map<int, int>> questRequirements = { // [numPlayers][questNum]
   10: {1: 3, 2: 4, 3: 4, 4: 5, 5: 5},
 };
 
+class EscavalonPage extends StatelessWidget {
+  final Widget child;
+
+  const EscavalonPage({super.key, 
+    required this.child,
+  });
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.brown,
+        title: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset("assets/logo.png"),
+            SizedBox(height: 10,)
+          ],
+        ),
+        flexibleSpace: Opacity(
+          opacity: 0.5,
+          child: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: const AssetImage('assets/paper_darker.jpg'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        ),
+        shape: Border(
+          bottom: BorderSide(
+            color: Theme.of(context).primaryColor,
+            width: 2.0,
+          ),
+        ),
+        automaticallyImplyLeading: false,
+      ),
+      body: SizedBox.expand(
+        child: Stack(
+            children: <Widget>[
+              Positioned.fill(
+                child: Image.asset(
+                  "assets/paper.jpg",
+                  fit: BoxFit.cover,
+                ),
+              ),
+
+              Container(
+                padding: const EdgeInsets.all(16.0),
+                child: child
+              )
+            ],
+          )
+      )
+    );
+  }
+
+}
+
 class EscavalonCard extends StatelessWidget {
   final Widget child;
 
@@ -53,7 +113,10 @@ class EscavalonCard extends StatelessWidget {
         child: Card(
           shape: BeveledRectangleBorder(
             borderRadius: BorderRadius.circular(10),
-          ),  
+            side: BorderSide(color: Theme.of(context).primaryColor,)
+          ),
+          shadowColor: Colors.transparent,
+          color: Colors.brown.withValues(alpha: .25),
           child: Container(
             padding: const EdgeInsets.all(16.0),
             child: child,
@@ -81,12 +144,20 @@ class EscavalonButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
+      child: OutlinedButton(
+        style: OutlinedButton.styleFrom(
           shape: BeveledRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
+
+          side: BorderSide(
+            color: Theme.of(context).primaryColor,
+          ),
+
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          shadowColor: Colors.transparent,
+          backgroundColor: Colors.brown.withValues(alpha: .25)
+
         ),
         onPressed: onPressed,
         child: Builder(
@@ -178,87 +249,4 @@ FlutterTts createTts() {
   result.setSpeechRate(0.5);
   result.setVolume(1.0);
   return result;
-}
-
-class DiscussionTemplate extends StatefulWidget {
-  final VoidCallback endDiscussion;
-  final String continueText, startingScript, endingScript;
-
-  const DiscussionTemplate({
-    super.key,
-    required this.endDiscussion,
-    required this.continueText,
-    required this.startingScript,
-    required this.endingScript,
-  });
-
-  @override
-  State<StatefulWidget> createState() => _DiscussionTemplateState();
-}
-
-class _DiscussionTemplateState extends State<DiscussionTemplate> {
-  bool isSpeaking = false;
-
-  @override
-  void initState() {
-    super.initState();
-    startDiscussion();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        ExtendableCountDownTimer(
-          initialDuration: Duration(minutes: 7),
-          extensionDuration: Duration(minutes: 5),
-          onTimerFinished: endDiscussion,
-          extendButtonText: "Extend discussion by 5 minutes",
-        ),
-
-        SizedBox(height: 20),
-
-        EscavalonButton(
-          text: widget.continueText,
-          onPressed: () => {
-            if (!isSpeaking) widget.endDiscussion()
-          },
-        ),
-      ],
-    );
-  }
-  
-  void startDiscussion() async {
-    setState(() {
-      isSpeaking = true;
-    });
-
-    FlutterTts thisTts = createTts();
-    thisTts.setCompletionHandler(
-      () => setState(() {
-        isSpeaking = false;
-      })
-    );
-
-    thisTts.speak(widget.startingScript);    
-  }
-  
-  void endDiscussion() async {
-    setState(() {
-      isSpeaking = true;
-    });
-
-    void startVote() async {
-      await Future.delayed(Duration(seconds: 2));
-      widget.endDiscussion();
-    }
-
-    FlutterTts thisTts = createTts();
-    thisTts.setCompletionHandler(() {
-      startVote();
-    });
-    
-    thisTts.speak(widget.endingScript);
-  }
 }

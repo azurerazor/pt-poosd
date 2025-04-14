@@ -14,16 +14,7 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text("Login"),
-        ),
-        body: Container(
-          padding: EdgeInsets.all(16.0),
-          child: _LoginForm()
-        )
-    );
+    return EscavalonPage(child: _LoginForm());
   }
 }
 
@@ -46,106 +37,105 @@ class _LoginFormState extends State<_LoginForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center (
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              EscavalonCard(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    // username     
-                    TextFormField(
-                      decoration: const InputDecoration(
-                        icon: Icon(Icons.person),
-                        hintText: "cool-username",
-                        labelText: "Username"
-                      ),
-                      onChanged: (String? value) {
-                        setState(() {
-                          username = value;
-                        });                },
-
-                      autovalidateMode: AutovalidateMode.onUnfocus,
-
-                      validator: (String? value) {
-                        if (
-                          value == null || 
-                          value.length < 3 ||
-                          value.length > 16 || 
-                          !checkUsername.hasMatch(value)
-                        ) {
-                          return usernameRequirements;
-                        } else {
-                          return null;
-                        }
-                      },
+    return Center (
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            EscavalonCard(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  // username     
+                  TextFormField(
+                    decoration: const InputDecoration(
+                      icon: Icon(Icons.person),
+                      hintText: "cool-username",
+                      labelText: "Username"
                     ),
-                    // password
-                    TextFormField(
-                      obscureText: true,
+                    onChanged: (String? value) {
+                      setState(() {
+                        username = value;
+                      });                },
 
-                      decoration: const InputDecoration(
-                        icon: Icon(Icons.key),
-                        hintText: "password1234",
-                        labelText: "Password"
-                      ),
+                    autovalidateMode: AutovalidateMode.onUnfocus,
 
-                      onChanged: (String? value) {
-                        setState(() {
-                          password = value;
-                        });
-                      },
+                    validator: (String? value) {
+                      if (
+                        value == null || 
+                        value.length < 3 ||
+                        value.length > 16 || 
+                        !checkUsername.hasMatch(value)
+                      ) {
+                        return usernameRequirements;
+                      } else {
+                        return null;
+                      }
+                    },
+                  ),
+                  // password
+                  TextFormField(
+                    obscureText: true,
 
-                      autovalidateMode: AutovalidateMode.onUnfocus,
-
-                      validator: (String? value) {
-                        if (value == null || value.length < 8) {
-                          return passwordRequirements;
-                        } else {
-                          return null;
-                        }
-                      },
+                    decoration: const InputDecoration(
+                      icon: Icon(Icons.key),
+                      hintText: "password1234",
+                      labelText: "Password"
                     ),
 
-                  ],
-                )
-              ),
+                    onChanged: (String? value) {
+                      setState(() {
+                        password = value;
+                      });
+                    },
 
-              SizedBox(height: 20,),
+                    autovalidateMode: AutovalidateMode.onUnfocus,
 
-              Builder(
-                builder: (context) {
-                  if (_isLoading == false) {
-                    return EscavalonButton(
-                      text: 'Login', 
-                      onPressed: () {
-                        if (_formKey.currentState!.validate() == false) return;
-                        _tryLogin(username!, password!);
-                      },
-                    );
-                  } else {
-                    return EscavalonButton(
-                      child: SizedBox(
-                        width: 21,
-                        height: 21,
-                        child: LoadingIndicator(
-                          indicatorType: Indicator.ballPulse
-                        ),
+                    validator: (String? value) {
+                      if (value == null || value.length < 8) {
+                        return passwordRequirements;
+                      } else {
+                        return null;
+                      }
+                    },
+                  ),
+
+                  SizedBox(height: 20,),
+                ],
+              )
+            ),
+
+            SizedBox(height: 20,),
+
+            Builder(
+              builder: (context) {
+                if (_isLoading == false) {
+                  return EscavalonButton(
+                    text: 'Login', 
+                    onPressed: () {
+                      if (_formKey.currentState!.validate() == false) return;
+                      _tryLogin(username!, password!);
+                    },
+                  );
+                } else {
+                  return EscavalonButton(
+                    child: SizedBox(
+                      width: 21,
+                      height: 21,
+                      child: LoadingIndicator(
+                        indicatorType: Indicator.ballPulse
                       ),
-                      onPressed: () => {} // do nothing
-                    );
-                  }
+                    ),
+                    onPressed: () => {} // do nothing
+                  );
                 }
-              ),
+              }
+            ),
 
-            ],
-          )
-        ),
-      )
+          ],
+        )
+      ),
     );
   }
 

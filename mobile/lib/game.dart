@@ -40,19 +40,7 @@ class GamePage extends StatelessWidget {
     globalNumPlayers = numPlayers;
     globalRolesSelected = rolesSelected;
 
-    return Scaffold(
-      appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text("Escavalon"),
-        ),
-        body: Center(
-          child: 
-            Container(
-              padding: const EdgeInsets.all(16.0), 
-              child: _GamePageContent()
-            )
-        ),
-    );
+    return EscavalonPage(child: _GamePageContent());
   }
 }
 
@@ -72,7 +60,6 @@ class _GamePageContentState extends State<_GamePageContent> {
   List<Team?> questResults = List<Team?>.generate(5, (int idx) => null, growable: false);
 
   Future<bool>? _gameSavedSuccessfully;
-  final bool _gameSaved = false; 
 
   FlutterTts flutterTts = FlutterTts();
 
@@ -106,18 +93,18 @@ class _GamePageContentState extends State<_GamePageContent> {
           )
         );
       case 2:
-        return endGame(context);
+        return endGame();
       default:
         throw ErrorDescription("Invalid game phase: $gamePhase");
     }
   }
 
   // not yet tested
-  Widget endGame(BuildContext context) {
+  Widget endGame() {
     // if user is logged in, we can try to save the game
-    if (globalToken != null) {
-      _gameSavedSuccessfully = trySave();
-    }
+    // if (globalToken != null) {
+    //   _gameSavedSuccessfully = trySave();
+    // }
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -133,6 +120,7 @@ class _GamePageContentState extends State<_GamePageContent> {
           )
         ),
 
+        SizedBox(height: 10,),
         // save game status
         Builder(
           builder: (context) {
@@ -144,36 +132,12 @@ class _GamePageContentState extends State<_GamePageContent> {
           }
         ),
 
+        SizedBox(height: 10,),
+
         EscavalonButton(
           text: "Return to Home Screen",
           onPressed: () {
             bool returnToHome = true;
-
-            if (globalToken != null && _gameSaved == false) {
-              showDialog(
-                context: context, 
-                builder: (context) => AlertDialog(
-                  title: const Text("Warning!"),
-                  content: const Text("Game not saved. Are you sure you want to return to the home screen?"),
-                  actions: <Widget>[
-                    TextButton(
-                      child: const Text("NO"),
-                      onPressed: () {
-                        returnToHome = false;
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                    TextButton(
-                      child: const Text("YES"),
-                      onPressed: () {
-                        returnToHome = true;
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ],
-                ),
-              );
-            }
 
             if (returnToHome) {
               Navigator.of(context).pop();

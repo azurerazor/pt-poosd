@@ -14,17 +14,8 @@ class Home extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text("Escavalon"),
-        ),
-        body: Center(
-          child: Container ( 
-            padding: const EdgeInsets.all(16.0),
-            child: const _HomeContent(),
-          ),
-        ),
+    return EscavalonPage(
+      child: _HomeContent()
     );
   }
 }
@@ -80,7 +71,7 @@ class _HomeContentState extends State<_HomeContent> {
         EscavalonButton(
           text: 'Open Web App', 
           onPressed: () {
-            _lauchWebApp();
+            launchUrl(_url);
           }
         ),
 
@@ -89,10 +80,6 @@ class _HomeContentState extends State<_HomeContent> {
             if (_username != null) { 
               return Column(
                 children: <Widget>[
-                  EscavalonButton(
-                    text: "History", 
-                    onPressed: ()=>{}
-                  ),
                   EscavalonButton(
                     text: 'Logout', 
                     onPressed: () {
@@ -164,17 +151,11 @@ class _HomeContentState extends State<_HomeContent> {
       )
     );
 
+    if (info == null) return;
+
     setState(() {
       _username = info[0];
       webTokenStorage = info[1];
     });
   } 
-}
-
-// launches the web app in the default browser
-// currently forces user to login into web app even if they are logged in on mobile
-Future<void> _lauchWebApp() async {
-  if (!await launchUrl(_url)) {
-    throw Exception('Failed to launch $_url');
-  }
 }

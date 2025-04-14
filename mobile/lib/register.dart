@@ -13,16 +13,7 @@ class RegisterPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text("Register"),
-        ),
-        body: Container(
-          padding: EdgeInsets.all(40.0),
-          child: _RegisterForm()
-        )
-    );
+    return EscavalonPage(child: _RegisterForm());
   }
 }
 
@@ -47,132 +38,135 @@ class _RegisterFormState extends State<_RegisterForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center (
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              EscavalonCard(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // username
-                    TextFormField(
-                      decoration: const InputDecoration(
-                        icon: Icon(Icons.person),
-                        hintText: "cool-username",
-                        labelText: "Username"
-                      ),
-                      onChanged: (String? value) {
-                        setState(() {
-                          username = value;
-                        });               
-                      },
-
-                      autovalidateMode: AutovalidateMode.onUnfocus,
-
-                      validator: (String? value) {
-                        if (
-                          value == null || 
-                          value.length < 3 ||
-                          value.length > 16 || 
-                          !checkUsername.hasMatch(value)
-                        ) {
-                          return usernameRequirements;
-                        } else {
-                          return null;
-                        }
-                      },
+    return Center (
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            EscavalonCard(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // username
+                  TextFormField(
+                    decoration: const InputDecoration(
+                      icon: Icon(Icons.person),
+                      hintText: "cool-username",
+                      labelText: "Username"
                     ),
-                    // email
-                    TextFormField(
-                      decoration: const InputDecoration(
-                        icon: Icon(Icons.mail),
-                        hintText: "you@gmail.com",
-                        labelText: "Email"
-                      ),
+                    onChanged: (String? value) {
+                      setState(() {
+                        username = value;
+                      });               
+                    },
 
-                      onChanged: (String? value) {
-                        setState(() {
-                          email = value;
-                        });
-                      },
+                    autovalidateMode: AutovalidateMode.onUnfocus,
 
-                      autovalidateMode: AutovalidateMode.onUnfocus,
-
-                      validator: (String? value) {
-                        if (
-                          value == null || 
-                          value.length < 3 ||
-                          !checkEmail.hasMatch(value)
-                        ) {
-                          return emailRequirements;
-                        } else {
-                          return null;
-                        }
-                      },
+                    validator: (String? value) {
+                      if (
+                        value == null || 
+                        value.length < 3 ||
+                        value.length > 16 || 
+                        !checkUsername.hasMatch(value)
+                      ) {
+                        return usernameRequirements;
+                      } else {
+                        return null;
+                      }
+                    },
+                  ),
+                  // email
+                  TextFormField(
+                    decoration: const InputDecoration(
+                      icon: Icon(Icons.mail),
+                      hintText: "you@gmail.com",
+                      labelText: "Email"
                     ),
-                    // password
-                    TextFormField(
-                      obscureText: true,
 
-                      decoration: const InputDecoration(
-                        icon: Icon(Icons.key),
-                        hintText: "password1234",
-                        labelText: "Password"
-                      ),
+                    onChanged: (String? value) {
+                      setState(() {
+                        email = value;
+                      });
+                    },
 
-                      onChanged: (String? value) {
-                        setState(() {
-                          password = value;
-                        });
-                      },
+                    autovalidateMode: AutovalidateMode.onUnfocus,
 
-                      autovalidateMode: AutovalidateMode.onUnfocus,
+                    validator: (String? value) {
+                      if (
+                        value == null || 
+                        value.length < 3 ||
+                        !checkEmail.hasMatch(value)
+                      ) {
+                        return emailRequirements;
+                      } else {
+                        return null;
+                      }
+                    },
+                  ),
+                  // password
+                  TextFormField(
+                    obscureText: true,
 
-                      validator: (String? value) {
-                        if (value == null || value.length < 8) {
-                          return passwordRequirements;
-                        } else {
-                          return null;
-                        }
-                      },
+                    decoration: const InputDecoration(
+                      icon: Icon(Icons.key),
+                      hintText: "password1234",
+                      labelText: "Password"
                     ),
-                  ],
-                )
-              ),
 
-              Builder(
-                builder: (context) {
-                  if (_isLoading == false) {
-                    return EscavalonButton(
-                      text: 'Register', 
-                      onPressed: () {
-                        if (_formKey.currentState!.validate() == false) return;
-                        _tryRegister(username!, email!, password!);
-                      },
-                    );
-                  } else {
-                    return EscavalonButton(
-                      child: SizedBox(
-                        width: 21,
-                        height: 21,
-                        child: LoadingIndicator(
-                          indicatorType: Indicator.ballPulse
-                        ),
+                    onChanged: (String? value) {
+                      setState(() {
+                        password = value;
+                      });
+                    },
+
+                    autovalidateMode: AutovalidateMode.onUnfocus,
+
+                    validator: (String? value) {
+                      if (value == null || value.length < 8) {
+                        return passwordRequirements;
+                      } else {
+                        return null;
+                      }
+                    },
+                  ),
+                  
+                  SizedBox(height: 20,)
+
+                ],
+              )
+            ),
+
+            SizedBox(height: 20,),
+
+            Builder(
+              builder: (context) {
+                if (_isLoading == false) {
+                  return EscavalonButton(
+                    text: 'Register', 
+                    onPressed: () {
+                      if (_formKey.currentState!.validate() == false) return;
+                      _tryRegister(username!, email!, password!);
+                    },
+                  );
+                } else {
+                  return EscavalonButton(
+                    child: SizedBox(
+                      width: 21,
+                      height: 21,
+                      child: LoadingIndicator(
+                        indicatorType: Indicator.ballPulse
                       ),
-                      onPressed: () => {} // do nothing
-                    );
-                  }
+                    ),
+                    onPressed: () => {} // do nothing
+                  );
                 }
-              ),
+              }
+            ),
 
-            ],
-          )
-        ),
-      )
+          ],
+        )
+      ),
     );
   }
 

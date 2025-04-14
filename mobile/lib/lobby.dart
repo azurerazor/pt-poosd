@@ -20,19 +20,7 @@ class LobbyPage extends StatelessWidget {
   Widget build(BuildContext context) {
     webTokenStorage = token;
 
-    return Scaffold(
-      appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text("Escavalon"),
-        ),
-        body: Center(
-          child: 
-            Container(
-              padding: const EdgeInsets.all(16.0), 
-              child: _LobbyPageContent()
-            )
-        ),
-    );
+    return EscavalonPage(child: _LobbyPageContent());
   }
   
 }
@@ -69,6 +57,7 @@ class _LobbyPageContentState extends State<_LobbyPageContent> {
               Form(
                 key: _formKey,
                 child: TextFormField(
+                  initialValue: "5",
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly
                   ],
@@ -279,11 +268,18 @@ class _LobbyPageContentState extends State<_LobbyPageContent> {
   }
 
   Widget getRoleImage(String role) {
-    Widget thisImage = Image(
-      image: ResizeImage(
-        AssetImage("assets/$role.png"),
+    Widget thisImage = ClipPath(
+      clipper: BeveledRectangleImageClipper(
+        border: BeveledRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+      ),
+      child: Image.asset(
+        'assets/$role.png',
         width: 150,
-      )
+        height: 220,
+        fit: BoxFit.cover,
+      ),
     );
 
     if (_rolesSelected[role]!) {
@@ -297,4 +293,22 @@ class _LobbyPageContentState extends State<_LobbyPageContent> {
     );
   }
 
+}
+
+class BeveledRectangleImageClipper extends CustomClipper<Path> {
+  final BeveledRectangleBorder border;
+  final BorderRadius? borderRadius;
+
+  BeveledRectangleImageClipper({required this.border, this.borderRadius});
+
+  @override
+  Path getClip(Size size) {
+    final Rect rect = Rect.fromLTWH(0, 0, size.width, size.height);
+    return border.getOuterPath(rect, textDirection: TextDirection.ltr);
+  }
+
+  @override
+  bool shouldReclip(covariant BeveledRectangleImageClipper oldClipper) {
+    return oldClipper.border != border || oldClipper.borderRadius != borderRadius;
+  }
 }

@@ -41,25 +41,32 @@ class _NightState extends State<Night> {
   
   @override
   Widget build(BuildContext context) {
-    if (scriptIdx == script!.length) {
-      return Text(
-        "Night phase complete. Good luck on your quests!",
-        style: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-        ),
-        textAlign: TextAlign.center,
-      );
-    }
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Builder(builder: (context) {
+          if (scriptIdx == script!.length) {
+            return Text(
+              "Night phase complete. Good luck on your quests!",
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            );
+          }
 
-    speak(script![scriptIdx].$2);
-    return Text(
-      script![scriptIdx].$2,
-      style: TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
-      ),
-      textAlign: TextAlign.center,
+          speak(script![scriptIdx].$2);
+          return Text(
+            script![scriptIdx].$2,
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          );
+        }),
+      ],
     );
   }
   
