@@ -486,14 +486,48 @@ export class AssasinationChoiceEvent extends GameEvent {
  */
 export class GameResultEvent extends GameEvent {
     public winner: Alignment;
+    public message: string;
 
-    public constructor(winner: Alignment = Alignment.GOOD) {
+    public constructor(winner: Alignment = Alignment.GOOD, message: string = "") {
         super("game_result");
         this.winner = winner;
+        this.message = message;
     }
 
-    public read(json: any): void { this.winner = json.winner; }
-    public write(): any { return { winner: this.winner }; }
+    public static goodWin(): GameResultEvent {
+        return new GameResultEvent(Alignment.GOOD, "The evil players couldn't find Merlin!");
+    }
+
+    public static guessedMerlin(): GameResultEvent {
+        return new GameResultEvent(Alignment.EVIL, "The evil players found Merlin!");
+    }
+
+    public static evilWin(): GameResultEvent {
+        return new GameResultEvent(Alignment.EVIL, "The good players couldn't stop Mordred!");
+    }
+
+    public read(json: any): void {
+        this.winner = json.winner;
+        this.message = json.message || "";
+    }
+
+    public write(): any {
+        return {
+            winner: this.winner,
+            message: this.message
+        };
+    }
+}
+
+/**
+ * Sent by the host after game results are displayed to
+ * request sending all players back to the lobby
+ */
+export class BackToLobbyEvent extends GameEvent {
+    public constructor() { super("back_to_lobby"); }
+
+    public read(json: any): void { }
+    public write(): any { return {}; }
 }
 
 /**
@@ -512,3 +546,4 @@ EventBroker.registerEvent("mission_choice", MissionChoiceEvent);
 EventBroker.registerEvent("assassination", AssassinationEvent);
 EventBroker.registerEvent("assassination_choice", AssasinationChoiceEvent);
 EventBroker.registerEvent("game_result", GameResultEvent);
+EventBroker.registerEvent("back_to_lobby", BackToLobbyEvent);
