@@ -65,6 +65,7 @@ app.post('/api/verify/:token', verifyEmail);
 app.use('/api/get_user', get_user);
 app.use('/api/stats', stats);
 app.use('/api/game', game);
+app.use('/api/game_history', game);
 
 // Listen for incoming requests
 httpServer.listen(PORT, () => {
