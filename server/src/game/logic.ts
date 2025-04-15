@@ -32,18 +32,18 @@ export function bootstrapEvents(): void {
             return;
         }
 
+        // Remove the default servant/minion roles if included (shouldn't count these in the role set)
+        const roles = event.roles & ~Roles.SERVANT_OF_ARTHUR & ~Roles.MINION_OF_MORDRED;
+
         // Check that the roles are valid
-        if (Lobby.isValidRoleset(event.roles, lobby.getPlayerCount())) {
+        if (Lobby.isValidRoleset(roles, lobby.getPlayerCount())) {
             // If so, update the lobby with the new roleset
-            lobby.enabledRoles = event.roles;
+            lobby.enabledRoles = roles;
         }
 
-        // If the roleset was invalid, still resend the old roleset
-        // to ensure the host doesn't get desynced
-        ServerEventBroker
-            .getInstance()
-            .sendTo(lobby, new UpdateEvent()
-                .setEnabledRoles(lobby.enabledRoles));
+        // If the roleset was invalid, still resend the old roleset to ensure host doesn't get desynced
+        lobby.send(new UpdateEvent()
+            .setEnabledRoles(lobby.enabledRoles));
     });
 
     ServerEventBroker.on('start_game', (lobby: ServerLobby, event: StartGameEvent) => {

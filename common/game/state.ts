@@ -73,7 +73,7 @@ export class Lobby {
     /**
      * The set of enabled roles
     */
-    public enabledRoles: Roles = Roles.DEFAULT_ROLES;
+    public enabledRoles: Roles = Roles.NONE;
 
     /**
      * The order of players for display and leader selection
