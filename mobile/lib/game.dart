@@ -51,7 +51,7 @@ class _GamePageContent extends StatefulWidget {
 }
 
 class _GamePageContentState extends State<_GamePageContent> {
-  final startTime = DateTime.now();
+  final DateTime startTime = DateTime.now();
 
   int gamePhase = 0; // 0: start, 1: quests (+ killing merlin), 2: end
 

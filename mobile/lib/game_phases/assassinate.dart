@@ -32,7 +32,7 @@ class _AssassinateState extends State<Assassinate> {
         endDiscussion: () => setState(() {
           discussing = false;
         }), 
-        continueText: "Assassinate!", 
+        continueText: "Assassinate 🗡️!", 
         startingScript: "Minions of Mordred, you still have a chance to win! Victory is yours if you successfully assassinate Merlin. ${widget.includesAssassin ? "Assassin, you will make the final decision about who to kill." : "Once you are done discussing, you will vote on who to kill. If there is a tie, nobody gets killed."} ", 
         endingScript: "Time has run out! Starting assassination."
       );

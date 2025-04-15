@@ -96,10 +96,6 @@ export class ClientEventBroker extends EventBroker {
         this.instance.socket.close();
     }
 
-    public dispatch(lobby: Lobby, event: GameEvent): void {
-        super.dispatch(lobby, event);
-    }
-
     /**
      * Sends an event to the other side
      */

@@ -376,6 +376,13 @@ export class Lobby {
     }
 
     /**
+     * Returns the full player map
+     */
+    public getPlayerMap(): Map<string, Player> {
+        return this.players;
+    }
+
+    /**
      * Gets a version of the player map with only data visible to a certain player
      */
     public getPlayerMapFor(username: string): Map<string, Player> {
