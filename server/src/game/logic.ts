@@ -45,18 +45,33 @@ export function bootstrapEvents(): void {
         // Check that the event is from the host
         if (event.origin !== lobby.host) {
             console.error("Received start_game event from non-host:", event.origin);
+            // Send an update to make sure clients know they're in the lobby still
+            ServerEventBroker
+                .getInstance()
+                .sendTo(lobby, new UpdateEvent()
+                    .setState(lobby.state));
             return;
         }
 
         // Check that the lobby is in the correct state
         if (lobby.state.state !== GameState.LOBBY) {
             console.error("Received start_game event in invalid state:", lobby.state.state);
+            // Send an update to make sure clients know they're in the lobby still
+            ServerEventBroker
+                .getInstance()
+                .sendTo(lobby, new UpdateEvent()
+                    .setState(lobby.state));
             return;
         }
 
         // Check that there are enough players to start
         if (lobby.getPlayerCount() < 5) {
             console.error("Received start_game event with too few players:", lobby.getPlayerCount());
+            // Send an update to make sure clients know they're in the lobby still
+            ServerEventBroker
+                .getInstance()
+                .sendTo(lobby, new UpdateEvent()
+                    .setState(lobby.state));
             return;
         }
 
