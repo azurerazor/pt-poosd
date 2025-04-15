@@ -136,7 +136,7 @@ export class Lobby {
         if (players < 5 || players > 10 || round < 0 || round > 4) return -1;
         
         // Source: Avalon rulebook, through one degree of separation
-        if (players == 5) return [2, 3, 2, 3, 3][round];
+        if (players <= 5) return [2, 3, 2, 3, 3][round];
         if (players <= 6) return [2, 3, 4, 3, 4][round];
         if (players <= 7) return [2, 3, 3, 4, 4][round];
         return [3, 4, 4, 5, 5][round];
