@@ -16,6 +16,10 @@ import stats from './routes/stats.js';
 require('dotenv').config();
 const PORT = process.env.PORT!;
 const MONGO_URI = process.env.MONGO_URI!;
+const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN!;
+
+const CLIENT_ORIGIN_PATTERN = `https?:\\/\\/(?:\\w+.)*${CLIENT_ORIGIN}(?::\\d+)?`;
+const CLIENT_ORIGIN_REGEX = new RegExp(CLIENT_ORIGIN_PATTERN);
 
 // Connect to the MongoDB Atlas database
 mongoose
@@ -26,7 +30,15 @@ mongoose
 // Set up the Express app
 const app = express();
 app.use(cors({
-    origin: process.env.CLIENT_ORIGIN,
+    origin: (origin, next) => {
+        // Allow requests from the client origin
+        if (origin && CLIENT_ORIGIN_REGEX.test(origin)) {
+            return next(null, origin);
+        }
+
+        // Otherwise reject
+        next(null, 'none');
+    },
     credentials: true
 }));
 app.use(cookieParser());
