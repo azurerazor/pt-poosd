@@ -54,7 +54,8 @@ function handleEndGame(lobby: ServerLobby, results: GameResultEvent) {
 
     // Send the full player map to all players
     lobby.send(new UpdateEvent()
-        .setPlayers(lobby.getPlayerMap()));
+        .setPlayers(lobby.getPlayerMap())
+        .setPlayerOrder(lobby.playerOrder));
 }
 
 /**
