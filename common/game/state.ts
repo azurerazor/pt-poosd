@@ -236,11 +236,8 @@ export class Lobby {
         if (!player || !player.isConnected) return false;
 
         // Unset the previous host
-        if (this.players.has(this.host)) {
-            const oldHost = this.getPlayer(this.host);
-            if (oldHost) {
-                oldHost.isHost = false;
-            }
+        for (const [_, player] of this.players) {
+            player.isHost = false;
         }
 
         // Set the new host
@@ -260,11 +257,8 @@ export class Lobby {
         if (!player || !player.isConnected) return false;
 
         // Unset the previous leader
-        if (this.leader) {
-            const oldLeader = this.getPlayer(this.leader);
-            if (oldLeader) {
-                oldLeader.isLeader = false;
-            }
+        for (const [_, player] of this.players) {
+            player.isLeader = false;
         }
 
         // Set the new leader
