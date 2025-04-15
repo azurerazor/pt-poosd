@@ -515,18 +515,30 @@ export class AssasinationChoiceEvent extends GameEvent {
 /**
  * Sent to clients with the results of the game
  * 
- * An update event will be sent *before* this one that changes
- * the state to RESULTS; a placeholder can be displayed before
- * actual results are received via this event
+ * These results should be displayed until an update event sets
+ * the game state back to the lobby (triggered by the host)
  */
 export class GameResultEvent extends GameEvent {
+    /**
+     * Which alignment won the game
+     */
     public winner: Alignment;
+
+    /**
+     * The message to display to the players
+     */
     public message: string;
 
-    public constructor(winner: Alignment = Alignment.GOOD, message: string = "") {
+    /**
+     * The player that was assassinated, if any
+     */
+    public assassinated: string | null = null;
+
+    public constructor(winner: Alignment = Alignment.GOOD, message: string = "", assassinated: string | null = null) {
         super("game_result");
         this.winner = winner;
         this.message = message;
+        this.assassinated = assassinated;
     }
 
     public static goodWin(): GameResultEvent {
@@ -544,12 +556,14 @@ export class GameResultEvent extends GameEvent {
     public read(json: any): void {
         this.winner = json.winner;
         this.message = json.message || "";
+        this.assassinated = json.assassinated || null;
     }
 
     public write(): any {
         return {
             winner: this.winner,
-            message: this.message
+            message: this.message,
+            assassinated: this.assassinated
         };
     }
 }
