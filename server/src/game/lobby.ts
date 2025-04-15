@@ -4,6 +4,32 @@ import { GameEvent } from "@common/game/events";
 import { ServerEventBroker } from "./events";
 import { merlin } from "@common/game/roles";
 
+/**
+ * Describes a possible set of events we're waiting for,
+ * such as receiving votes or mission choices.
+ */
+export enum WaitingFor {
+    /**
+     * Not waiting for anything
+     */
+    NONE = "none",
+
+    /**
+     * Waiting for a team proposal vote
+     */
+    TEAM_VOTE = "team_vote",
+
+    /**
+     * Waiting for mission pass/fail choices
+     */
+    MISSION_CHOICES = "mission_choices",
+
+    /**
+     * Waiting for assassination guesses
+     */
+    ASSASSINATION_GUESSES = "assassination_guesses",
+}
+
 export class ServerLobby extends Lobby {
     /**
      * Set of clients that have replied ready following the
@@ -30,6 +56,11 @@ export class ServerLobby extends Lobby {
      * Map of players to Merlin guesses for assassination
      */
     private readonly merlinGuessMap: Map<string, string> = new Map();
+
+    /**
+     * What we're currently waiting for, if anything
+     */
+    public waitingFor: WaitingFor = WaitingFor.NONE;
 
     constructor(id: string, host: string) {
         super(id, host, () => { deleteLobby(id); });

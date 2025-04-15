@@ -3,7 +3,7 @@ import { Alignment, getRoles, minion, Roles, servant } from "@common/game/roles"
 import { GameState, Lobby } from "@common/game/state";
 import { ASSASSINATION_TIME, MISSION_CHOICE_TIME, TEAM_VOTE_TIME } from "@common/game/timing";
 import { ServerEventBroker } from "./events";
-import { ServerLobby } from "./lobby";
+import { ServerLobby, WaitingFor } from "./lobby";
 import { updatePlayers } from "./sockets";
 
 /**
@@ -156,6 +156,12 @@ function handleTeamProposal(lobby: ServerLobby, event: TeamProposalEvent): void 
         return;
     }
 
+    // Check if we're in the middle of a vote
+    if (lobby.waitingFor !== WaitingFor.NONE) {
+        console.error("Received team_proposal event while waiting for:", lobby.waitingFor);
+        return;
+    }
+
     // Update the state
     lobby.state.team = event.team;
 
@@ -163,6 +169,7 @@ function handleTeamProposal(lobby: ServerLobby, event: TeamProposalEvent): void 
     lobby.onReady(l => {
         // All players have been updated and responded ready; trigger the team vote
         lobby.clearVotes();
+        lobby.waitingFor = WaitingFor.TEAM_VOTE;
         l.send(new TeamVoteEvent(lobby.state.team));
 
         // Set a timeout for the vote
@@ -181,6 +188,8 @@ function handleTeamProposal(lobby: ServerLobby, event: TeamProposalEvent): void 
  * Handles a single team vote
  */
 function handleTeamVoteChoice(lobby: ServerLobby, event: TeamVoteChoiceEvent): void {
+    // Ignore if we're not voting
+    if (lobby.waitingFor !== WaitingFor.TEAM_VOTE) return;
     lobby.setVote(event.origin, event.vote);
 }
 
@@ -188,6 +197,9 @@ function handleTeamVoteChoice(lobby: ServerLobby, event: TeamVoteChoiceEvent): v
  * Handles votes for a team, after a timeout
  */
 function handleTeamVote(lobby: ServerLobby): void {
+    // Reset the waiting state
+    lobby.waitingFor = WaitingFor.NONE;
+
     // Check if the vote passed
     if (lobby.isVotePassing()) {
         // If so, start the mission with this team
@@ -220,6 +232,9 @@ function handleTeamVote(lobby: ServerLobby): void {
  * Handles a single mission pass/fail choice
  */
 function handleMissionChoice(lobby: ServerLobby, event: MissionChoiceEvent): void {
+    // Ignore if we're not on a mission
+    if (lobby.waitingFor !== WaitingFor.MISSION_CHOICES) return;
+
     // Check if the event is from a player on the team
     if (!lobby.state.team.includes(event.origin)) {
         console.error("Received mission_choice event from non-team member:", event.origin);
@@ -233,6 +248,9 @@ function handleMissionChoice(lobby: ServerLobby, event: MissionChoiceEvent): voi
  * Handles mission choices, after a timeout for pass/fail
  */
 function handleMissionOutcome(lobby: ServerLobby): void {
+    // Reset the waiting state
+    lobby.waitingFor = WaitingFor.NONE;
+
     // Get outcome and clear the mission choice map
     const outcome = lobby.isMissionPassing();
     const fails = lobby.getNumFails();
@@ -290,6 +308,9 @@ function handleMissionOutcome(lobby: ServerLobby): void {
  * Handles a single assassination guess
  */
 function handleAssassinationChoice(lobby: ServerLobby, event: AssassinationChoiceEvent): void {
+    // Check if we're in the assassination phase
+    if (lobby.waitingFor !== WaitingFor.ASSASSINATION_GUESSES) return;
+
     // Check that the event came from an evil player (only the assassin, if the assassin is enabled)
     if (!lobby.canAssassinateMerlin(event.origin)) {
         console.error("Received assassination_choice event from non-assassinating player:", event.origin);
@@ -303,8 +324,12 @@ function handleAssassinationChoice(lobby: ServerLobby, event: AssassinationChoic
  * Handles assassination choices, after a timeout for guesses
  */
 function handleAssassination(lobby: ServerLobby): void {
-    // Get a majority assassination vote, if any
+    // Reset the waiting state
+    lobby.waitingFor = WaitingFor.NONE;
+
+    // Get a majority assassination vote, if any + clear the guess map
     const assassinated = lobby.getAssassinatedPlayer();
+    lobby.clearMerlinGuesses();
 
     // If there was no assassination, the good guys win!
     if (!assassinated) {
