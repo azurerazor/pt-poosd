@@ -6,7 +6,7 @@ import { ServerEventBroker } from "./events";
 import { ServerLobby, WaitingFor } from "./lobby";
 import { updatePlayers } from "./sockets";
 import { shuffle } from "@common/util/random";
-import Stats from "models/stats";
+import Stats from "../models/stats";
 
 /**
  * Min number of players to start a game (1 if running locally)
