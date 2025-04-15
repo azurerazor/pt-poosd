@@ -49,9 +49,12 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
   };
 
   const handleSubmitMission = () => {
-    if(selectedGuys.length !== quests[players.size][round]){
+    if (selectedGuys.length !== quests[players.size][round]) {
       alert("Not enough players on the mission!");
-    }else setSelectedTeam(selectedGuys);
+    } else {
+      setSelectedTeam(selectedGuys);
+      (document.getElementById("MissionSelect") as HTMLDialogElement)?.close();
+    }
   };
 
   return (

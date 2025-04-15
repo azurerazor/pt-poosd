@@ -131,7 +131,7 @@ export default function GameFlow() {
     });
 
     ClientEventBroker.on('mission', (lobby: ClientLobby, event: UpdateEvent) => {
-      console.log("Received mission Event", event);
+      console.log("Received mission Event", event, acceptedTeam);
       setShowMissionVote(true);
 
       const timer = setTimeout(() => {
