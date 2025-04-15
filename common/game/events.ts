@@ -541,12 +541,26 @@ export class GameResultEvent extends GameEvent {
         this.assassinated = assassinated;
     }
 
-    public static goodWin(): GameResultEvent {
-        return new GameResultEvent(Alignment.GOOD, "The evil players couldn't find Merlin!");
+    /**
+     * Sets the player that was assassinated, builder-style
+     */
+    public setAssassinated(assassinated: string | null): GameResultEvent {
+        this.assassinated = assassinated;
+        return this;
     }
 
-    public static guessedMerlin(): GameResultEvent {
-        return new GameResultEvent(Alignment.EVIL, "The evil players found Merlin!");
+    public static goodWin(): GameResultEvent {
+        return new GameResultEvent(Alignment.GOOD, "The good players stopped Mordred!");
+    }
+
+    public static missedMerlin(assassinated: string | null): GameResultEvent {
+        return new GameResultEvent(Alignment.GOOD, "The evil players couldn't find Merlin!")
+            .setAssassinated(assassinated);
+    }
+
+    public static guessedMerlin(assassinated: string): GameResultEvent {
+        return new GameResultEvent(Alignment.EVIL, "The evil players found Merlin!")
+            .setAssassinated(assassinated);
     }
 
     public static evilWin(): GameResultEvent {
