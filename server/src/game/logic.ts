@@ -6,6 +6,11 @@ import { ServerLobby } from "./lobby";
 import { updatePlayers } from "./sockets";
 
 /**
+ * Min number of players to start a game (1 if running locally)
+ */
+const MIN_PLAYERS: number = (process.env.NODE_ENV == 'development') ? 1 : 5;
+
+/**
  * Bootstraps event listeners for primary game logic on the server
  */
 export function bootstrapEvents(): void {
@@ -65,7 +70,7 @@ export function bootstrapEvents(): void {
         }
 
         // Check that there are enough players to start
-        if (lobby.getPlayerCount() < 5) {
+        if (lobby.getPlayerCount() < MIN_PLAYERS) {
             console.error("Received start_game event with too few players:", lobby.getPlayerCount());
             // Send an update to make sure clients know they're in the lobby still
             ServerEventBroker

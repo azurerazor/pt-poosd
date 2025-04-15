@@ -25,19 +25,20 @@ export class LobbyState {
     public round: number = -1;
 
     /**
-     * Round outcomes, if applicable.
+     * Round outcomes, if applicable (otherwise -1s)
      * 
      * Each is an integer:
      *  -1 represents a mission that hasn't happened yet
-     *   0 represents a pass
-     *   any other number is the number of fails on that mission
+     *  0 represents a pass
+     *  any other number is the number of fails on that mission
      */
-    public outcomes: number[] | null = null;
+    public outcomes: number[] = [-1, -1, -1, -1, -1];
 
     /**
      * The current team being proposed or on a mission, if applicable
+     * (otherwise empty)
      */
-    public team: string[] | null = null;
+    public team: string[] = [];
 }
 
 /**
