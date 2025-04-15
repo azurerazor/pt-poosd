@@ -176,7 +176,7 @@ class _RegisterFormState extends State<_RegisterForm> {
     });
 
     final response = await http.post(
-      Uri.parse('http://45.55.60.192:5050/api/register'),
+      Uri.parse('http://escavalon.quest/api/register'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

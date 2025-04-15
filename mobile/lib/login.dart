@@ -151,7 +151,7 @@ class _LoginFormState extends State<_LoginForm> {
     });
 
     final response = await http.post(
-      Uri.parse('http://45.55.60.192:5050/api/login'),
+      Uri.parse('http://escavalon.quest/api/login'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
