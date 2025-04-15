@@ -364,6 +364,20 @@ export class RoleRevealEvent extends GameEvent {
 }
 
 /**
+ * Sent by the leader to propose a team for the next mission
+ */
+export class TeamProposalEvent extends GameEvent {
+    public team: string[];
+    public constructor(team: string[] = []) {
+        super("team_proposal");
+        this.team = team;
+    }
+
+    public read(json: any): void { this.team = json.team; }
+    public write(): any { return { team: this.team }; }
+}
+
+/**
  * Triggered when a team has been proposed that should be voted for
  * 
  * When received on the server:
@@ -377,7 +391,7 @@ export class TeamVoteEvent extends GameEvent {
     public players: string[];
 
     public constructor(players: string[] = []) {
-        super("team_proposal");
+        super("team_vote");
         this.players = players;
     }
 
@@ -392,7 +406,7 @@ export class TeamVoteChoiceEvent extends GameEvent {
     public vote: boolean;
 
     public constructor(vote: boolean = true) {
-        super("team_vote");
+        super("team_vote_choice");
         this.vote = vote;
     }
 
@@ -413,7 +427,7 @@ export class MissionEvent extends GameEvent {
     public players: string[];
 
     public constructor(players: string[] = []) {
-        super("mission_start");
+        super("mission");
         this.players = players;
     }
 
@@ -469,7 +483,7 @@ export class AssasinationChoiceEvent extends GameEvent {
     public guess: string;
 
     public constructor(guess: string = "") {
-        super("merlin_guess");
+        super("assassination_choice");
         this.guess = guess;
     }
 
@@ -539,6 +553,7 @@ EventBroker.registerEvent("set_role_list", SetRoleListEvent);
 EventBroker.registerEvent("update", UpdateEvent);
 EventBroker.registerEvent("start_game", StartGameEvent);
 EventBroker.registerEvent("role_reveal", RoleRevealEvent);
+EventBroker.registerEvent("team_proposal", TeamProposalEvent);
 EventBroker.registerEvent("team_vote", TeamVoteEvent);
 EventBroker.registerEvent("team_vote_choice", TeamVoteChoiceEvent);
 EventBroker.registerEvent("mission", MissionEvent);
