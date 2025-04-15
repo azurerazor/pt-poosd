@@ -77,8 +77,16 @@
     cursor: pointer;
     border: var(--w) solid var(--c);
     text-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0);
+}
 
-    box-shadow: 0 5px 5px rgba(0, 0, 0 1);
+.btn:hover,
+.btn:focus-within {
+    transform: translateY(-1px);
+}
+
+.btn:active {
+    transform: translateY(0px);
 }
 
 .bg-paper {
