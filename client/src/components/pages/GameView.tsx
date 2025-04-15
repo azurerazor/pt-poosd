@@ -14,6 +14,7 @@ import RoleRevealCard from "../ui/RoleRevealCard"
 import {quests, fails} from "./GameFlow"
 import { LobbyState, GameState } from "../../../../common/game/state";
 import SuccessFailCard from '../ui/SuccessFailCard';
+import LoadingCard from '../ui/LoadingCard';
 import MissionVoteCard from '../ui/MissionVoteCard';
 import MissionRevealCard from '../ui/MissionRevealCard';
 import AssassinationScreen from 'components/ui/AssassinationScreen';
@@ -157,7 +158,7 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
          * the button currently exists exclusively for testing
          */
         }
-        {(showSuccessFail && selectedTeam.includes(myPlayer.username)) && (
+        {(showSuccessFail && selectedTeam.includes(myPlayer.username)) ? (
           <div
             className="fixed inset-0 z-50 flex items-center justify-center"
             style={{
@@ -168,6 +169,19 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
             >
             <div className="rounded-lg p-8 max-w-xl w-full text-center">
               <SuccessFailCard player={myPlayer} players={players} setSuccessFail={setSuccessFail} />
+            </div>
+          </div>
+        ) : (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center"
+            style={{
+              backdropFilter: 'blur(8px)',
+              backgroundColor: 'rgba(0, 0, 0, 0.3)',
+              WebkitBackdropFilter: 'blur(8px)',
+            }}
+            >
+            <div className="rounded-lg p-8 max-w-xl w-full text-center">
+              <LoadingCard message="Voting in progress..." />
             </div>
           </div>
         )}
