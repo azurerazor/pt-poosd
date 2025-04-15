@@ -38,7 +38,7 @@ const MissionVoteCard: React.FC<Props> = ({ selectedTeam, players, setAcceptReje
 
     return (
         <div className="card bg-base-100 shadow-sm">
-        <div className="card-body">
+        <div className="card-body flex-col">
             <h1 className="text-xl font-bold flex-row">Vote for this mission:</h1>
             <div className="justify-center join join-horizontal">
                 {selectedPlayers.map((p) => (

@@ -62,7 +62,7 @@ const SuccessFailCard: React.FC<Props> = ({ player, players, setSuccessFail}) =>
 
     return (
         <div className="card bg-base-100 shadow-sm">
-        <div className="card-body w-full flex-row">
+        <div className="card-body w-fit join-vertical">
             <h1 className="text-xl font-bold flex-row">Pass or Fail this mission:</h1>
             <div className="join join-horizontal flex justify-between space-x-5">
                 <img src={successCard} alt="Success Card" 
