@@ -5,6 +5,7 @@ import FunctionButton from "../misc/FunctionButton";
 import { useNavigate } from "react-router";
 
 type Props = {
+  myPlayer: Player;
   allPlayers: Map<string, Player>;
   winner: Alignment;
   assassinated: string | null;
@@ -12,7 +13,7 @@ type Props = {
   setBackToLobby: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function ResultsView({ allPlayers, winner, assassinated, message, setBackToLobby }: Props) {
+export default function ResultsView({ myPlayer, allPlayers, winner, assassinated, message, setBackToLobby }: Props) {
   const navigate = useNavigate();
   const players = Array.from(allPlayers.values());
 
@@ -39,7 +40,7 @@ export default function ResultsView({ allPlayers, winner, assassinated, message,
         )}
         <p className="text-xl italic mb-8">{message}</p>
 
-        <FunctionButton label="Back to Lobby" onClick={() => setBackToLobby(true)} />
+        <FunctionButton label="Back to Lobby" onClick={() => { if(myPlayer.isHost) setBackToLobby(true) }} />
       </div>
     </div>
   );

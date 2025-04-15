@@ -56,11 +56,11 @@ const MissionVoteCard: React.FC<Props> = ({ selectedTeam, players, setAcceptReje
             </div>
             <div className="join join-horizontal flex justify-between space-x-5">
                 <img src={accept} alt="Accept Card" 
-                  className={`w-60 border-6 ${leftActive ? 'border-blue-400' : 'border-transparent'}`}
+                  className={`w-50 border-6 ${leftActive ? 'border-blue-400' : 'border-transparent'}`}
                   onClick={handleAccept}
                 />
                 <img src={reject} alt="Reject Card" 
-                  className={`w-60 border-6 ${rightActive ? 'border-blue-400' : 'border-transparent'}`} 
+                  className={`w-50 border-6 ${rightActive ? 'border-blue-400' : 'border-transparent'}`} 
                   onClick={handleReject}
                 />
             </div>

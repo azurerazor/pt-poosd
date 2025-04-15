@@ -108,6 +108,7 @@ export default function GameFlow() {
           }
           if(event.state !== null){
             setGameState(event.state.state);
+            if(event.state.state === GameState.LOBBY)setEndState(false);
             setOutcomes(event.state.outcomes!);
             setRound(event.state.round);
           }
@@ -125,7 +126,6 @@ export default function GameFlow() {
 
       const timer = setTimeout(() => {
         setShowRoleCard(false);
-        ClientEventBroker.getInstance().dispatch(ClientLobby.getInstance(), new GameResultEvent(Alignment.GOOD,"The good players stopped Mordred!"));
       }, ROLE_REVEAL_TIME);
 
       return () => clearTimeout(timer);
@@ -188,6 +188,20 @@ export default function GameFlow() {
       message = event.message;
       assassinated = event.assassinated !== null ? event.assassinated : "";
       setEndState(true);
+      setEnabledRoles(Roles.NONE);
+      setSelectedTeam([]);
+      setSuccessFail(null);
+      setAcceptReject(null);
+      setAssassinate(null);
+      setBackToLobby(false);
+      setShowRoleCard(false);
+      setShowSuccessFail(false);
+      setShowMissionVote(false);
+      setShowMissionOutcome(false);
+      setShowAssassinationCard(false);
+      setGameReady(false);
+      setChangeView(false);
+      setSentTeamProposal(false);
     });
   }, []);
 
@@ -281,25 +295,7 @@ export default function GameFlow() {
       console.log("Sending back to lobby event");
       ClientEventBroker.getInstance().send(new BackToLobbyEvent());
       setGameState(GameState.LOBBY);
-      setEnabledRoles(Roles.NONE);
-      setSelectedTeam([]);
-      setSuccessFail(null);
-      setAcceptReject(null);
-      setAssassinate(null);
-      setBackToLobby(false);
       setEndState(false);
-      setShowRoleCard(false);
-      setShowSuccessFail(false);
-      setShowMissionVote(false);
-      setShowMissionOutcome(false);
-      setShowAssassinationCard(false);
-      setGameReady(false);
-      setIsLoading(false);
-      setChangeView(false);
-      setHasReceivedFirstUpdate(false);
-      setHasResolvedPlayer(false);
-      setUpdating(false);
-      setSentTeamProposal(false);
     }
   }, [backToLobby]);
 
@@ -311,6 +307,7 @@ export default function GameFlow() {
     <div>
       {endState ? (
         <ResultsView
+          myPlayer={myPlayer}
           allPlayers={players}
           winner={winner}
           message={message}
