@@ -106,7 +106,7 @@ export function bootstrapEvents(): void {
 
         // Add servants if not enough roles
         while (roles.length < lobby.getPlayerCount()) {
-            roles.push(minion);
+            roles.push(servant);
         }
 
         // Shuffle roles and assign to players
