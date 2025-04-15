@@ -6,6 +6,7 @@ import 'escavalon_material.dart';
 import 'lobby.dart';
 import 'login.dart';
 import 'register.dart';
+import 'history.dart';
 
 final Uri _url = Uri.parse('www.escavalon.quest');
 
@@ -80,6 +81,16 @@ class _HomeContentState extends State<_HomeContent> {
             if (_username != null) { 
               return Column(
                 children: <Widget>[
+                  EscavalonButton(
+                    text: 'History', 
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HistoryPage(token: webTokenStorage)
+                        )
+                      );                    }
+                  ),
                   EscavalonButton(
                     text: 'Logout', 
                     onPressed: () {
