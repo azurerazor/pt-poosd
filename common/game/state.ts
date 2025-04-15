@@ -417,4 +417,23 @@ export class Lobby {
 
         return res;
     }
+
+    /**
+     * Checks whether the given player can assassinate merlin.
+     * 
+     * If the assassin is enabled, the player must be the assassin.
+     * Otherwise any evil player can submit a guess.
+     */
+    public canAssassinateMerlin(username: string): boolean {
+        const canAssassinate =
+        (this.enabledRoles & Roles.ASSASSIN) === Roles.ASSASSIN
+            ? Roles.ASSASSIN
+            : Roles.EVIL;
+
+        const player = this.getPlayer(username);
+        if (!player) return false;
+        if (!player.role) return false;
+
+        return (player.role & canAssassinate) !== Roles.NONE;
+    }
 }
