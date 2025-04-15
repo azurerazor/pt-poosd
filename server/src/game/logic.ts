@@ -292,7 +292,14 @@ function handleMissionChoice(lobby: ServerLobby, event: MissionChoiceEvent): voi
         return;
     }
 
-    console.log("Setting mission choice for", event.origin, "to", event.pass);
+    // Check that the choice is valid (good players can't fail)
+    const role = lobby
+        .getPlayer(event.origin)!
+        .getPossibleRoles()![0];
+    if (role.alignment === Alignment.GOOD && !event.pass) {
+        console.error("Received mission_choice event with invalid choice from good player:", event.origin);
+        return;
+    }
 
     lobby.setMissionChoice(event.origin, event.pass);
 }
