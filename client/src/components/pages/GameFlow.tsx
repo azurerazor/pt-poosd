@@ -98,7 +98,14 @@ export default function GameFlow() {
     ClientEventBroker.on('update', (lobby: ClientLobby, event: UpdateEvent) => {
       console.log("Received Update Event", event);
         setUpdating(true);
-        const updateGuys = async () => {        
+        const updateGuys = async () => {     
+          if(event.leader !== username){
+            console.log("Resetting accept/reject for mission choice and team vote because leader changed");
+            setSentTeamProposal(false);
+            setSuccessFail(null);
+            setAcceptReject(null);
+            setSelectedTeam([]);
+          }   
           if(event.players !== null){
             setMyPlayer(event.players.get(username));
             setPlayers(event.players);
@@ -160,12 +167,7 @@ export default function GameFlow() {
       setShowMissionOutcome(true);
 
       const timer = setTimeout(() => {
-        console.log("Resetting accept/reject for mission choice and team vote");
         setShowMissionOutcome(false);
-        setSentTeamProposal(false);
-        setSuccessFail(null);
-        setAcceptReject(null);
-        setSelectedTeam([]);
         console.log("Sending Ready event");
         ClientEventBroker.getInstance().send(new ReadyEvent());
       }, MISSION_OUTCOME_TIME);

@@ -58,6 +58,7 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
     } else {
       setSelectedTeam(selectedGuys);
       (document.getElementById("MissionSelect") as HTMLDialogElement)?.close();
+      setSelectedGuys([]);
     }
   };
 

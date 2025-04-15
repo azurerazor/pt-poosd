@@ -7,7 +7,7 @@ interface Props {
   role?: string;
 }
 
-const StatsCard: React.FC<Props> = ({ played, won, role = "null" }) => {
+const StatsCard: React.FC<Props> = ({ played, won, role = "Overall" }) => {
   const actualRole =
     getRoleByName(role) === getRoleByName("Servant of Arthur") && role !== "Servant of Arthur"
       ? null
@@ -26,7 +26,7 @@ const StatsCard: React.FC<Props> = ({ played, won, role = "null" }) => {
           />
         )}
         <div className="w-full">
-          <div className="stat-title font-bold">{role ?? "Overall"}</div>
+          <div className="stat-title font-bold">{role ? role : "Overall"}</div>
           <div className="stat-value font-bold">
             {won} / {played}
           </div>

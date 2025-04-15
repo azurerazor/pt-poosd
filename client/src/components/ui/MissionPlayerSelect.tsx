@@ -9,7 +9,7 @@ interface Props {
 }
 
 const MissionPlayerSelect: React.FC<Props> = ({ player, selectedGuys, setSelectedGuys, numberOfGuys }) => {
-  const [isGreen, setIsGreen] = useState(false);
+  const isGreen = selectedGuys.includes(player.username);
 
     const handleClick = () => {
       if (!isGreen && selectedGuys.length === numberOfGuys) return;
@@ -18,7 +18,6 @@ const MissionPlayerSelect: React.FC<Props> = ({ player, selectedGuys, setSelecte
       } else {
         setSelectedGuys([...selectedGuys, player.username]);
       }
-      setIsGreen((prevStatus) => !prevStatus);
     };
   return (
     <div onClick={handleClick} className="relative">
