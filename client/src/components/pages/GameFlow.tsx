@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { MissionChoiceEvent, ReadyEvent, StartGameEvent, UpdateEvent, SetRoleListEvent } from "@common/game/events";
+import { MissionChoiceEvent, ReadyEvent, StartGameEvent, UpdateEvent, SetRoleListEvent, TeamProposalEvent } from "@common/game/events";
 import { ClientEventBroker } from "game/events";
 import LobbyView from "./LobbyView";
 import GameView from "./GameView";
@@ -58,11 +58,14 @@ export default function GameFlow() {
   const [round, setRound] = useState(-1);
   const [order, setOrder] = useState<string[]>([]);
 
+  // useStates for different stages of the game
+  const [showRoleCard, setShowRoleCard] = useState(false);
+  const [showMissionVote, setShowMissionVote] = useState(false);
+
   // Other useStates used to wait for async stuff
   const [gameReady, setGameReady] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [changeView, setChangeView] = useState(false);
-  const [showRoleCard, setShowRoleCard] = useState(false);
   const [hasReceivedFirstUpdate, setHasReceivedFirstUpdate] = useState(false);
   const [hasResolvedPlayer, setHasResolvedPlayer] = useState(false);
   const [updating, setUpdating] = useState(false);
@@ -86,10 +89,7 @@ export default function GameFlow() {
             setPlayers(event.players);
           }
           if (event.enabledRoles) {
-            const roleList = Array.from(event.enabledRoles).reduce((acc, name) => {
-              return acc | getRoleByName(name).role;
-            }, Roles.NONE);
-            setEnabledRoles(roleList);
+            setEnabledRoles(event.enabledRoles);
           }
           if(event.state){
             setGameState(event.state.state);
@@ -114,9 +114,21 @@ export default function GameFlow() {
 
       return () => clearTimeout(timer);
     });
+
+    ClientEventBroker.on('team_vote', (lobby: ClientLobby, event: UpdateEvent) => {
+      setShowRoleCard(true);
+
+      const timer = setTimeout(() => {
+        setShowRoleCard(false);
+      }, 10*1000);
+
+      return () => clearTimeout(timer);
+    });
+
   }, []);
 
   // Change the page from Lobby to Game
+  // TO-DO add a check for number of players (Gray out button for non-hosts and if not enough players)
   useEffect(() => {
     if (changeView) {
       setIsLoading(true);
@@ -127,6 +139,14 @@ export default function GameFlow() {
       };
 
       initializeGame();
+    }else {
+      setIsLoading(true);
+      const noGame = async () => {        
+        setGameReady(false);
+        setIsLoading(false);
+      };
+
+      noGame();
     }
   }, [changeView]);
 
@@ -134,6 +154,8 @@ export default function GameFlow() {
   useEffect(() => {
     if(gameState !== GameState.LOBBY){
       setChangeView(true);
+    }else {
+      setChangeView(false);
     }
   }, [gameState])
 
@@ -164,6 +186,10 @@ export default function GameFlow() {
     ClientEventBroker.getInstance().send(new SetRoleListEvent(enabledRoles));
   }, [enabledRoles]);
 
+  useEffect(() => {
+    ClientEventBroker.getInstance().send(new TeamProposalEvent(selectedTeam));
+  }, [selectedTeam])
+
   if(isLoading || updating){
     return <Loading />;
   }
@@ -190,8 +216,9 @@ export default function GameFlow() {
           setSuccessFail={setSuccessFail}
           outcomes={outcomes}
           round={round}
-          showRoleCard={showRoleCard}
           order={order}
+          showRoleCard={showRoleCard}
+          showMissionVote={showMissionVote}
         />
       )}
     </div>
