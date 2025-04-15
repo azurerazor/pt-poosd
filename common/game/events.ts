@@ -260,7 +260,7 @@ export class UpdateEvent extends GameEvent {
     /**
      * The set of enabled roles, if updated
      */
-    public enabledRoles: string[] | null = null;
+    public enabledRoles: Roles | null = null;
 
     /**
      * The info + state of all users in the lobby, if updated
@@ -288,7 +288,7 @@ export class UpdateEvent extends GameEvent {
         return this;
     }
 
-    public setEnabledRoles(roles: string[]): UpdateEvent {
+    public setEnabledRoles(roles: Roles): UpdateEvent {
         this.enabledRoles = roles;
         return this;
     }

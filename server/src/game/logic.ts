@@ -1,6 +1,6 @@
-import { ReadyEvent, RoleRevealEvent, StartGameEvent, TeamProposalEvent, UpdateEvent } from "@common/game/events";
+import { ReadyEvent, RoleRevealEvent, SetRoleListEvent, StartGameEvent, TeamProposalEvent, UpdateEvent } from "@common/game/events";
 import { Alignment, getRoles, minion } from "@common/game/roles";
-import { GameState } from "@common/game/state";
+import { GameState, Lobby } from "@common/game/state";
 import { ServerEventBroker } from "./events";
 import { ServerLobby } from "./lobby";
 import { updatePlayers } from "./sockets";
@@ -12,6 +12,33 @@ export function bootstrapEvents(): void {
     ServerEventBroker.on('ready', (lobby: ServerLobby, event: ReadyEvent) => {
         const username = event.origin;
         lobby.setReady(username);
+    });
+
+    ServerEventBroker.on('set_role_list', (lobby: ServerLobby, event: SetRoleListEvent) => {
+        // Check that the event is from the host
+        if (event.origin !== lobby.host) {
+            console.error("Received set_role_list event from non-host:", event.origin);
+            return;
+        }
+
+        // Check that the lobby is in the correct state
+        if (lobby.state.state !== GameState.LOBBY) {
+            console.error("Received set_role_list event in invalid state:", lobby.state.state);
+            return;
+        }
+
+        // Check that the roles are valid
+        if (Lobby.isValidRoleset(event.roles, lobby.getPlayerCount())) {
+            // If so, update the lobby with the new roleset
+            lobby.enabledRoles = event.roles;
+        }
+
+        // If the roleset was invalid, still resend the old roleset
+        // to ensure the host doesn't get desynced
+        ServerEventBroker
+            .getInstance()
+            .sendTo(lobby, new UpdateEvent()
+                .setEnabledRoles(lobby.enabledRoles));
     });
 
     ServerEventBroker.on('start_game', (lobby: ServerLobby, event: StartGameEvent) => {
