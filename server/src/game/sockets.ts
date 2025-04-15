@@ -163,7 +163,15 @@ export function initializeSockets(server: Server): void {
         }
 
         // Update all players in the lobby
-        updatePlayers(lobby);
+        // For ease of use, we send all non-player-specific data to everyone here
+        // to ensure the newly connected player gets the whole game state
+        updatePlayers(lobby, (event => {
+            event
+                .setHost(lobby.host)
+                .setLeader(lobby.leader)
+                .setState(lobby.state)
+                .setEnabledRoles(lobby.enabledRoles)
+        }));
 
         // Handle events
         socket.on('event', (packet: EventPacket) => {

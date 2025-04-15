@@ -278,7 +278,7 @@ export class UpdateEvent extends GameEvent {
         return this;
     }
 
-    public setLeader(leader: string): UpdateEvent {
+    public setLeader(leader: string | null): UpdateEvent {
         this.leader = leader;
         return this;
     }
