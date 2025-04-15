@@ -205,7 +205,7 @@ export const assassin = new Role(
     "Assassin",
     "A servant of Mordred. Knows the other evil players (except Oberon). Can assassinate Merlin at the end of the game.",
     "https://assets.dized.app/project/1d4f013b-38de-4a55-bf81-f8390b8c4407/en-US/eb51938ff9a3aaa135a6ae051260d1ab/4ea4f8c0-781e-4e4c-a471-b555279d57b5-d41d8cd98f00b204e9800998ecf8427e.png",
-    Roles.EVIL & ~Roles.OBERON
+    Roles.EVIL & ~Roles.ASSASSIN & ~Roles.OBERON
 );
 
 export const oberon = new Role(

@@ -207,6 +207,7 @@ function handleTeamVote(lobby: ServerLobby): void {
         const team = lobby.state.team;
 
         // First clear any stale mission choices
+        lobby.waitingFor = WaitingFor.MISSION_CHOICES;
         lobby.clearMissionChoices();
         lobby.send(new MissionEvent(team));
 
@@ -307,9 +308,11 @@ function handleMissionOutcome(lobby: ServerLobby): void {
             lobby.state.round++;
             lobby.state.team = [];
 
-            lobby.send(new UpdateEvent()
-                .setState(lobby.state)
-                .setLeader(lobby.leader!));
+            updatePlayers(lobby, (event: UpdateEvent) => {
+                event
+                    .setState(lobby.state)
+                    .setLeader(lobby.leader!);
+            });
         });
         // Now send the outcome event
         l.send(new MissionOutcomeEvent(outcome, fails));
