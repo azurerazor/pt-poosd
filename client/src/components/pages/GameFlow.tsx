@@ -12,11 +12,11 @@ import { GameState } from "../../../../common/game/state";
 
 export const quests = [
   [],[],[],[],[],
-  [ 2,  3,  2,  3,  3],
-  [ 2,  3,  4,  3,  4],
-  [ 2,  3,  3,  4,  4],
-  [ 3,  4,  4,  5,  5],
-  [ 3,  4,  4,  5,  5],
+  [2, 3, 2, 3, 3],
+  [2, 3, 4, 3, 4],
+  [2, 3, 3, 4, 4],
+  [3, 4, 4, 5, 5],
+  [3, 4, 4, 5, 5],
   [3, 4, 4, 5, 5],
 ];
 
@@ -87,9 +87,9 @@ export default function GameFlow() {
         setUpdating(true);
         const updateGuys = async () => {        
           if(event.players){
-            temp = Array.from(event.players.keys());
             setMyPlayer(event.players.get(username));
             setPlayers(event.players);
+            console.log(event.players.get(username), event.players);
           }
           if (event.enabledRoles) {
             setEnabledRoles(event.enabledRoles);

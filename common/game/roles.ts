@@ -149,7 +149,7 @@ export const servant = new Role(
     Alignment.GOOD,
     "Servant of Arthur",
     "A loyal servant of Arthur. Does not know any other players' roles.",
-    "https://assets.dized.app/project/1d4f013b-38de-4a55-bf81-f8390b8c4407/en-US/eb51938ff9a3aaa135a6ae051260d1ab/b4fc2a8a-8367-4be9-b009-71eaa48f882c-d41d8cd98f00b204e9800998ecf8427e.png",
+    "https://assetsio.gnwcdn.com/the-resistance-avalon-board-game-artwork.jpg?width=1200&height=1200&fit=crop&quality=100&format=png&enable=upscale&auto=webp",
     Roles.NONE
 );
 
@@ -177,7 +177,7 @@ export const minion = new Role(
     "Minion of Mordred",
     "A servant of Mordred. Knows the other evil players (except Oberon).",
     //Update this
-    "https://assets.dized.app/project/1d4f013b-38de-4a55-bf81-f8390b8c4407/en-US/eb51938ff9a3aaa135a6ae051260d1ab/ed963445-6c3d-4c46-b22c-85f17fb3c60e-d41d8cd98f00b204e9800998ecf8427e.png",
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTOzQ5zgpTsSD_BExlKgiOrl_lBGNBqKANYcQ&s",
     Roles.EVIL & ~Roles.OBERON
 );
 
