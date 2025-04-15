@@ -87,7 +87,7 @@ class _HomeContentState extends State<_HomeContent> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => HistoryPage(token: webTokenStorage)
+                          builder: (context) => HistoryPage(token: webTokenStorage!)
                         )
                       );                    }
                   ),

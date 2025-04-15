@@ -1,13 +1,17 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/escavalon_material.dart';
+import 'package:http/http.dart' as http;
 
 import 'game.dart';
 
-FlutterSecureStorage? webTokenStorage;
+FlutterSecureStorage webTokenStorage = FlutterSecureStorage();
 
 class HistoryPage extends StatelessWidget {
-  final FlutterSecureStorage? token;
+  final FlutterSecureStorage token;
   
   const HistoryPage({
     super.key,
@@ -32,7 +36,7 @@ class _HistoryPageContent extends StatefulWidget {
 
 class _HistoryPageContentState extends State<_HistoryPageContent> {
   late bool doneLoading;
-  late List<_GameRecord> games;
+  List<_GameRecord> games = [];
 
   @override
   void initState() {
@@ -42,13 +46,41 @@ class _HistoryPageContentState extends State<_HistoryPageContent> {
   }
 
   void _loadGames() async {
+    final String? token = await webTokenStorage.read(key: "token");
 
+    final response = await http.get(
+      Uri.parse('http://45.55.60.192:5050/api/game_history/get'),
+      headers: {HttpHeaders.cookieHeader: token!},
+    );
 
+    if (response.statusCode == 200) {
+      List<dynamic> gamesList = jsonDecode(response.body)['games'];
 
-    // setState(() {
-    //   doneLoading = true;
-    // });
-
+      for (var info in gamesList) {
+        games.add(
+          _GameRecord(
+            timeStarted: info['timeStarted'], 
+            numPlayers: info['numPlayers'], 
+            victor: info['goodWin'] ? Team.good : Team.evil, 
+            questResults: (info['missionOutcomes'] as List<dynamic>)
+                .map((outcome) {
+              switch (outcome) {
+                case false:
+                  return Team.evil;
+                case true:
+                  return Team.good;
+                case null:
+                default:
+                  return null;
+              }
+            }).toList(), 
+            specialRoles: List<String>.from(info['roles'])
+          )
+        );
+      }
+    }
+    
+    setState(() => doneLoading = true,);
   }
 
   @override
@@ -74,18 +106,40 @@ class _HistoryPageContentState extends State<_HistoryPageContent> {
           children: [
             Builder(builder: (context) {
               if (doneLoading) {
+                if (games.isEmpty) {
+                  return Text(
+                    "No game history found",
+                    style: TextStyle(
+                      fontSize: 24,
+                      // fontWeight: FontWeight.bold,
+                      fontStyle: FontStyle.italic
+                    ),
+                  );
+                }
+
                 return ListView(
                   scrollDirection: Axis.vertical,
                   children: games,
                 );
               } else {
-                return const Text(
-                  "Loading game history...",
-                  style: TextStyle(
-                    fontSize: 24,
-                    // fontWeight: FontWeight.bold,
-                    fontStyle: FontStyle.italic
-                  ),
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Loading game history",
+                      style: TextStyle(
+                        fontSize: 24,
+                        // fontWeight: FontWeight.bold,
+                        fontStyle: FontStyle.italic
+                      ),
+                    ),
+                    SizedBox(width: 20,),
+                    SizedBox(
+                        width: 21,
+                        height: 21,
+                        child: CircularProgressIndicator()
+                      ),
+                  ],
                 );
               }
             })
