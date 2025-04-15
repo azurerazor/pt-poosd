@@ -54,6 +54,11 @@ export class ServerEventBroker extends EventBroker {
         return lobby;
     }
 
+    public dispatch(lobby: Lobby, event: GameEvent): void {
+        console.log("Dispatching event:", event);
+        super.dispatch(lobby, event);
+    }
+
     public receive(packet: EventPacket): void {
         // Validate the packet
         const username = packet.origin;
