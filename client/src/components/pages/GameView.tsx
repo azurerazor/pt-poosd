@@ -33,9 +33,10 @@ type Props = {
   showRoleCard: boolean;
   showMissionVote: boolean;
   showSuccessFail: boolean;
+  showMissionOutcome: boolean;
 };
 
-export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam, successFail, setSuccessFail, setAcceptReject, outcomes, round, order, acceptedTeam, showRoleCard, showMissionVote, showSuccessFail }: Props) {
+export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam, successFail, setSuccessFail, setAcceptReject, outcomes, round, order, acceptedTeam, showRoleCard, showMissionVote, showSuccessFail, showMissionOutcome }: Props) {
   const navigate = useNavigate();
   const [selectedGuys, setSelectedGuys] = useState<string[]>([]);
   const grayscaleVal = !myPlayer.isLeader ? 100 : 0;
@@ -188,20 +189,20 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
          * Screen for displaying result of mission
          */
         }
-        <div className="absolute bottom-20">
-          <FunctionButton
-            label="Reveal Mission"
-            onClick={() => (document.getElementById("RevealMission") as HTMLDialogElement)?.showModal()}
-          />
-          <dialog id="RevealMission" className="modal">
-            <div className="fixed inset-0 z-50 flex items-center justify-center">
-              <MissionRevealCard outcomes={outcomes} numberOfPlayers={players.size} round={round} />
+        {showMissionOutcome && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center"
+            style={{
+              backdropFilter: 'blur(8px)',
+              backgroundColor: 'rgba(0, 0, 0, 0.3)',
+              WebkitBackdropFilter: 'blur(8px)',
+            }}
+          >
+            <div className="rounded-lg p-8 max-w-xl w-full text-center">
+              <MissionVoteCard selectedTeam={selectedTeam} players={players}  setAcceptReject={setAcceptReject} />
             </div>
-            <form method="dialog" className="modal-backdrop">
-              <button>close</button>
-            </form>
-          </dialog>
-        </div>
+          </div>
+        )}
 
         {
         /**

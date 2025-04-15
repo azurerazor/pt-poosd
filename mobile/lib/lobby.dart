@@ -167,6 +167,10 @@ class _LobbyPageContentState extends State<_LobbyPageContent> {
                 addEvilRole("Mordred");
               }
 
+              if (_rolesSelected["Assassin"] == true) {
+                addEvilRole("Assassin");
+              }
+
               return;
             }
 
@@ -184,9 +188,9 @@ class _LobbyPageContentState extends State<_LobbyPageContent> {
               return;
             }
 
-            if (role == "Mordred") {
-              if (addEvilRole("Mordred")) {
-                if (_rolesSelected["Mordred"] == true) {
+            if (role == "Mordred" || role == "Assassin") {
+              if (addEvilRole(role)) {
+                if (_rolesSelected[role] == true) {
                   _rolesSelected["Merlin"] = true;
                 }
               }

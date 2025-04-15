@@ -64,6 +64,7 @@ export default function GameFlow() {
   const [showRoleCard, setShowRoleCard] = useState(false);
   const [showSuccessFail, setShowSuccessFail] = useState(false);
   const [showMissionVote, setShowMissionVote] = useState(false);
+  const [showMissionOutcome, setShowMissionOutcome] = useState(false);
 
   // Other useStates used to wait for async stuff
   const [gameReady, setGameReady] = useState(false);
@@ -81,11 +82,8 @@ export default function GameFlow() {
     ClientLobby.initialize(lobbyId);
     ClientEventBroker.initialize(username, token);
 
-    ClientEventBroker.on('ready', (lobby: ClientLobby, event: ReadyEvent) => {
-        console.log("READY EVENT", event);
-    });
-
     ClientEventBroker.on('update', (lobby: ClientLobby, event: UpdateEvent) => {
+      console.log("Received Update Event", event);
         setUpdating(true);
         const updateGuys = async () => {        
           if(event.players){
@@ -99,7 +97,6 @@ export default function GameFlow() {
           if(event.state){
             setGameState(event.state.state);
             setOutcomes(event.state.outcomes!);
-            setSelectedTeam(event.state.team!);
             setRound(event.state.round);
             setAcceptedTeam(event.state.team);
           }
@@ -112,6 +109,7 @@ export default function GameFlow() {
     });
 
     ClientEventBroker.on('role_reveal', (lobby: ClientLobby, event: UpdateEvent) => {
+      console.log("Received role reveal Event", event);
       setShowRoleCard(true);
 
       const timer = setTimeout(() => {
@@ -122,6 +120,7 @@ export default function GameFlow() {
     });
 
     ClientEventBroker.on('team_vote', (lobby: ClientLobby, event: UpdateEvent) => {
+      console.log("Received team vote Event", event);
       setShowMissionVote(true);
 
       const timer = setTimeout(() => {
@@ -132,6 +131,7 @@ export default function GameFlow() {
     });
 
     ClientEventBroker.on('mission', (lobby: ClientLobby, event: UpdateEvent) => {
+      console.log("Received mission Event", event);
       setShowMissionVote(true);
 
       const timer = setTimeout(() => {
@@ -139,13 +139,25 @@ export default function GameFlow() {
       }, 10*1000);
 
       return () => clearTimeout(timer);
-    });    
+    });
+
+    ClientEventBroker.on('mission_outcome', (lobby: ClientLobby, event: UpdateEvent) => {
+      console.log("Received mission_outcome Event", event);
+      setShowMissionOutcome(true);
+
+      const timer = setTimeout(() => {
+        setShowMissionOutcome(false);
+      }, 10*1000);
+
+      return () => clearTimeout(timer);
+    });
   }, []);
 
   // Change the page from Lobby to Game
   useEffect(() => {
     if (changeView) {
       setIsLoading(true);
+      console.log("Sending StartGameEvent");
       ClientEventBroker.getInstance().send(new StartGameEvent());
       const initializeGame = async () => {        
         setGameReady(true);
@@ -176,25 +188,30 @@ export default function GameFlow() {
   // If done updating send a ready event to socket
   useEffect(() => {
     if(!updating && hasReceivedFirstUpdate && myPlayer){
+      console.log("Sending ready event");
       ClientEventBroker.getInstance().send(new ReadyEvent());
     }
   }, [updating, hasReceivedFirstUpdate, myPlayer]);
 
   // Send a mission choice event whenever you make a choice
   useEffect(() => {
+    console.log("Sending Mission Choice Event", successFail);
     ClientEventBroker.getInstance().send(new MissionChoiceEvent(successFail!));
   }, [successFail]);
 
   // Send a roleListEvent whenever the role list changes
   useEffect(() => {
+    console.log("Sending SetRoleListEvent", enabledRoles);
     ClientEventBroker.getInstance().send(new SetRoleListEvent(enabledRoles));
   }, [enabledRoles]);
 
   useEffect(() => {
+    console.log("Sending TeamProposalEvent", selectedTeam);
     ClientEventBroker.getInstance().send(new TeamProposalEvent(selectedTeam));
   }, [selectedTeam]);
 
   useEffect(() => {
+    console.log("Sending TeamVoteChoiceEvent", acceptReject);
     ClientEventBroker.getInstance().send(new TeamVoteChoiceEvent(acceptReject!));
   }, [acceptReject]);
 
@@ -230,6 +247,7 @@ export default function GameFlow() {
           showRoleCard={showRoleCard}
           showMissionVote={showMissionVote}
           showSuccessFail={showSuccessFail}
+          showMissionOutcome={showMissionOutcome}
         />
       )}
     </div>

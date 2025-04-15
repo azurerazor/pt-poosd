@@ -3,7 +3,6 @@
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:mobile/escavalon_material.dart';
 
 import 'game_phases/night.dart';
@@ -61,14 +60,10 @@ class _GamePageContentState extends State<_GamePageContent> {
 
   Future<bool>? _gameSavedSuccessfully;
 
-  FlutterTts flutterTts = FlutterTts();
-
   @override
   void initState() {
     super.initState();
-    flutterTts.setLanguage("en-US");
-    flutterTts.setSpeechRate(0.5);
-    flutterTts.setVolume(1.0);
+    gamePhase = 0;
   }
 
   @override
