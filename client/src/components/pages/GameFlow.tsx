@@ -57,7 +57,6 @@ export default function GameFlow() {
   const [outcomes, setOutcomes] = useState<number[]>([]);
   const [round, setRound] = useState(-1);
   const [order, setOrder] = useState<string[]>([]);
-  const [acceptedTeam, setAcceptedTeam] = useState<string[]>([]);
   const [acceptReject, setAcceptReject] = useState<boolean | null>(null);
 
   // useStates for different stages of the game
@@ -73,6 +72,7 @@ export default function GameFlow() {
   const [hasReceivedFirstUpdate, setHasReceivedFirstUpdate] = useState(false);
   const [hasResolvedPlayer, setHasResolvedPlayer] = useState(false);
   const [updating, setUpdating] = useState(false);
+  const [sentTeamProposal, setSentTeamProposal] = useState(false);
 
   // Update all the necessary useStates whenever socket updates
   useEffect(() => {
@@ -86,19 +86,19 @@ export default function GameFlow() {
       console.log("Received Update Event", event);
         setUpdating(true);
         const updateGuys = async () => {        
-          if(event.players){
+          if(event.players !== null){
             setMyPlayer(event.players.get(username));
             setPlayers(event.players);
           }
-          if (event.enabledRoles) {
+          if (event.enabledRoles !== null) {
             setEnabledRoles(event.enabledRoles);
           }
-          if(event.state){
+          if(event.state !== null){
             setGameState(event.state.state);
             setOutcomes(event.state.outcomes!);
             setRound(event.state.round);
           }
-          if(event.playerOrder)setOrder(event.playerOrder);
+          if(event.playerOrder !== null)setOrder(event.playerOrder);
           setUpdating(false);
           setHasReceivedFirstUpdate(true);
         };
@@ -124,6 +124,7 @@ export default function GameFlow() {
 
       const timer = setTimeout(() => {
         setShowMissionVote(false);
+        setSentTeamProposal(false);
       }, 10*1000);
 
       return () => clearTimeout(timer);
@@ -131,14 +132,11 @@ export default function GameFlow() {
 
     ClientEventBroker.on('mission', (lobby: ClientLobby, event: MissionEvent) => {
 
-      setAcceptedTeam(event.players!);
       setSelectedTeam(event.players!);
-
-      console.log("Received mission Event", event, acceptedTeam, event.players);
-      setShowMissionVote(true);
+      setShowSuccessFail(true);
 
       const timer = setTimeout(() => {
-        setShowMissionVote(false);
+        setShowSuccessFail(false);
       }, 10*1000);
 
       return () => clearTimeout(timer);
@@ -216,8 +214,9 @@ export default function GameFlow() {
   }, [enabledRoles]);
 
   useEffect(() => {
-    if(selectedTeam.length){
+    if(selectedTeam.length && myPlayer && myPlayer.isLeader && !sentTeamProposal){
       console.log("Sending TeamProposalEvent", selectedTeam);
+      setSentTeamProposal(true);
       ClientEventBroker.getInstance().send(new TeamProposalEvent(selectedTeam));
     }
   }, [selectedTeam]);
@@ -257,7 +256,6 @@ export default function GameFlow() {
           outcomes={outcomes}
           round={round}
           order={order}
-          acceptedTeam={acceptedTeam}
           showRoleCard={showRoleCard}
           showMissionVote={showMissionVote}
           showSuccessFail={showSuccessFail}
