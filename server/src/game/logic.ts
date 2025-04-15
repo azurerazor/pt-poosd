@@ -233,7 +233,10 @@ function handleTeamVote(lobby: ServerLobby): void {
  */
 function handleMissionChoice(lobby: ServerLobby, event: MissionChoiceEvent): void {
     // Ignore if we're not on a mission
-    if (lobby.waitingFor !== WaitingFor.MISSION_CHOICES) return;
+    if (lobby.waitingFor !== WaitingFor.MISSION_CHOICES) {
+        console.error("Received mission_choice event while not on a mission:", lobby.waitingFor);
+        return;
+    }
 
     // Check if the event is from a player on the team
     if (!lobby.state.team.includes(event.origin)) {
