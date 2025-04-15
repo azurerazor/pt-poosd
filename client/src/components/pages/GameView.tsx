@@ -26,6 +26,7 @@ type Props = {
   successFail: boolean | null;
   setSuccessFail: React.Dispatch<React.SetStateAction<boolean | null>>;
   setAcceptReject: React.Dispatch<React.SetStateAction<boolean | null>>;
+  setAssassinate: React.Dispatch<React.SetStateAction<string | null>>;
   outcomes: number[];
   round: number;
   order: string[];
@@ -33,9 +34,10 @@ type Props = {
   showMissionVote: boolean;
   showSuccessFail: boolean;
   showMissionOutcome: boolean;
+  showAssassinationCard: boolean;
 };
 
-export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam, successFail, setSuccessFail, setAcceptReject, outcomes, round, order, showRoleCard, showMissionVote, showSuccessFail, showMissionOutcome }: Props) {
+export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam, successFail, setSuccessFail, setAcceptReject, setAssassinate, outcomes, round, order, showRoleCard, showMissionVote, showSuccessFail, showMissionOutcome, showAssassinationCard }: Props) {
   const navigate = useNavigate();
   const [selectedGuys, setSelectedGuys] = useState<string[]>([]);
   const grayscaleVal = !myPlayer.isLeader ? 100 : 0;
@@ -61,6 +63,7 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
       {
       /**
        * Display's the player's role and information about it at the start of the game
+       * TO-DO Only show enabled roles in the info section
        */
       }
       {showRoleCard && (
@@ -201,7 +204,7 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
             }}
           >
             <div className="rounded-lg p-8 max-w-xl w-full text-center">
-              <MissionVoteCard selectedTeam={selectedTeam} players={players}  setAcceptReject={setAcceptReject} />
+              <MissionRevealCard outcomes={outcomes} numberOfPlayers={players.size} round={round} />
             </div>
           </div>
         )}
@@ -209,22 +212,23 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
         {
         /**
          * Assassination screen
+         * TO-DO Add check to only show evils in here
          */
         }
-        <div className="absolute top-50">
-          <FunctionButton
-            label="Assassination"
-            onClick={() => (document.getElementById("AssassinationScreen") as HTMLDialogElement)?.showModal()}
-          />
-          <dialog id="AssassinationScreen" className="modal">
-            <div className="fixed inset-0 z-50 flex items-center justify-center">
-              <AssassinationScreen player={myPlayer} players={players} />
+        {(showAssassinationCard && !(getRoles(myPlayer.role!)[0].isGood())) && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center"
+            style={{
+              backdropFilter: 'blur(8px)',
+              backgroundColor: 'rgba(0, 0, 0, 0.3)',
+              WebkitBackdropFilter: 'blur(8px)',
+            }}
+          >
+            <div className="rounded-lg p-8 max-w-xl w-full text-center">
+              <AssassinationScreen player={myPlayer} players={players} setAssassinate={setAssassinate} />
             </div>
-            <form method="dialog" className="modal-backdrop">
-              <button>close</button>
-            </form>
-          </dialog>
-        </div>
+          </div>
+        )}
 
         {
         /**

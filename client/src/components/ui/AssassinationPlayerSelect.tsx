@@ -2,16 +2,20 @@ import { useState } from "react";
 import { Player } from "../../../../common/game/player";
 
 interface Props {
-  player: Player,
-  id: number,
-  selected: number,
-  setSelected: React.Dispatch<React.SetStateAction<number>>
+  player: Player;
+  id: number;
+  selected: number;
+  setSelected: React.Dispatch<React.SetStateAction<number>>;
+  setAssassinate: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
-const AssassinationPlayerSelect: React.FC<Props> = ({ player, id, selected, setSelected }) => {
+const AssassinationPlayerSelect: React.FC<Props> = ({ player, id, selected, setSelected, setAssassinate }) => {
   const handleClick = () => {
     if (selected === id) setSelected(-1);
-    else setSelected(id);
+    else {
+      setAssassinate(player.username);
+      setSelected(id);
+    }
   };
 
   return (
