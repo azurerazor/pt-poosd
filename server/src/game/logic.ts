@@ -1,6 +1,6 @@
-import { ReadyEvent, RoleRevealEvent, StartGameEvent, UpdateEvent } from "@common/game/events";
+import { ReadyEvent, RoleRevealEvent, StartGameEvent, TeamProposalEvent, UpdateEvent } from "@common/game/events";
 import { Alignment, getRoles, minion } from "@common/game/roles";
-import { GameState, Outcome } from "@common/game/state";
+import { GameState } from "@common/game/state";
 import { ServerEventBroker } from "./events";
 import { ServerLobby } from "./lobby";
 import { updatePlayers } from "./sockets";
@@ -83,6 +83,38 @@ export function bootstrapEvents(): void {
         lobby.onReady(l => {
             // All players have been updated and responded ready; trigger the role reveal
             ServerEventBroker.getInstance().sendTo(l, new RoleRevealEvent());
+
+            // At this point, we wait for a team proposal from the leader
+        });
+    });
+
+    ServerEventBroker.on("team_proposal", (lobby: ServerLobby, event: TeamProposalEvent) => {
+        // Check that the event is from the leader
+        if (event.origin !== lobby.leader) {
+            console.error("Received team_proposal event from non-leader:", event.origin);
+            return;
+        }
+
+        // Check that the lobby is in the correct state
+        if (lobby.state.state !== GameState.IN_GAME) {
+            console.error("Received team_proposal event in invalid state:", lobby.state.state);
+            return;
+        }
+
+        // Check that the proposal is valid
+        if (event.team.length != lobby.getMissionPlayerCount()) {
+            console.error("Received team_proposal event with wrong number of players:", event.team.length);
+            return;
+        }
+
+        // Update the state
+        lobby.state.team = event.team;
+
+        // Send the update
+        updatePlayers(lobby, (event: UpdateEvent) => {
+            event
+                .setState(lobby.state)
+                .setLeader(lobby.leader!);
         });
     });
 }
