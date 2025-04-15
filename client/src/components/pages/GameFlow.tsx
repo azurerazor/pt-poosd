@@ -126,7 +126,6 @@ export default function GameFlow() {
 
       const timer = setTimeout(() => {
         setShowMissionVote(false);
-        setSentTeamProposal(false);
       }, 10*1000);
 
       return () => clearTimeout(timer);
@@ -150,6 +149,8 @@ export default function GameFlow() {
 
       const timer = setTimeout(() => {
         setShowMissionOutcome(false);
+        setSentTeamProposal(false);
+        ClientEventBroker.getInstance().send(new ReadyEvent());
       }, 10*1000);
 
       return () => clearTimeout(timer);
