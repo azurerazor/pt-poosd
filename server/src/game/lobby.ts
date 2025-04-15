@@ -2,6 +2,7 @@ import { Lobby } from "@common/game/state";
 import { deleteLobby } from "./lobbies";
 import { GameEvent } from "@common/game/events";
 import { ServerEventBroker } from "./events";
+import { merlin } from "@common/game/roles";
 
 export class ServerLobby extends Lobby {
     /**
@@ -180,5 +181,28 @@ export class ServerLobby extends Lobby {
      */
     public clearMerlinGuesses(): void {
         this.merlinGuessMap.clear();
+    }
+
+    /**
+     * Gets which player is Merlin, if any.
+     * 
+     * Returns null if no player is assigned to Merlin.
+     */
+    public getMerlin(): string | null {
+        for (const player of this.getPlayers()) {
+            if (merlin.is(player.role!)) return player.username;
+        }
+        return null;
+    }
+
+    /**
+     * Increments the leader, setting them to the next player that's not online.
+     */
+    public incrementLeader(): void {
+        let index = this.playerOrder.indexOf(this.leader!);
+        do {
+            index = (index + 1) % this.playerOrder.length;
+            this.leader = this.playerOrder[index];
+        } while (!this.getPlayer(this.leader)!.isConnected);
     }
 }
