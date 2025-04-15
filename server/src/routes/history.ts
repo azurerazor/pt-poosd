@@ -23,7 +23,9 @@ function gameToJson(game: any): any {
 router.get('/get/:num?', async (req: Request, res: Response) => {
     // Fetch games for the user
     const user = res.locals.user;
-    const docs = await MobileGame.find({ user }).sort({ date: -1 }).limit(parseInt(req.params.num) || 100);
+    const docs = await MobileGame.find({ user })
+        .sort({ date: -1 })
+        .limit(parseInt(req.params.num) || 100);
 
     // Return a list of all games played by the user
     const games = docs.map(gameToJson);
