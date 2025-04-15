@@ -475,20 +475,32 @@ export class MissionOutcomeEvent extends GameEvent {
 
 /**
  * Sent to clients when enough missions have passed and evil
- * players have the chance to pick out Merlin
+ * players have the chance to pick out Merlin.
  * 
  * If the assassin role is enabled, only the assasin should
- * be able to send in a vote
+ * be able to send in a vote. Otherwise, all evil players
+ * can send an AssassinationGuessEvent.
  * 
- * Otherwise, all evil players can send a MerlinGuessEvent
+ * Contains a list of usernames of good players, which will
+ * be the options for assassination.
  */
 export class AssassinationEvent extends GameEvent {
-    public constructor() {
+    public goodPlayers: string[];
+
+    public constructor(goodPlayers: string[] = []) {
         super("assassination");
+        this.goodPlayers = goodPlayers;
     }
 
-    public read(json: any): void { }
-    public write(): any { return {}; }
+    public read(json: any): void {
+        this.goodPlayers = json.good_players;
+    }
+
+    public write(): any {
+        return {
+            good_players: this.goodPlayers
+        };
+    }
 }
 
 /**

@@ -7,6 +7,7 @@ import Stats from "../models/stats";
 import { ServerEventBroker } from "./events";
 import { ServerLobby, WaitingFor } from "./lobby";
 import { updatePlayers } from "./sockets";
+import { Player } from "@common/game/player";
 
 /**
  * Min number of players to start a game (1 if running locally)
@@ -339,8 +340,16 @@ function handleMissionOutcome(lobby: ServerLobby): void {
             }
 
             // Otherwise, go to the assassination phase
+            // Fetch good players first
+            const goodPlayers: string[] = [];
+            for (const player of lobby.getPlayers()) {
+                const role = player.getPossibleRoles()![0];
+                if (role.alignment === Alignment.GOOD) {
+                    goodPlayers.push(player.username);
+                }
+            }
             lobby.clearMerlinGuesses();
-            lobby.send(new AssassinationEvent());
+            lobby.send(new AssassinationEvent(goodPlayers));
 
             // Wait for merlin guesses
             setTimeout(() => handleAssassination(lobby), ASSASSINATION_TIME);
