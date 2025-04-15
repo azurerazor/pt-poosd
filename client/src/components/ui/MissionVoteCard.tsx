@@ -20,20 +20,22 @@ const MissionVoteCard: React.FC<Props> = ({ selectedTeam, players, setAcceptReje
     const [leftActive, setLeft] = useState(false);
     const [rightActive, setRight] = useState(false);
 
-    const handleAccept = () => {
+    const handleLeft = () => {
         console.log("accepted");
-        if(leftActive)setAcceptReject(null);
-        else setAcceptReject(true);
-        setLeft(leftActive => !leftActive);
-        if (!leftActive) setRight(false);
+        if (!leftActive) {
+            setAcceptReject(true);
+            setRight(false);
+            setLeft(leftActive => !leftActive);
+        }
     };
 
-    const handleReject = () => {
+    const handleRight = () => {
         console.log("rejected");
-        if(rightActive)setAcceptReject(null);
-        else setAcceptReject(false);
-        setRight(rightActive => !rightActive);
-        if (!rightActive) setLeft(false);
+        if (!rightActive) {
+            setAcceptReject(false);
+            setLeft(false);
+            setRight(rightActive => !rightActive);
+        }
     };
 
     return (

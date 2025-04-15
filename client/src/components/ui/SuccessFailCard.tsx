@@ -43,10 +43,8 @@ const SuccessFailCard: React.FC<Props> = ({ player, players, setSuccessFail}) =>
         if (!leftActive) {
             setSuccessFail(true);
             setRight(false);
-        }else{
-            setSuccessFail(null);
+            setLeft(leftActive => !leftActive);
         }
-        setLeft(leftActive => !leftActive);
     };
 
     const handleRight = () => {
@@ -54,10 +52,8 @@ const SuccessFailCard: React.FC<Props> = ({ player, players, setSuccessFail}) =>
         if (!rightActive) {
             setSuccessFail(failCard === successCard);
             setLeft(false);
-        }else{
-            setSuccessFail(null);
+            setRight(rightActive => !rightActive);
         }
-        setRight(rightActive => !rightActive);
     };
 
     return (
