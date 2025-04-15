@@ -20,6 +20,7 @@ type Props = {
 export default function LobbyView({ players, changeView, setChangeView, lobbyId, enabledRoles, setEnabledRoles, myPlayer }: Props) {
     console.log(myPlayer, "IN THE LOBBY");
     let specialRoles = getRoles(Roles.SPECIAL_ROLES);
+    const grayscaleVal = (!myPlayer.isHost || players.size < 5) ? 100 : 0;
     return (
         <RolesetContextProvider>
             <div className="flex justify-center gap-4 p-4 h-screen">
@@ -36,10 +37,12 @@ export default function LobbyView({ players, changeView, setChangeView, lobbyId,
 
                     </div>
                     <div className="flex justify-between items-center">
-                        <FunctionButton
-                            label="Start"
-                            onClick={() => { if(myPlayer.isHost) setChangeView(true)}}
-                        />
+                        <div style={{ filter: `grayscale(${grayscaleVal}%)` }}>
+                            <FunctionButton
+                                label="Start"
+                                onClick={() => { if(grayscaleVal === 0) setChangeView(true)}}
+                            />
+                        </div>
                         <RouteButton to="/dashboard">
                             Exit
                         </RouteButton>
