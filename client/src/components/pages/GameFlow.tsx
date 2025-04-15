@@ -79,6 +79,7 @@ export default function GameFlow() {
   const [hasResolvedPlayer, setHasResolvedPlayer] = useState(false);
   const [updating, setUpdating] = useState(false);
   const [sentTeamProposal, setSentTeamProposal] = useState(false);
+  const [goodPlayers, setGoodPlayers] = useState<string[]>([]);
 
   // End state variables
   let winner = Alignment.GOOD;
@@ -177,8 +178,9 @@ export default function GameFlow() {
 
     ClientEventBroker.on('assassination', (lobby: ClientLobby, event: AssassinationEvent) => {
       console.log("Received assassination Event", event);
-      setShowAssassinationCard(true);
+      setGoodPlayers(event.goodPlayers);
 
+      setShowAssassinationCard(true);
       const timer = setTimeout(() => {
         setShowAssassinationCard(false);
       }, ASSASSINATION_TIME);
@@ -340,6 +342,7 @@ export default function GameFlow() {
           round={round}
           order={order}
           setAssassinate={setAssassinate}
+          goodPlayers={goodPlayers}
           showRoleCard={showRoleCard}
           showMissionVote={showMissionVote}
           showSuccessFail={showSuccessFail}
