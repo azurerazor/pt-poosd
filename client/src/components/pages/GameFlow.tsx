@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { MissionChoiceEvent, ReadyEvent, StartGameEvent, UpdateEvent, SetRoleListEvent, TeamProposalEvent, TeamVoteEvent } from "@common/game/events";
+import { MissionChoiceEvent, ReadyEvent, StartGameEvent, UpdateEvent, SetRoleListEvent, TeamProposalEvent, TeamVoteEvent, TeamVoteChoiceEvent } from "@common/game/events";
 import { ClientEventBroker } from "game/events";
 import LobbyView from "./LobbyView";
 import GameView from "./GameView";
@@ -58,11 +58,12 @@ export default function GameFlow() {
   const [round, setRound] = useState(-1);
   const [order, setOrder] = useState<string[]>([]);
   const [acceptedTeam, setAcceptedTeam] = useState<string[]>([]);
+  const [acceptReject, setAcceptReject] = useState<boolean | null>(null);
 
   // useStates for different stages of the game
   const [showRoleCard, setShowRoleCard] = useState(false);
-  const [showMissionVote, setShowMissionVote] = useState(false);
   const [showSuccessFail, setShowSuccessFail] = useState(false);
+  const [showMissionVote, setShowMissionVote] = useState(false);
 
   // Other useStates used to wait for async stuff
   const [gameReady, setGameReady] = useState(false);
@@ -100,6 +101,7 @@ export default function GameFlow() {
             setOutcomes(event.state.outcomes!);
             setSelectedTeam(event.state.team!);
             setRound(event.state.round);
+            setAcceptedTeam(event.state.team);
           }
           if(event.playerOrder)setOrder(event.playerOrder);
           setUpdating(false);
@@ -190,7 +192,11 @@ export default function GameFlow() {
 
   useEffect(() => {
     ClientEventBroker.getInstance().send(new TeamProposalEvent(selectedTeam));
-  }, [selectedTeam])
+  }, [selectedTeam]);
+
+  useEffect(() => {
+    ClientEventBroker.getInstance().send(new TeamVoteChoiceEvent(acceptReject!));
+  }, [acceptReject]);
 
   if(isLoading || updating || !myPlayer){
     return <Loading />;
@@ -216,6 +222,7 @@ export default function GameFlow() {
           setSelectedTeam={setSelectedTeam}
           successFail={successFail}
           setSuccessFail={setSuccessFail}
+          setAcceptReject={setAcceptReject}
           outcomes={outcomes}
           round={round}
           order={order}

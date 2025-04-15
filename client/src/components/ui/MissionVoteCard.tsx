@@ -7,9 +7,10 @@ import { useState } from 'react';
 interface Props {
   selectedTeam: string[];
   players: Map<string, Player>;
+  setAcceptReject: React.Dispatch<React.SetStateAction<boolean | null>>;
 }
 
-const MissionVoteCard: React.FC<Props> = ({ selectedTeam, players }) => {
+const MissionVoteCard: React.FC<Props> = ({ selectedTeam, players, setAcceptReject }) => {
     const selectedPlayers = Array.from(players)
       .filter(([_, player]) => selectedTeam.includes(player.username))
       .map(([_, player]) => player);
@@ -21,12 +22,16 @@ const MissionVoteCard: React.FC<Props> = ({ selectedTeam, players }) => {
 
     const handleAccept = () => {
         console.log("accepted");
+        if(leftActive)setAcceptReject(null);
+        else setAcceptReject(true);
         setLeft(leftActive => !leftActive);
         if (!leftActive) setRight(false);
     };
 
     const handleReject = () => {
         console.log("rejected");
+        if(rightActive)setAcceptReject(null);
+        else setAcceptReject(false);
         setRight(rightActive => !rightActive);
         if (!rightActive) setLeft(false);
     };
