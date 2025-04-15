@@ -160,10 +160,11 @@ export default function GameFlow() {
       setShowMissionOutcome(true);
 
       const timer = setTimeout(() => {
+        console.log("Resetting accept/reject for mission choice and team vote");
         setShowMissionOutcome(false);
         setSentTeamProposal(false);
-        setSuccessFail(false);
-        setAcceptReject(false);
+        setSuccessFail(null);
+        setAcceptReject(null);
         setSelectedTeam([]);
         console.log("Sending Ready event");
         ClientEventBroker.getInstance().send(new ReadyEvent());
@@ -254,7 +255,7 @@ export default function GameFlow() {
       console.log("Sending Mission Choice Event", successFail);
       ClientEventBroker.getInstance().send(new MissionChoiceEvent(successFail!));
     }else {
-      console.log("Abstained from success fail vote");
+      console.log("Abstained from success fail vote or like reset choice");
     }
   }, [successFail]);
 
@@ -279,7 +280,7 @@ export default function GameFlow() {
       console.log("Sending TeamVoteChoiceEvent", acceptReject);
       ClientEventBroker.getInstance().send(new TeamVoteChoiceEvent(acceptReject!));
     }else {
-      console.log("Abstained form Team vote");
+      console.log("Abstained form Team vote or like reset vote");
     }
   }, [acceptReject]);
 
