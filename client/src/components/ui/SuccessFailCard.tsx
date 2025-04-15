@@ -39,7 +39,7 @@ const SuccessFailCard: React.FC<Props> = ({ player, players, setSuccessFail}) =>
     const [rightActive, setRight] = useState(false);
 
     const handleLeft = () => {
-        console.log("accepted");
+        console.log("accepted mission choice");
         if (!leftActive) {
             setSuccessFail(true);
             setRight(false);
@@ -48,7 +48,7 @@ const SuccessFailCard: React.FC<Props> = ({ player, players, setSuccessFail}) =>
     };
 
     const handleRight = () => {
-        console.log("rejected");
+        console.log("rejected mission choice");
         if (!rightActive) {
             setSuccessFail(failCard === successCard);
             setLeft(false);

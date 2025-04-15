@@ -49,7 +49,7 @@ const RoleRevealCard: React.FC<Props> = ({ player, players, onClose }) => {
 
           <div className="join join-horizontal flex flex-row flex-wrap justify-center">
             {otherPlayers.map((p) => (
-              <div key={p.username} className="flex flex-col">
+              <div key={p.username} className="flex flex-col justify-center">
                 <div className="avatar p-1">
                   <div className="w-14 rounded border-4">
                     <img src={p.avatar} alt={p.username} />
