@@ -150,6 +150,7 @@ export default function GameFlow() {
       const timer = setTimeout(() => {
         setShowMissionOutcome(false);
         setSentTeamProposal(false);
+        console.log("Sending Ready event");
         ClientEventBroker.getInstance().send(new ReadyEvent());
       }, 10*1000);
 
@@ -213,9 +214,11 @@ export default function GameFlow() {
 
   // Send a mission choice event whenever you make a choice
   useEffect(() => {
-    if(successFail) {
+    if(successFail !== null) {
       console.log("Sending Mission Choice Event", successFail);
       ClientEventBroker.getInstance().send(new MissionChoiceEvent(successFail!));
+    }else {
+      console.log("Abstained from vote");
     }
   }, [successFail]);
 
