@@ -257,17 +257,12 @@ function handleMissionOutcome(lobby: ServerLobby): void {
     lobby.clearMissionChoices();
 
     // Update the lobby state
-    lobby.state.outcomes[lobby.state.round++] = fails;
-    lobby.state.team = [];
-
-    // Set the new leader
-    lobby.incrementLeader();
+    lobby.state.outcomes[lobby.state.round] = fails;
 
     // Send the updated game state
     updatePlayers(lobby, (event: UpdateEvent) => {
         event
-            .setState(lobby.state)
-            .setLeader(lobby.leader!);
+            .setState(lobby.state);
     });
 
     // Wait for a ready response from all players before sending the outcome
@@ -297,6 +292,18 @@ function handleMissionOutcome(lobby: ServerLobby): void {
         }
 
         // Otherwise, just send the mission outcome
+        // Clients will respond with ready and we increment the round + leader
+        l.onReady(() => {
+            // Increment the round and set the next leader
+            lobby.incrementLeader();
+            lobby.state.round++;
+            lobby.state.team = [];
+
+            lobby.send(new UpdateEvent()
+                .setState(lobby.state)
+                .setLeader(lobby.leader!));
+        });
+        // Now send the outcome event
         l.send(new MissionOutcomeEvent(outcome, fails));
 
         // Afterward play continues as normal
