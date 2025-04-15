@@ -27,11 +27,12 @@ type Props = {
   setSuccessFail: React.Dispatch<React.SetStateAction<boolean | null>>;
   outcomes: number[];
   round: number;
-  showRoleCard: boolean;
   order: string[];
+  showRoleCard: boolean;
+  showMissionVote: boolean;
 };
 
-export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam, successFail, setSuccessFail, outcomes, round, showRoleCard, order }: Props) {
+export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam, successFail, setSuccessFail, outcomes, round, order, showRoleCard, showMissionVote }: Props) {
   const navigate = useNavigate();
   const [selectedGuys, setSelectedGuys] = useState(0);
   const grayscaleVal = !myPlayer.isLeader ? 100 : 0;
@@ -159,20 +160,20 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
          * Voting on mission
          */
         }
-        <div className="absolute bottom-60">
-          <FunctionButton
-          label="Vote on Mission"
-          onClick={() => (document.getElementById("MissionVote") as HTMLDialogElement)?.showModal()}
-        />
-        <dialog id="MissionVote" className="modal">
-          <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <MissionVoteCard selectedTeam={selectedTeam} players={players} />
+        {showMissionVote && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center"
+            style={{
+              backdropFilter: 'blur(8px)',
+              backgroundColor: 'rgba(0, 0, 0, 0.3)',
+              WebkitBackdropFilter: 'blur(8px)',
+            }}
+          >
+            <div className="rounded-lg p-8 max-w-xl w-full text-center">
+              <MissionVoteCard selectedTeam={selectedTeam} players={players} />
+            </div>
           </div>
-          <form method="dialog" className="modal-backdrop">
-            <button>close</button>
-          </form>
-        </dialog>
-        </div>
+        )}
 
         {
         /**
