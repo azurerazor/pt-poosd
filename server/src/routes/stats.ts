@@ -22,7 +22,7 @@ function statsToJson(stats: any): any {
 router.get('/user/:forUser?', async (req: Request, res: Response) => {
     // Fetch stats for the user
     const forUser = req.params.forUser ?? res.locals.user;
-    const stats = await Stats.findOne({ username: req.params.forUser });
+    const stats = await Stats.findOne({ user: forUser });
 
     // Check if the stat block exists
     if (!stats) {
