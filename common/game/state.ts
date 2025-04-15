@@ -108,15 +108,21 @@ export class Lobby {
     public close(): void { this.onClose(); }
 
     /**
-     * Gets the appropriate number of evil players for the current number of players
+     * Gets the appropriate number of evil players for a given number of players
      */
-    public getEvilPlayerCount(): number {
-        const num_players = this.getPlayerCount();
-
+    public static getEvilPlayerCount(num_players: number): number {
         // Source: Avalon rulebook
+
         if (num_players <= 6) return 2;
         if (num_players <= 9) return 3;
         return 4;
+    }
+
+    /**
+     * Gets the appropriate number of evil players for the current number of players
+     */
+    public getEvilPlayerCount(): number {
+        return Lobby.getEvilPlayerCount(this.getPlayerCount());
     }
 
     /**
@@ -172,28 +178,33 @@ export class Lobby {
     }
 
     /**
-     * Checks whether the role set is valid for this number of players
+     * Checks whether a given roleset is valid for a given number of players
      */
-    public isValidRoleset(): boolean {
-        const num_players = this.getPlayerCount();
-
+    public static isValidRoleset(roles: Roles, num_players: number): boolean {
         // Ensure there are no more evil roles than the number of evil players
-        const evil_roles = this.enabledRoles & Roles.EVIL & ~Roles.MINION_OF_MORDRED;
+        const evil_roles = roles & Roles.EVIL & ~Roles.MINION_OF_MORDRED;
         const num_evil = getRoles(evil_roles).length;
-        if (num_evil > this.getEvilPlayerCount()) return false;
+        if (num_evil > Lobby.getEvilPlayerCount(num_players)) return false;
 
         // Ensure there are no more good roles than the number of good players
-        const good_roles = this.enabledRoles & Roles.GOOD;
+        const good_roles = roles & Roles.GOOD;
         const num_good = getRoles(good_roles).length;
-        if (num_good > num_players - this.getEvilPlayerCount()) return false;
+        if (num_good > num_players - Lobby.getEvilPlayerCount(num_players)) return false;
 
         // Ensure all roles have their required roles present
-        for (const role of getRoles(this.enabledRoles)) {
+        for (const role of getRoles(roles)) {
             const requires = role_requirements[role.role];
-            if ((this.enabledRoles & requires) != requires) return false;
+            if ((roles & requires) != requires) return false;
         }
 
         return true;
+    }
+
+    /**
+     * Checks whether the role set is valid for this number of players
+     */
+    public isValidRoleset(): boolean {
+        return Lobby.isValidRoleset(this.enabledRoles, this.getPlayerCount());
     }
 
     /**
