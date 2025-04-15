@@ -447,6 +447,33 @@ export class MissionChoiceEvent extends GameEvent {
 }
 
 /**
+ * Sent to clients to indicate the mission outcome should be displayed.
+ * Information in this event is redundant since it's already provided
+ * by the update, but it's here for ease of use.
+ */
+export class MissionOutcomeEvent extends GameEvent {
+    public pass: boolean;
+    public numFails: number;
+    public constructor(pass: boolean = false, numFails: number = 0) {
+        super("mission_outcome");
+        this.pass = pass;
+        this.numFails = numFails;
+    }
+
+    public read(json: any): void {
+        this.pass = json.pass;
+        this.numFails = json.numFails;
+    }
+
+    public write(): any {
+        return {
+            pass: this.pass,
+            numFails: this.numFails
+        };
+    }
+}
+
+/**
  * Sent to clients when enough missions have passed and evil
  * players have the chance to pick out Merlin
  * 
@@ -552,6 +579,7 @@ EventBroker.registerEvent("team_vote", TeamVoteEvent);
 EventBroker.registerEvent("team_vote_choice", TeamVoteChoiceEvent);
 EventBroker.registerEvent("mission", MissionEvent);
 EventBroker.registerEvent("mission_choice", MissionChoiceEvent);
+EventBroker.registerEvent("mission_outcome", MissionOutcomeEvent);
 EventBroker.registerEvent("assassination", AssassinationEvent);
 EventBroker.registerEvent("assassination_choice", AssasinationChoiceEvent);
 EventBroker.registerEvent("game_result", GameResultEvent);
