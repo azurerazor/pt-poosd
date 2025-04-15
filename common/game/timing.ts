@@ -20,6 +20,11 @@ export const TEAM_VOTE_TIME: number = 10 * SECONDS;
 export const MISSION_CHOICE_TIME: number = 10 * SECONDS;
 
 /**
+ * Amount of time to show the outcome of a mission
+ */
+export const MISSION_OUTCOME_TIME: number = 10 * SECONDS;
+
+/**
  * Amount of time players have to guess Merlin for assassination.
  */
 export const ASSASSINATION_TIME: number = 10 * SECONDS;
