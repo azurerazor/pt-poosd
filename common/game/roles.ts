@@ -187,7 +187,7 @@ export const morgana = new Role(
     "Morgana",
     "A servant of Mordred. Knows the other evil players (except Oberon). Appears as Merlin to Percival.",
     "https://assets.dized.app/project/1d4f013b-38de-4a55-bf81-f8390b8c4407/en-US/eb51938ff9a3aaa135a6ae051260d1ab/bffe4547-0177-4f5f-a737-eae1cbe20674-d41d8cd98f00b204e9800998ecf8427e.png",
-    Roles.EVIL & ~Roles.OBERON
+    Roles.EVIL & ~Roles.MORGANA & ~Roles.OBERON
 );
 
 export const mordred = new Role(
@@ -196,7 +196,7 @@ export const mordred = new Role(
     "Mordred",
     "A servant of Mordred. Unknown to Merlin.",
     "https://assets.dized.app/project/1d4f013b-38de-4a55-bf81-f8390b8c4407/en-US/eb51938ff9a3aaa135a6ae051260d1ab/86af9c9a-2d00-4e10-bded-acbc898ff770-d41d8cd98f00b204e9800998ecf8427e.png",
-    Roles.EVIL & ~Roles.OBERON
+    Roles.EVIL & ~Roles.MORDRED & ~Roles.OBERON 
 );
 
 export const assassin = new Role(
