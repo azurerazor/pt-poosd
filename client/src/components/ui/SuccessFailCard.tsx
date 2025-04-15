@@ -40,14 +40,16 @@ const SuccessFailCard: React.FC<Props> = ({ player, players, setSuccessFail}) =>
 
     const handleLeft = () => {
         console.log("accepted");
-        setLeft(leftActive => !leftActive);
+        if(!leftActive)setSuccessFail(true);
         if (!leftActive) setRight(false);
+        setLeft(leftActive => !leftActive);
     };
 
     const handleRight = () => {
         console.log("rejected");
-        setRight(rightActive => !rightActive);
+        if(!rightActive)setSuccessFail(false);
         if (!rightActive) setLeft(false);
+        setRight(rightActive => !rightActive);
     };
 
     return (
