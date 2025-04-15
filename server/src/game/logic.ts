@@ -6,6 +6,7 @@ import { ServerEventBroker } from "./events";
 import { ServerLobby, WaitingFor } from "./lobby";
 import { updatePlayers } from "./sockets";
 import { shuffle } from "@common/util/random";
+import Stats from "models/stats";
 
 /**
  * Min number of players to start a game (1 if running locally)
@@ -16,7 +17,38 @@ const MIN_PLAYERS: number = (process.env.NODE_ENV == 'development') ? 1 : 5;
  * Handles ending the game, sending all information first
  * then sending the game results when all clients are ready
  */
-function sendGameResults(lobby: ServerLobby, results: GameResultEvent) {
+function handleEndGame(lobby: ServerLobby, results: GameResultEvent) {
+    // Commit stats for all users
+    for (const player of lobby.getPlayers()) {
+        const user = player.username;
+
+        const role = player.getPossibleRoles()![0];
+        const isGood = role.isGood();
+        const isEvil = !isGood;
+        const didWin = role.alignment === results.winner;
+
+        // update the mongoose stat block using old values and incrementing
+        // Create the stats object if it doesn't exist
+        Stats.findOne({ user }).then(async stats => {
+            if (!stats) return await Stats.create({ user });
+            return stats;
+        }).then(async stats => {
+            await stats.updateOne({
+                $inc: {
+                    gamesPlayed: 1,
+                    gamesPlayedAsGood: isGood ? 1 : 0,
+                    gamesPlayedAsEvil: isEvil ? 1 : 0,
+                    [`gamesPlayedAs.${role.name}`]: 1,
+
+                    gamesWon: didWin ? 1 : 0,
+                    gamesWonAsGood: didWin && isGood ? 1 : 0,
+                    gamesWonAsEvil: didWin && isEvil ? 1 : 0,
+                    [`gamesWonAs.${role.name}`]: didWin ? 1 : 0,
+                }
+            });
+        });
+    }
+
     // Prepare to send the results on ready
     lobby.onReady(l => { l.send(results); });
 
@@ -294,7 +326,7 @@ function handleMissionOutcome(lobby: ServerLobby): void {
         if (lobby.getNumPassedMissions() >= 3) {
             // If merlin is disabled, good players win right away
             if ((lobby.enabledRoles & Roles.MERLIN) === Roles.NONE) {
-                sendGameResults(lobby, GameResultEvent.goodWin());
+                handleEndGame(lobby, GameResultEvent.goodWin());
                 return;
             }
 
@@ -309,7 +341,7 @@ function handleMissionOutcome(lobby: ServerLobby): void {
 
         // If three rounds have failed, evil wins right away
         if (lobby.getNumFailedMissions() >= 3) {
-            sendGameResults(lobby, GameResultEvent.evilWin());
+            handleEndGame(lobby, GameResultEvent.evilWin());
             return;
         }
 
@@ -364,7 +396,7 @@ function handleAssassination(lobby: ServerLobby): void {
 
     // If there was no assassination, the good guys win!
     if (!assassinated) {
-        sendGameResults(lobby, GameResultEvent.missedMerlin(assassinated));
+        handleEndGame(lobby, GameResultEvent.missedMerlin(assassinated));
         return;
     }
 
@@ -372,12 +404,12 @@ function handleAssassination(lobby: ServerLobby): void {
     const merlin = lobby.getMerlin()!; // assassination doesn't happen if there's no merlin
     if (merlin === assassinated) {
         // Evil wins!
-        sendGameResults(lobby, GameResultEvent.guessedMerlin(merlin));
+        handleEndGame(lobby, GameResultEvent.guessedMerlin(merlin));
         return;
     }
 
     // Otherwise, good players win
-    sendGameResults(lobby, GameResultEvent.missedMerlin(assassinated));
+    handleEndGame(lobby, GameResultEvent.missedMerlin(assassinated));
 }
 
 function handlebackToLobby(lobby: ServerLobby, event: BackToLobbyEvent): void {
