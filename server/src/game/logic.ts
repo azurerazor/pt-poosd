@@ -5,6 +5,7 @@ import { ASSASSINATION_TIME, MISSION_CHOICE_TIME, TEAM_VOTE_TIME } from "@common
 import { ServerEventBroker } from "./events";
 import { ServerLobby, WaitingFor } from "./lobby";
 import { updatePlayers } from "./sockets";
+import { shuffle } from "@common/util/random";
 
 /**
  * Min number of players to start a game (1 if running locally)
@@ -79,7 +80,7 @@ function handleStartGame(lobby: ServerLobby, event: StartGameEvent): void {
 
     // Shuffle the player order
     lobby.playerOrder = lobby.getPlayers().map(player => player.username);
-    lobby.playerOrder.sort(() => Math.random() - 0.5);
+    shuffle(lobby.playerOrder);
 
     // Set the first leader
     lobby.setLeader(lobby.playerOrder[0]);
@@ -107,7 +108,7 @@ function handleStartGame(lobby: ServerLobby, event: StartGameEvent): void {
     }
 
     // Shuffle roles and assign to players
-    roles.sort(() => Math.random() - 0.5);
+    shuffle(roles);
     for (let i = 0; i < roles.length; i++) {
         const username = lobby.playerOrder[i];
         const role = roles[i].role;
