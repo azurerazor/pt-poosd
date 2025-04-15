@@ -8,7 +8,7 @@ import { Player } from "../../../../common/game/player";
 import { useUser } from '../../util/auth';
 import { ClientLobby } from "../../game/lobby";
 import Loading from "./Loading";
-import { Outcome, GameState } from "../../../../common/game/state";
+import { GameState } from "../../../../common/game/state";
 
 export const quests = [
   [],[],[],[],[],
@@ -53,8 +53,8 @@ export default function GameFlow() {
   // useStates that should be sent to socket
   const [gameState, setGameState] = useState<GameState>(GameState.LOBBY);
   const [selectedTeam, setSelectedTeam] = useState<string[]>([]);
-  const [successFail, setSuccessFail] = useState<Outcome>(Outcome.NONE);
-  const [outcomes, setOutcomes] = useState<Outcome[]>([]);
+  const [successFail, setSuccessFail] = useState<boolean | null>(null);
+  const [outcomes, setOutcomes] = useState<number[]>([]);
   const [round, setRound] = useState(-1);
   const [order, setOrder] = useState<string[]>([]);
 
@@ -156,7 +156,7 @@ export default function GameFlow() {
 
   // Send a mission choice event whenever you make a choice
   useEffect(() => {
-    ClientEventBroker.getInstance().send(new MissionChoiceEvent(successFail !== Outcome.FAILURE));
+    ClientEventBroker.getInstance().send(new MissionChoiceEvent(successFail!));
   }, [successFail]);
 
   // Send a roleListEvent whenever the role list changes

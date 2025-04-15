@@ -1,14 +1,13 @@
 import { Player } from "../../../../common/game/player";
 import { Roles, getRoles } from "../../../../common/game/roles";
 import { ClientLobby } from "../../game/lobby";
-import { Outcome } from "../../../../common/game/state";
 import FunctionButton from "../misc/FunctionButton";
 import { useState } from 'react';
 
 interface Props {
     player: Player;
     players: Map<string, Player>;
-    setSuccessFail: React.Dispatch<React.SetStateAction<Outcome>>;
+    setSuccessFail: React.Dispatch<React.SetStateAction<boolean | null>>;
 }
 
 const SuccessFailCard: React.FC<Props> = ({ player, players, setSuccessFail}) => {

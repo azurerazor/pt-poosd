@@ -37,7 +37,7 @@ export default function LobbyView({ players, changeView, setChangeView, lobbyId,
                     <div className="flex justify-between items-center">
                         <FunctionButton
                             label="Start"
-                            onClick={() => setChangeView(true)}
+                            onClick={() => { if(myPlayer.isHost) setChangeView(true)}}
                         />
                         <RouteButton to="/dashboard">
                             Exit

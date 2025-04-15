@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Role, role_dependencies, role_requirements, Roles } from "../../../../common/game/roles";
-import { ClientLobby } from "../../game/lobby";
 import { Player } from "../../../../common/game/player";
 
 interface Props {

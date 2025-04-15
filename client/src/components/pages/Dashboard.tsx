@@ -86,6 +86,10 @@ export default function Dashboard() {
                     label="Logout"
                     onClick={handleLogout}
                 />
+                <FunctionButton
+                    label="Stats"
+                    onClick={() => navigate(`/stats`)}
+                />
             </div>
         </div>
     );

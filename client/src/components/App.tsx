@@ -6,9 +6,9 @@ import Signup from './pages/Signup'
 import Dashboard from './pages/Dashboard'
 import GameFlow from './pages/GameFlow'
 import Verify from './pages/Verify'
-
 import ProtectedRoute from 'util/auth';
 import TestPage from './pages/TestPage'
+import Stats from './pages/Stats'
 
 function App() {
     return (
@@ -25,6 +25,7 @@ function App() {
                 
                 {/* Protected Routes */}
                 <Route path='/dashboard' element={<ProtectedRoute element={<Dashboard />} />} />
+                <Route path='/stats' element={<ProtectedRoute element={<Stats />} />} />
 
                 {/* Game pages */}
                 <Route path="/game/*" element={<ProtectedRoute element={<GameFlow />} />} />

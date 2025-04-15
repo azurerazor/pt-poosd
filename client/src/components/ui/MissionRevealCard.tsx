@@ -1,16 +1,18 @@
 import { Player } from "../../../../common/game/player";
 import { Role, getRoles } from "../../../../common/game/roles";
+import { fails } from "../pages/GameFlow";
 import RoleRevealInfo from "./RoleRevealInfo";
-import { Outcome } from "../../../../common/game/state";
 
 interface Props {
-  outcomes: Outcome[];
+  outcomes: number[];
+  numberOfPlayers: number;
+  round: number;
   onClose?: () => void;
 }
 
-const MissionRevealCard: React.FC<Props> = ({ outcomes, onClose }) => {
-  const succy = outcomes.filter((o) => o === Outcome.SUCCESS).length;
-  const fail = outcomes.filter((o) => o === Outcome.FAILURE).length;
+const MissionRevealCard: React.FC<Props> = ({ outcomes, numberOfPlayers, round, onClose }) => {
+  const succy = outcomes.filter((o) => o < fails[numberOfPlayers][round]).length;
+  const fail = outcomes.filter((o) => o >= fails[numberOfPlayers][round]).length;
 
   console.log(succy, fail);
 

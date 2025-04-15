@@ -12,7 +12,7 @@ import { HiddenContextProvider } from "../../util/hiddenContext";
 import VoteMission from '../ui/VoteMission';
 import RoleRevealCard from "../ui/RoleRevealCard"
 import {quests, fails} from "./GameFlow"
-import { LobbyState, Outcome, GameState } from "../../../../common/game/state";
+import { LobbyState, GameState } from "../../../../common/game/state";
 import SuccessFailCard from '../ui/SuccessFailCard';
 import MissionVoteCard from '../ui/MissionVoteCard';
 import MissionRevealCard from '../ui/MissionRevealCard';
@@ -23,9 +23,9 @@ type Props = {
   myPlayer: Player;
   selectedTeam: string[];
   setSelectedTeam: React.Dispatch<React.SetStateAction<string[]>>;
-  successFail: Outcome;
-  setSuccessFail: React.Dispatch<React.SetStateAction<Outcome>>;
-  outcomes: Outcome[];
+  successFail: boolean | null;
+  setSuccessFail: React.Dispatch<React.SetStateAction<boolean | null>>;
+  outcomes: number[];
   round: number;
   showRoleCard: boolean;
   order: string[];
@@ -38,7 +38,6 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
   const orderedPlayers = order
     .map((username) => players.get(username))
     .filter((p): p is Player => p !== undefined);
-  console.log(order, orderedPlayers);
 
   const handleLeave = () => {
     navigate(`/dashboard`);
@@ -86,7 +85,7 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
         }
         <div className="join join-vertical lg:join-horizontal">
           {[...Array(5)].map((_, i) => (
-            <GameMission key={i} status={Outcome.NONE} pcount={quests[players.size][i]} numFails={fails[players.size][i]} />
+            <GameMission key={i} round={i} numberOfPlayers={players.size} status={outcomes[i]} pcount={quests[players.size][i]} />
           ))}
         </div>
       <div className="justify-between">
@@ -187,7 +186,7 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
           />
           <dialog id="RevealMission" className="modal">
             <div className="fixed inset-0 z-50 flex items-center justify-center">
-              <MissionRevealCard outcomes={outcomes} />
+              <MissionRevealCard outcomes={outcomes} numberOfPlayers={players.size} round={round} />
             </div>
             <form method="dialog" className="modal-backdrop">
               <button>close</button>
@@ -207,7 +206,7 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
           />
           <dialog id="AssassinationScreen" className="modal">
             <div className="fixed inset-0 z-50 flex items-center justify-center">
-              <AssassinationScreen player={myPlayer} players={players} setSuccessFail={setSuccessFail}/>
+              <AssassinationScreen player={myPlayer} players={players} />
             </div>
             <form method="dialog" className="modal-backdrop">
               <button>close</button>
