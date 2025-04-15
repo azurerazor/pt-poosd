@@ -18,7 +18,6 @@ type Props = {
 };
 
 export default function LobbyView({ players, changeView, setChangeView, lobbyId, enabledRoles, setEnabledRoles, myPlayer }: Props) {
-    console.log(myPlayer, "IN THE LOBBY");
     let specialRoles = getRoles(Roles.SPECIAL_ROLES);
     const grayscaleVal = (!myPlayer.isHost || players.size < 5) ? 100 : 0;
     return (
