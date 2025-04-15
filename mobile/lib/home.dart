@@ -7,7 +7,7 @@ import 'lobby.dart';
 import 'login.dart';
 import 'register.dart';
 
-final Uri _url = Uri.parse('http://45.55.60.192/');
+final Uri _url = Uri.parse('www.escavalon.quest');
 
 class Home extends StatelessWidget {
   const Home({super.key});
