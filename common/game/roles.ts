@@ -28,7 +28,7 @@ export enum Roles {
     | MERLIN | MORGANA
     | PERCIVAL,
 
-    SPECIAL_ROLES = 
+    SPECIAL_ROLES =
     MERLIN | PERCIVAL | MORGANA
     | MORDRED | OBERON | ASSASSIN
 }
@@ -54,7 +54,7 @@ export const role_requirements: { [key: number]: Roles } = {
  */
 export const role_dependencies: { [key: number]: Roles } = {
     [Roles.SERVANT_OF_ARTHUR]: Roles.SERVANT_OF_ARTHUR,
-    [Roles.MERLIN]: Roles.PERCIVAL | Roles.MORGANA| Roles.MORDRED | Roles.ASSASSIN,
+    [Roles.MERLIN]: Roles.PERCIVAL | Roles.MORGANA | Roles.MORDRED | Roles.ASSASSIN,
     [Roles.PERCIVAL]: Roles.MORGANA,
 
     [Roles.MINION_OF_MORDRED]: Roles.NONE,

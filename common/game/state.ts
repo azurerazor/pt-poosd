@@ -206,14 +206,14 @@ export class Lobby {
         if (num_evil > Lobby.getEvilPlayerCount(num_players)) return false;
 
         // Ensure there are no more good roles than the number of good players
-        const good_roles = roles & Roles.GOOD;
+        const good_roles = roles & Roles.GOOD & ~Roles.SERVANT_OF_ARTHUR;
         const num_good = getRoles(good_roles).length;
         if (num_good > num_players - Lobby.getEvilPlayerCount(num_players)) return false;
 
         // Ensure all roles have their required roles present
         for (const role of getRoles(roles)) {
             const requires = role_requirements[role.role];
-            if ((roles & requires) != requires) return false;
+            if ((roles & requires) !== requires) return false;
         }
 
         return true;

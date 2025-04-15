@@ -308,7 +308,7 @@ export class UpdateEvent extends GameEvent {
         this.host = json.host || null;
         this.leader = json.leader || null;
         this.state = json.state || null;
-        this.enabledRoles = json.enabled_roles || null;
+        this.enabledRoles = json.enabled_roles ?? null;
         if (json.players) {
             this.players = new Map<string, any>();
             for (const [username, player] of Object.entries(json.players)) {
@@ -319,12 +319,12 @@ export class UpdateEvent extends GameEvent {
 
     public write(): any {
         let json: any = {};
-        if (this.playerOrder) json.player_order = this.playerOrder;
-        if (this.host) json.host = this.host;
-        if (this.leader) json.leader = this.leader;
-        if (this.state) json.state = this.state;
-        if (this.enabledRoles) json.enabled_roles = this.enabledRoles;
-        if (this.players) {
+        if (this.playerOrder !== null) json.player_order = this.playerOrder;
+        if (this.host !== null) json.host = this.host;
+        if (this.leader !== null) json.leader = this.leader;
+        if (this.state !== null) json.state = this.state;
+        if (this.enabledRoles !== null) json.enabled_roles = this.enabledRoles;
+        if (this.players !== null) {
             json.players = {};
             for (const [username, player] of this.players.entries()) {
                 json.players[username] = player.toJSON();
