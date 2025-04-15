@@ -11,7 +11,6 @@ interface Props {
 }
 
 const MissionRevealCard: React.FC<Props> = ({ outcomes, numberOfPlayers, round, onClose }) => {
-  console.log(round, numberOfPlayers, outcomes[round], outcomes[0]);
   const succy = quests[numberOfPlayers][round]-outcomes[round];
   const fail = outcomes[round];
 
