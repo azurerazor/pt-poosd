@@ -29,14 +29,13 @@ type Props = {
   outcomes: number[];
   round: number;
   order: string[];
-  acceptedTeam: string[];
   showRoleCard: boolean;
   showMissionVote: boolean;
   showSuccessFail: boolean;
   showMissionOutcome: boolean;
 };
 
-export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam, successFail, setSuccessFail, setAcceptReject, outcomes, round, order, acceptedTeam, showRoleCard, showMissionVote, showSuccessFail, showMissionOutcome }: Props) {
+export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam, successFail, setSuccessFail, setAcceptReject, outcomes, round, order, showRoleCard, showMissionVote, showSuccessFail, showMissionOutcome }: Props) {
   const navigate = useNavigate();
   const [selectedGuys, setSelectedGuys] = useState<string[]>([]);
   const grayscaleVal = !myPlayer.isLeader ? 100 : 0;
@@ -153,7 +152,7 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
          * the button currently exists exclusively for testing
          */
         }
-        {(showSuccessFail && acceptedTeam.includes(myPlayer.username)) && (
+        {(showSuccessFail && selectedTeam.includes(myPlayer.username)) && (
           <div
             className="fixed inset-0 z-50 flex items-center justify-center"
             style={{
