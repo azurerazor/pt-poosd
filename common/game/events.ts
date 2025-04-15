@@ -378,14 +378,8 @@ export class TeamProposalEvent extends GameEvent {
 }
 
 /**
- * Triggered when a team has been proposed that should be voted for
- * 
- * When received on the server:
- *  - Distributed to clients, if the proposal was valid
- *  - If invalid, the team proposal state update event is sent again
- *    to retrigger a new proposal from the same leader
- * 
- * When received on the client: shows a vote dialog
+ * Sent to all clients when a team proposal is made and they
+ * should show a vote dialog
  */
 export class TeamVoteEvent extends GameEvent {
     public players: string[];
