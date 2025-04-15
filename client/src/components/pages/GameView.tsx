@@ -25,6 +25,7 @@ type Props = {
   setSelectedTeam: React.Dispatch<React.SetStateAction<string[]>>;
   successFail: boolean | null;
   setSuccessFail: React.Dispatch<React.SetStateAction<boolean | null>>;
+  setAcceptReject: React.Dispatch<React.SetStateAction<boolean | null>>;
   outcomes: number[];
   round: number;
   order: string[];
@@ -34,7 +35,7 @@ type Props = {
   showSuccessFail: boolean;
 };
 
-export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam, successFail, setSuccessFail, outcomes, round, order, acceptedTeam, showRoleCard, showMissionVote, showSuccessFail }: Props) {
+export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam, successFail, setSuccessFail, setAcceptReject, outcomes, round, order, acceptedTeam, showRoleCard, showMissionVote, showSuccessFail }: Props) {
   const navigate = useNavigate();
   const [selectedGuys, setSelectedGuys] = useState<string[]>([]);
   const grayscaleVal = !myPlayer.isLeader ? 100 : 0;
@@ -177,7 +178,7 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
             }}
           >
             <div className="rounded-lg p-8 max-w-xl w-full text-center">
-              <MissionVoteCard selectedTeam={selectedTeam} players={players} />
+              <MissionVoteCard selectedTeam={selectedTeam} players={players}  setAcceptReject={setAcceptReject} />
             </div>
           </div>
         )}
