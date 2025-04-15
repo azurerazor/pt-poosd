@@ -26,6 +26,7 @@ class _NightState extends State<Night> {
   @override
   void initState() {
     super.initState();
+    scriptIdx = 0;
     flutterTts.setCompletionHandler(() {
       updateIndex();
     });

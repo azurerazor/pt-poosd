@@ -22,6 +22,7 @@ class _AssassinateState extends State<Assassinate> {
   @override
   void initState() {
     super.initState();
+    discussing = true;
   }
 
   @override

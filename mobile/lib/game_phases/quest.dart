@@ -28,6 +28,12 @@ class _QuestState extends State<Quest> {
   bool twoFailsRequired = false;
 
   @override
+  void initState() {
+    super.initState();
+    _deltaQuestsWon = 0;
+  }
+
+  @override
   Widget build(BuildContext context) {   
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
