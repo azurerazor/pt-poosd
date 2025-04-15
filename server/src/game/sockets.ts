@@ -65,6 +65,11 @@ export function initializeSockets(server: Server): void {
                 return next(new Error("Lobby is full"));
             }
 
+            // Check if the game has started
+            if (!lobbyObj.getPlayer(user) && lobbyObj.state.state !== GameState.LOBBY) {
+                return next(new Error("Game has already started"));
+            }
+
             // Set the player's active lobby
             setActiveLobby(user, lobby);
 
@@ -160,6 +165,13 @@ export function initializeSockets(server: Server): void {
         if (player) {
             player.isConnected = true;
         } else {
+            // If not, check whether the game has started (can't join if it has)
+            if (lobby.state.state !== GameState.LOBBY) {
+                console.log(`User ${user} connected but game has started`);
+                socket.disconnect(true);
+                return;
+            }
+
             // If not, add them to the lobby
             lobby.addPlayer(user);
         }
