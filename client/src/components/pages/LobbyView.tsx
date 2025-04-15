@@ -18,6 +18,7 @@ type Props = {
 };
 
 export default function LobbyView({ players, changeView, setChangeView, lobbyId, enabledRoles, setEnabledRoles, myPlayer }: Props) {
+    console.log(myPlayer, "IN THE LOBBY");
     let specialRoles = getRoles(Roles.SPECIAL_ROLES);
     return (
         <RolesetContextProvider>

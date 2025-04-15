@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { MissionChoiceEvent, ReadyEvent, StartGameEvent, UpdateEvent, SetRoleListEvent, TeamProposalEvent } from "@common/game/events";
+import { MissionChoiceEvent, ReadyEvent, StartGameEvent, UpdateEvent, SetRoleListEvent, TeamProposalEvent, TeamVoteEvent } from "@common/game/events";
 import { ClientEventBroker } from "game/events";
 import LobbyView from "./LobbyView";
 import GameView from "./GameView";
@@ -46,6 +46,7 @@ export default function GameFlow() {
   const initialized = useRef(false);
 
   // All useStates passed to children when updated in socket
+  let temp = [];
   const [players, setPlayers] = useState<Map<string, Player>>(new Map());
   const [enabledRoles, setEnabledRoles] = useState(Roles.NONE);
   const [myPlayer, setMyPlayer] = useState<Player>();
@@ -86,6 +87,8 @@ export default function GameFlow() {
         setUpdating(true);
         const updateGuys = async () => {        
           if(event.players){
+            temp = Array.from(event.players.keys());
+            setMyPlayer(event.players.get(username));
             setPlayers(event.players);
           }
           if (event.enabledRoles) {
@@ -116,10 +119,10 @@ export default function GameFlow() {
     });
 
     ClientEventBroker.on('team_vote', (lobby: ClientLobby, event: UpdateEvent) => {
-      setShowRoleCard(true);
+      setShowMissionVote(true);
 
       const timer = setTimeout(() => {
-        setShowRoleCard(false);
+        setShowMissionVote(false);
       }, 10*1000);
 
       return () => clearTimeout(timer);
@@ -128,7 +131,7 @@ export default function GameFlow() {
   }, []);
 
   // Change the page from Lobby to Game
-  // TO-DO add a check for number of players (Gray out button for non-hosts and if not enough players)
+  // TO-DO add a check for number of players on client side (Gray out button for non-hosts and if not enough players)
   useEffect(() => {
     if (changeView) {
       setIsLoading(true);
@@ -161,20 +164,10 @@ export default function GameFlow() {
 
   // If done updating send a ready event to socket
   useEffect(() => {
-    const foundPlayer = players.get(username);
-
-    if (!updating && hasReceivedFirstUpdate && foundPlayer) {
-      setMyPlayer(foundPlayer);
+    if(!updating && hasReceivedFirstUpdate && myPlayer){
       ClientEventBroker.getInstance().send(new ReadyEvent());
     }
-  }, [players, updating, hasReceivedFirstUpdate]);
-
-  // update which player you are after players list updated
-  useEffect(() => {
-    const foundPlayer = players.get(username);
-    setMyPlayer(foundPlayer);
-    setHasResolvedPlayer(!!foundPlayer);
-  }, [players]);
+  }, [updating, hasReceivedFirstUpdate, myPlayer]);
 
   // Send a mission choice event whenever you make a choice
   useEffect(() => {
@@ -190,7 +183,7 @@ export default function GameFlow() {
     ClientEventBroker.getInstance().send(new TeamProposalEvent(selectedTeam));
   }, [selectedTeam])
 
-  if(isLoading || updating){
+  if(isLoading || updating || !myPlayer){
     return <Loading />;
   }
 
