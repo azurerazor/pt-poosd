@@ -500,7 +500,7 @@ export class AssassinationEvent extends GameEvent {
  * 
  * Otherwise, the vote considers all evil players
  */
-export class AssasinationChoiceEvent extends GameEvent {
+export class AssassinationChoiceEvent extends GameEvent {
     public guess: string;
 
     public constructor(guess: string = "") {
@@ -595,6 +595,6 @@ EventBroker.registerEvent("mission", MissionEvent);
 EventBroker.registerEvent("mission_choice", MissionChoiceEvent);
 EventBroker.registerEvent("mission_outcome", MissionOutcomeEvent);
 EventBroker.registerEvent("assassination", AssassinationEvent);
-EventBroker.registerEvent("assassination_choice", AssasinationChoiceEvent);
+EventBroker.registerEvent("assassination_choice", AssassinationChoiceEvent);
 EventBroker.registerEvent("game_result", GameResultEvent);
 EventBroker.registerEvent("back_to_lobby", BackToLobbyEvent);
