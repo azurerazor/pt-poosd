@@ -90,9 +90,12 @@ export class ServerLobby extends Lobby {
         }
 
         // All players are ready
-        this.onReadyCallback(this);
+        const callback = this.onReadyCallback;
         this.onReadyCallback = () => { }; // Reset the callback
         this.readySet.clear(); // Clear the ready map
+        
+        // Call the callback
+        callback(this);
     }
 
     /**
