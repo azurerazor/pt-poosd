@@ -323,8 +323,19 @@ function handleMissionOutcome(lobby: ServerLobby): void {
 
     // Send the updated game state
     updatePlayers(lobby, (event: UpdateEvent) => {
-        event
-            .setState(lobby.state);
+        // Add full information on evil players for the assassination phase
+        // (only if three missions passed and merlin is enabled)
+        if (lobby.getNumPassedMissions() >= 3 && (lobby.enabledRoles & Roles.MERLIN) !== Roles.NONE) {
+            for (const player of lobby.getPlayers()) {
+                const role = player.getPossibleRoles()![0];
+                if (role.alignment === Alignment.EVIL) {
+                    event.players!.set(player.username, player);
+                }
+            }
+        }
+
+        // Always set the mission outcome
+        event.setState(lobby.state);
     });
 
     // Wait for a ready response from all players before sending the outcome
