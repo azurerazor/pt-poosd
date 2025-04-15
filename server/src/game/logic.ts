@@ -257,6 +257,8 @@ function handleMissionOutcome(lobby: ServerLobby): void {
     // Get outcome and clear the mission choice map
     const outcome = lobby.isMissionPassing();
     const fails = lobby.getNumFails();
+    console.log("Number of fails:", fails);
+    console.log("Outcome:", outcome);
     lobby.clearMissionChoices();
 
     // Update the lobby state
