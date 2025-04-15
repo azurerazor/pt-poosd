@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from "react";
-import { MissionChoiceEvent, ReadyEvent, StartGameEvent, UpdateEvent, SetRoleListEvent, TeamProposalEvent, TeamVoteEvent, TeamVoteChoiceEvent, RoleRevealEvent, MissionEvent, MissionOutcomeEvent, AssassinationEvent, AssassinationChoiceEvent, GameResultEvent } from "@common/game/events";
+import { MissionChoiceEvent, ReadyEvent, StartGameEvent, UpdateEvent, SetRoleListEvent, TeamProposalEvent, TeamVoteEvent, TeamVoteChoiceEvent, RoleRevealEvent, MissionEvent, MissionOutcomeEvent, AssassinationEvent, AssassinationChoiceEvent, GameResultEvent, BackToLobbyEvent } from "@common/game/events";
+import { ROLE_REVEAL_TIME, TEAM_VOTE_TIME, MISSION_CHOICE_TIME, MISSION_OUTCOME_TIME, ASSASSINATION_TIME } from "../../../../common/game/timing";
 import { ClientEventBroker } from "game/events";
 import LobbyView from "./LobbyView";
 import GameView from "./GameView";
-import { Roles, getRoleByName } from "../../../../common/game/roles";
+import ResultsView from "./ResultsView";
+import { Roles, getRoleByName, Alignment } from "../../../../common/game/roles";
 import { Player } from "../../../../common/game/player";
 import { useUser } from '../../util/auth';
 import { ClientLobby } from "../../game/lobby";
@@ -59,6 +61,8 @@ export default function GameFlow() {
   const [order, setOrder] = useState<string[]>([]);
   const [acceptReject, setAcceptReject] = useState<boolean | null>(null);
   const [assassinate, setAssassinate] = useState<string | null>(null);
+  const [backToLobby, setBackToLobby] = useState(false);
+  const [endState, setEndState] = useState(false);
 
   // useStates for different stages of the game
   const [showRoleCard, setShowRoleCard] = useState(false);
@@ -75,6 +79,13 @@ export default function GameFlow() {
   const [hasResolvedPlayer, setHasResolvedPlayer] = useState(false);
   const [updating, setUpdating] = useState(false);
   const [sentTeamProposal, setSentTeamProposal] = useState(false);
+
+  // End state variables
+  let winner = Alignment.GOOD;
+  let message = "";
+  let assassinated = "";
+  let allPlayers = [];
+
 
   // Update all the necessary useStates whenever socket updates
   useEffect(() => {
@@ -114,7 +125,8 @@ export default function GameFlow() {
 
       const timer = setTimeout(() => {
         setShowRoleCard(false);
-      }, 10*1000);
+        ClientEventBroker.getInstance().dispatch(ClientLobby.getInstance(), new GameResultEvent(Alignment.GOOD,"The good players stopped Mordred!"));
+      }, ROLE_REVEAL_TIME);
 
       return () => clearTimeout(timer);
     });
@@ -126,7 +138,7 @@ export default function GameFlow() {
 
       const timer = setTimeout(() => {
         setShowMissionVote(false);
-      }, 10*1000);
+      }, TEAM_VOTE_TIME);
 
       return () => clearTimeout(timer);
     });
@@ -138,7 +150,7 @@ export default function GameFlow() {
 
       const timer = setTimeout(() => {
         setShowSuccessFail(false);
-      }, 10*1000);
+      }, MISSION_CHOICE_TIME);
 
       return () => clearTimeout(timer);
     });
@@ -150,9 +162,12 @@ export default function GameFlow() {
       const timer = setTimeout(() => {
         setShowMissionOutcome(false);
         setSentTeamProposal(false);
+        setSuccessFail(false);
+        setAcceptReject(false);
+        setSelectedTeam([]);
         console.log("Sending Ready event");
         ClientEventBroker.getInstance().send(new ReadyEvent());
-      }, 10*1000);
+      }, MISSION_OUTCOME_TIME);
 
       return () => clearTimeout(timer);
     });
@@ -163,9 +178,16 @@ export default function GameFlow() {
 
       const timer = setTimeout(() => {
         setShowAssassinationCard(false);
-      }, 10*1000);
+      }, ASSASSINATION_TIME);
 
       return () => clearTimeout(timer);
+    });
+
+    ClientEventBroker.on('game_result', (lobby: ClientLobby, event: GameResultEvent) => {
+      winner = event.winner;
+      message = event.message;
+      assassinated = event.assassinated !== null ? event.assassinated : "";
+      setEndState(true);
     });
   }, []);
 
@@ -247,12 +269,39 @@ export default function GameFlow() {
     }
   }, [acceptReject]);
 
-    useEffect(() => {
+  useEffect(() => {
     if(myPlayer && ClientLobby.getInstance().canAssassinateMerlin(myPlayer!.username)){
       console.log("Sending AssassinateChoiceEvent", assassinate);
       ClientEventBroker.getInstance().send(new AssassinationChoiceEvent(assassinate!));
     }
   }, [assassinate]);
+
+  useEffect(() => {
+    if(backToLobby === true){
+      console.log("Sending back to lobby event");
+      ClientEventBroker.getInstance().send(new BackToLobbyEvent());
+      setGameState(GameState.LOBBY);
+      setEnabledRoles(Roles.NONE);
+      setSelectedTeam([]);
+      setSuccessFail(null);
+      setAcceptReject(null);
+      setAssassinate(null);
+      setBackToLobby(false);
+      setEndState(false);
+      setShowRoleCard(false);
+      setShowSuccessFail(false);
+      setShowMissionVote(false);
+      setShowMissionOutcome(false);
+      setShowAssassinationCard(false);
+      setGameReady(false);
+      setIsLoading(false);
+      setChangeView(false);
+      setHasReceivedFirstUpdate(false);
+      setHasResolvedPlayer(false);
+      setUpdating(false);
+      setSentTeamProposal(false);
+    }
+  }, [backToLobby]);
 
   if(isLoading || updating || !myPlayer){
     return <Loading />;
@@ -260,7 +309,15 @@ export default function GameFlow() {
 
   return (
     <div>
-      {!gameReady ? (
+      {endState ? (
+        <ResultsView
+          allPlayers={players}
+          winner={winner}
+          message={message}
+          assassinated={assassinated}
+          setBackToLobby={setBackToLobby}
+        />
+      ) : !gameReady ? (
         <LobbyView
           players={players}
           changeView={changeView}
