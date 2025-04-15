@@ -101,6 +101,7 @@ export function initializeSockets(server: Server): void {
             setActiveLobby(user, null);
 
             // If a game is not active, the user gets removed entirely
+            let reassignedHost = false;
             if (lobby.state.state === GameState.LOBBY) {
                 lobby.removePlayer(user);
 
@@ -110,6 +111,12 @@ export function initializeSockets(server: Server): void {
                     lobby.close();
 
                     return;
+                }
+
+                // Otherwise, update the host to someone who's still in the lobby
+                if (lobby.host === user) {
+                    lobby.reassignHost();
+                    reassignedHost = true;
                 }
             } else {
                 // Otherwise, keep the player in the lobby but disconnect them
@@ -134,7 +141,10 @@ export function initializeSockets(server: Server): void {
             }
 
             // Otherwise, update other players in the lobby
-            updatePlayers(lobby);
+            updatePlayers(lobby, event => {
+                // Update the host if we did the thing
+                if (reassignedHost) event.setHost(lobby.host)
+            });
         });
 
         // Join the lobby, then update all players (now including this one)

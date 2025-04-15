@@ -204,5 +204,28 @@ export class ServerLobby extends Lobby {
             index = (index + 1) % this.playerOrder.length;
             this.leader = this.playerOrder[index];
         } while (!this.getPlayer(this.leader)!.isConnected);
+
+        // Set the leader in the player map
+        for (const player of this.getPlayers()) {
+            player.isLeader = (player.username === this.leader);
+        }
+    }
+
+    /**
+     * Picks a new host from the current players.
+     */
+    public reassignHost(): void {
+        // Pick a new host from the current players
+        for (const player of this.getPlayers()) {
+            if (player.isConnected) {
+                this.host = player.username;
+                
+                // Set the host in the player map
+                for (const p of this.getPlayers()) {
+                    p.isHost = (p.username === this.host);
+                }
+                return;
+            }
+        }
     }
 }
