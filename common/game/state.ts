@@ -132,6 +132,7 @@ export class Lobby {
     public getNumPassedMissions() : number {
         let res = 0;
         for (const [round, fails] of this.state.outcomes.entries()) {
+            if (fails < 0) break;
             if (fails < Lobby.getMissionFailCount(this.getPlayerCount(), round)) res++;
         }
         return res;
