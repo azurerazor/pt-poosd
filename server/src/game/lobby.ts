@@ -148,6 +148,11 @@ export class ServerLobby extends Lobby {
      */
     public setMissionChoice(username: string, pass: boolean): void {
         this.missionMap.set(username, pass);
+
+        console.log("Mission map is now:");
+        for (const [player, choice] of this.missionMap.entries()) {
+            console.log(`${player}: ${choice}`);
+        }
     }
 
     /**

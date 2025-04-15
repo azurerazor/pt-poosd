@@ -244,6 +244,8 @@ function handleMissionChoice(lobby: ServerLobby, event: MissionChoiceEvent): voi
         return;
     }
 
+    console.log("Setting mission choice for", event.origin, "to", event.pass);
+
     lobby.setMissionChoice(event.origin, event.pass);
 }
 
