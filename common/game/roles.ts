@@ -175,7 +175,7 @@ export const minion = new Role(
     Roles.MINION_OF_MORDRED,
     Alignment.EVIL,
     "Minion of Mordred",
-    "A servant of Mordred. Knows the other evil players (except Oberon).",
+    "A servant of Mordred. Knows other evil players (except Oberon).",
     //Update this
     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTOzQ5zgpTsSD_BExlKgiOrl_lBGNBqKANYcQ&s",
     Roles.EVIL & ~Roles.OBERON
@@ -185,7 +185,7 @@ export const morgana = new Role(
     Roles.MORGANA,
     Alignment.EVIL,
     "Morgana",
-    "A servant of Mordred. Knows the other evil players (except Oberon). Appears as Merlin to Percival.",
+    "A servant of Mordred. Knows other evil players (except Oberon). Appears as Merlin to Percival.",
     "https://assets.dized.app/project/1d4f013b-38de-4a55-bf81-f8390b8c4407/en-US/eb51938ff9a3aaa135a6ae051260d1ab/bffe4547-0177-4f5f-a737-eae1cbe20674-d41d8cd98f00b204e9800998ecf8427e.png",
     Roles.EVIL & ~Roles.MORGANA & ~Roles.OBERON
 );
@@ -203,7 +203,7 @@ export const assassin = new Role(
     Roles.ASSASSIN,
     Alignment.EVIL,
     "Assassin",
-    "A servant of Mordred. Knows the other evil players (except Oberon). Can assassinate Merlin at the end of the game.",
+    "A servant of Mordred. Knows other evil players (except Oberon). May assassinate Merlin at the end of the game.",
     "https://assets.dized.app/project/1d4f013b-38de-4a55-bf81-f8390b8c4407/en-US/eb51938ff9a3aaa135a6ae051260d1ab/4ea4f8c0-781e-4e4c-a471-b555279d57b5-d41d8cd98f00b204e9800998ecf8427e.png",
     Roles.EVIL & ~Roles.ASSASSIN & ~Roles.OBERON
 );
