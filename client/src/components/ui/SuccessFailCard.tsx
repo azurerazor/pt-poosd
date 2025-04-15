@@ -62,11 +62,11 @@ const SuccessFailCard: React.FC<Props> = ({ player, players, setSuccessFail}) =>
             <h1 className="text-xl font-bold justify-center">Pass or Fail this mission:</h1>
             <div className="join join-horizontal flex-row justify-between space-x-5">
                 <img src={successCard} alt="Success Card" 
-                className={`w-60 border-6 ${leftActive ? 'border-blue-400' : 'border-transparent'}`}
+                className={`w-50 border-6 ${leftActive ? 'border-blue-400' : 'border-transparent'}`}
                 onClick={handleLeft}
                 />
                 <img src={failCard} alt="Fail Card" 
-                className={`w-60 border-6 ${rightActive ? 'border-blue-400' : 'border-transparent'}`} 
+                className={`w-50 border-6 ${rightActive ? 'border-blue-400' : 'border-transparent'}`} 
                 onClick={handleRight}
                 />
             </div>
