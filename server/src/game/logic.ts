@@ -2,11 +2,11 @@ import { AssassinationChoiceEvent, AssassinationEvent, BackToLobbyEvent, GameRes
 import { Alignment, getRoles, minion, Roles, servant } from "@common/game/roles";
 import { GameState, Lobby } from "@common/game/state";
 import { ASSASSINATION_TIME, MISSION_CHOICE_TIME, TEAM_VOTE_TIME } from "@common/game/timing";
+import { shuffle } from "@common/util/random";
+import Stats from "../models/stats";
 import { ServerEventBroker } from "./events";
 import { ServerLobby, WaitingFor } from "./lobby";
 import { updatePlayers } from "./sockets";
-import { shuffle } from "@common/util/random";
-import Stats from "../models/stats";
 
 /**
  * Min number of players to start a game (1 if running locally)
