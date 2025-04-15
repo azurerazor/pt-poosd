@@ -225,7 +225,7 @@ class _RegisterFormState extends State<_RegisterForm> {
         context: context,
         builder: (context) => AlertDialog(
           title: Text("Registered successfully!"),
-          content: Text("Username: $username\nEmail: $email"),
+          content: Text("Check your email for a verification link.\nUsername: $username\nEmail: $email"),
           actions: <Widget>[
             TextButton(
               child: Text("Proceed to login"),
