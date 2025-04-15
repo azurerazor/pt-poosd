@@ -97,7 +97,6 @@ export default function GameFlow() {
           if(event.state){
             setGameState(event.state.state);
             setOutcomes(event.state.outcomes!);
-            setSelectedTeam(event.state.team!);
             setRound(event.state.round);
             setAcceptedTeam(event.state.team);
           }
