@@ -31,6 +31,11 @@ class _QuestState extends State<Quest> {
   void initState() {
     super.initState();
     _deltaQuestsWon = 0;
+    currentQuest = 0;
+    currentQuestPhase = 0;
+    numFailedVotes = 0;
+    questResults = List<Team?>.generate(5, (int idx) => null, growable: false);
+    twoFailsRequired = false;
   }
 
   @override
@@ -48,7 +53,7 @@ class _QuestState extends State<Quest> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(
-                      "Quest ${currentQuest + 1}",
+                      (currentQuestPhase != -1) ? "Quest ${currentQuest + 1}" : "Quests over!",
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -56,7 +61,10 @@ class _QuestState extends State<Quest> {
                       textAlign: TextAlign.center,
                     ),
                     Text(
-                      "Size of quest: ${questRequirements[globalNumPlayers]![currentQuest + 1]}\n${twoFailsRequired ? "Two traitors" : "One traitor"} required for mission to fail.\nNumber of failed proposals: $numFailedVotes",
+                      (currentQuestPhase != -1) ?
+                      "Number of players on quest: ${questRequirements[globalNumPlayers]![currentQuest + 1]}\n${twoFailsRequired ? "Two traitors" : "One traitor"} required for mission to fail.\nNumber of failed proposals: $numFailedVotes"
+                      : "Three missions have succeeded!\nGood will win, unless Merlin dies.\nMinions of Mordred, who do you think is Merlin?"
+                      ,
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -151,7 +159,7 @@ class _QuestState extends State<Quest> {
     });
 
     if (currentQuest == 5) {
-      if (_deltaQuestsWon > 0) {
+      if (_deltaQuestsWon > 0 && globalRolesSelected["Merlin"] == true) {
         setState(() {
           currentQuestPhase = -1;  // assassinating merlin
         });
@@ -198,7 +206,7 @@ class _QuestState extends State<Quest> {
     }
 
     if (_deltaQuestsWon.abs() >= 3) {
-      if (_deltaQuestsWon > 0) {
+      if (_deltaQuestsWon > 0 && globalRolesSelected["Merlin"] == true) {
         setState(() {
           currentQuestPhase = -1; // assassinating merlin
         });
