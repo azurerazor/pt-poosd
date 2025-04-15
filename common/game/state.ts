@@ -127,6 +127,24 @@ export class Lobby {
     }
 
     /**
+     * Gets the number of missions that have passed this game
+     */
+    public getNumPassedMissions() : number {
+        let res = 0;
+        for (const [round, fails] of this.state.outcomes.entries()) {
+            if (fails < Lobby.getMissionFailCount(this.getPlayerCount(), round)) res++;
+        }
+        return res;
+    }
+
+    /**
+     * Gets the number of missions that have failed this game
+     */
+    public getNumFailedMissions() : number {
+        return this.state.round - this.getNumPassedMissions();
+    }
+
+    /**
      * Gets the number of players required for a mission with
      * a given number of players on a given round.
      * 

@@ -25,6 +25,11 @@ export class ServerLobby extends Lobby {
      */
     private readonly missionMap: Map<string, boolean> = new Map();
 
+    /**
+     * Map of players to Merlin guesses for assassination
+     */
+    private readonly merlinGuessMap: Map<string, string> = new Map();
+
     constructor(id: string, host: string) {
         super(id, host, () => { deleteLobby(id); });
     }
@@ -122,9 +127,58 @@ export class ServerLobby extends Lobby {
     }
 
     /**
+     * Checks whether the current mission is passing.
+     */
+    public isMissionPassing(): boolean {
+        return this.getNumFails() < this.getMissionFailCount();
+    }
+
+    /**
      * Clears the mission pass/fail map.
      */
     public clearMissionChoices(): void {
         this.missionMap.clear();
+    }
+
+    /**
+     * Sets a player's guess for the current Merlin assassination.
+     */
+    public setMerlinGuess(username: string, guess: string): void {
+        this.merlinGuessMap.set(username, guess);
+    }
+
+    /**
+     * Gets the majority Merlin vote, or null if there was a tie.
+     */
+    public getAssassinatedPlayer(): string | null {
+        const freq = new Map<string, number>();
+        for (const guess of this.merlinGuessMap.values()) {
+            freq.set(guess, (freq.get(guess) ?? 0) + 1);
+        }
+
+        let maxCount = 0;
+        let maxPlayer: string | null = null;
+        let numMax = 0;
+        for (const [player, count] of freq.entries()) {
+            if (count > maxCount) {
+                maxCount = count;
+                maxPlayer = player;
+                numMax = 1;
+            } else if (count === maxCount) {
+                numMax++;
+            }
+        }
+        // On a tie, return null
+        if (numMax > 1) return null;
+
+        // Otherwise, return the most guessed player
+        return maxPlayer;
+    }
+
+    /**
+     * Clears the Merlin guess map.
+     */
+    public clearMerlinGuesses(): void {
+        this.merlinGuessMap.clear();
     }
 }
