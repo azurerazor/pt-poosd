@@ -3,21 +3,23 @@ import { Player } from "../../../../common/game/player";
 
 interface Props {
   player: Player;
-  selectedGuys: number;
-  setSelectedGuys: React.Dispatch<React.SetStateAction<number>>;
+  selectedGuys: string[];
+  setSelectedGuys: React.Dispatch<React.SetStateAction<string[]>>;
   numberOfGuys: number;
 }
 
 const MissionPlayerSelect: React.FC<Props> = ({ player, selectedGuys, setSelectedGuys, numberOfGuys }) => {
   const [isGreen, setIsGreen] = useState(false);
 
-  const handleClick = () => {
-    if(!isGreen && selectedGuys == numberOfGuys)return;
-    if(isGreen)setSelectedGuys((prevGuys) => prevGuys-1);
-    else setSelectedGuys((prevGuys) => prevGuys+1);
-    setIsGreen((prevStatus) => !prevStatus);
-  };
-
+    const handleClick = () => {
+      if (!isGreen && selectedGuys.length === numberOfGuys) return;
+      if (isGreen) {
+        setSelectedGuys(selectedGuys.filter((username) => username !== player.username));
+      } else {
+        setSelectedGuys([...selectedGuys, player.username]);
+      }
+      setIsGreen((prevStatus) => !prevStatus);
+    };
   return (
     <div onClick={handleClick} className="relative">
       <div className="avatar join-item p-1">

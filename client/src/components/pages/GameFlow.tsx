@@ -46,7 +46,6 @@ export default function GameFlow() {
   const initialized = useRef(false);
 
   // All useStates passed to children when updated in socket
-  let temp = [];
   const [players, setPlayers] = useState<Map<string, Player>>(new Map());
   const [enabledRoles, setEnabledRoles] = useState(Roles.NONE);
   const [myPlayer, setMyPlayer] = useState<Player>();
@@ -58,10 +57,12 @@ export default function GameFlow() {
   const [outcomes, setOutcomes] = useState<number[]>([]);
   const [round, setRound] = useState(-1);
   const [order, setOrder] = useState<string[]>([]);
+  const [acceptedTeam, setAcceptedTeam] = useState<string[]>([]);
 
   // useStates for different stages of the game
   const [showRoleCard, setShowRoleCard] = useState(false);
   const [showMissionVote, setShowMissionVote] = useState(false);
+  const [showSuccessFail, setShowSuccessFail] = useState(false);
 
   // Other useStates used to wait for async stuff
   const [gameReady, setGameReady] = useState(false);
@@ -128,10 +129,18 @@ export default function GameFlow() {
       return () => clearTimeout(timer);
     });
 
+    ClientEventBroker.on('mission', (lobby: ClientLobby, event: UpdateEvent) => {
+      setShowMissionVote(true);
+
+      const timer = setTimeout(() => {
+        setShowMissionVote(false);
+      }, 10*1000);
+
+      return () => clearTimeout(timer);
+    });    
   }, []);
 
   // Change the page from Lobby to Game
-  // TO-DO add a check for number of players on client side (Gray out button for non-hosts and if not enough players)
   useEffect(() => {
     if (changeView) {
       setIsLoading(true);
@@ -210,8 +219,10 @@ export default function GameFlow() {
           outcomes={outcomes}
           round={round}
           order={order}
+          acceptedTeam={acceptedTeam}
           showRoleCard={showRoleCard}
           showMissionVote={showMissionVote}
+          showSuccessFail={showSuccessFail}
         />
       )}
     </div>

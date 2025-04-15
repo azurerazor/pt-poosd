@@ -28,13 +28,15 @@ type Props = {
   outcomes: number[];
   round: number;
   order: string[];
+  acceptedTeam: string[];
   showRoleCard: boolean;
   showMissionVote: boolean;
+  showSuccessFail: boolean;
 };
 
-export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam, successFail, setSuccessFail, outcomes, round, order, showRoleCard, showMissionVote }: Props) {
+export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam, successFail, setSuccessFail, outcomes, round, order, acceptedTeam, showRoleCard, showMissionVote, showSuccessFail }: Props) {
   const navigate = useNavigate();
-  const [selectedGuys, setSelectedGuys] = useState(0);
+  const [selectedGuys, setSelectedGuys] = useState<string[]>([]);
   const grayscaleVal = !myPlayer.isLeader ? 100 : 0;
   const orderedPlayers = order
     .map((username) => players.get(username))
@@ -42,6 +44,12 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
 
   const handleLeave = () => {
     navigate(`/dashboard`);
+  };
+
+  const handleSubmitMission = () => {
+    if(selectedGuys.length !== quests[players.size][round]){
+      alert("Not enough players on the mission!");
+    }else setSelectedTeam(selectedGuys);
   };
 
   return (
@@ -128,10 +136,9 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
                 />
               ))}
             </div>
-            <FunctionButton label="Submit" />
+            <FunctionButton label="Submit" onClick={handleSubmitMission}/>
           </div>
           <form method="dialog" className="modal-backdrop">
-            <button>close</button>
           </form>
         </dialog>
         </div>
@@ -141,20 +148,20 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
          * the button currently exists exclusively for testing
          */
         }
-        <div className="absolute bottom-35">
-          <FunctionButton
-          label="Vote Success/Fail"
-          onClick={() => (document.getElementById("SuccessFail") as HTMLDialogElement)?.showModal()}
-        />
-        <dialog id="SuccessFail" className="modal">
-          <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <SuccessFailCard player={myPlayer} players={players} setSuccessFail={setSuccessFail} />
+        {(showSuccessFail && acceptedTeam.includes(myPlayer.username)) && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center"
+            style={{
+              backdropFilter: 'blur(8px)',
+              backgroundColor: 'rgba(0, 0, 0, 0.3)',
+              WebkitBackdropFilter: 'blur(8px)',
+            }}
+            >
+            <div className="rounded-lg p-8 max-w-xl w-full text-center">
+              <SuccessFailCard player={myPlayer} players={players} setSuccessFail={setSuccessFail} />
+            </div>
           </div>
-          <form method="dialog" className="modal-backdrop">
-            <button>close</button>
-          </form>
-        </dialog>
-        </div>
+        )}
         {
         /**
          * Voting on mission

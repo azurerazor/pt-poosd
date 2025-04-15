@@ -1,6 +1,6 @@
 import { Player } from "../../../../common/game/player";
 import { Role, getRoles } from "../../../../common/game/roles";
-import { fails } from "../pages/GameFlow";
+import { fails, quests } from "../pages/GameFlow";
 import RoleRevealInfo from "./RoleRevealInfo";
 
 interface Props {
@@ -11,15 +11,12 @@ interface Props {
 }
 
 const MissionRevealCard: React.FC<Props> = ({ outcomes, numberOfPlayers, round, onClose }) => {
-  const succy = outcomes.filter((o) => o < fails[numberOfPlayers][round]).length;
-  const fail = outcomes.filter((o) => o >= fails[numberOfPlayers][round]).length;
-
-  console.log(succy, fail);
+  const succy = quests[numberOfPlayers][round]-outcomes[round];
+  const fail = outcomes[round];
 
   const successCard = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Ace_of_spades.svg/1200px-Ace_of_spades.svg.png";
   const failCard = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/Playing_card_heart_A.svg/1200px-Playing_card_heart_A.svg.png";
   
-  // TO-DO make this based on the fails array in GameFlow
   const verdict = succy > fail ? "Success" : "Fail";
 
   return (
