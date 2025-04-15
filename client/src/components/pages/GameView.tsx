@@ -171,7 +171,7 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
               <SuccessFailCard player={myPlayer} players={players} setSuccessFail={setSuccessFail} />
             </div>
           </div>
-        ) : (
+        ) : (showSuccessFail && (
           <div
             className="fixed inset-0 z-50 flex items-center justify-center"
             style={{
@@ -184,7 +184,7 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
               <LoadingCard message="Voting in progress..." />
             </div>
           </div>
-        )}
+        ))}
         {
         /**
          * Voting on mission
