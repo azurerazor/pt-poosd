@@ -17,6 +17,7 @@ import SuccessFailCard from '../ui/SuccessFailCard';
 import MissionVoteCard from '../ui/MissionVoteCard';
 import MissionRevealCard from '../ui/MissionRevealCard';
 import AssassinationScreen from 'components/ui/AssassinationScreen';
+import { ClientEventBroker } from 'game/events';
 
 type Props = {
   players: Map<string, Player>;
@@ -46,6 +47,7 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
     .filter((p): p is Player => p !== undefined);
 
   const handleLeave = () => {
+    ClientEventBroker.disconnect();
     navigate(`/dashboard`);
   };
 

@@ -43,10 +43,8 @@ const SuccessFailCard: React.FC<Props> = ({ player, players, setSuccessFail}) =>
         if (!leftActive) {
             setSuccessFail(true);
             setRight(false);
-        }else{
-            setSuccessFail(null);
+            setLeft(leftActive => !leftActive);
         }
-        setLeft(leftActive => !leftActive);
     };
 
     const handleRight = () => {
@@ -54,15 +52,13 @@ const SuccessFailCard: React.FC<Props> = ({ player, players, setSuccessFail}) =>
         if (!rightActive) {
             setSuccessFail(failCard === successCard);
             setLeft(false);
-        }else{
-            setSuccessFail(null);
+            setRight(rightActive => !rightActive);
         }
-        setRight(rightActive => !rightActive);
     };
 
     return (
         <div className="card bg-base-100 shadow-sm">
-        <div className="card-body w-full">
+        <div className="card-body w-fit join-vertical">
             <h1 className="text-xl font-bold flex-row">Pass or Fail this mission:</h1>
             <div className="join join-horizontal flex justify-between space-x-5">
                 <img src={successCard} alt="Success Card" 

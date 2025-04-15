@@ -22,23 +22,25 @@ const MissionVoteCard: React.FC<Props> = ({ selectedTeam, players, setAcceptReje
 
     const handleAccept = () => {
         console.log("accepted");
-        if(leftActive)setAcceptReject(null);
-        else setAcceptReject(true);
-        setLeft(leftActive => !leftActive);
-        if (!leftActive) setRight(false);
+        if (!leftActive) {
+            setAcceptReject(true);
+            setRight(false);
+            setLeft(leftActive => !leftActive);
+        }
     };
 
     const handleReject = () => {
         console.log("rejected");
-        if(rightActive)setAcceptReject(null);
-        else setAcceptReject(false);
-        setRight(rightActive => !rightActive);
-        if (!rightActive) setLeft(false);
+        if (!rightActive) {
+            setAcceptReject(false);
+            setLeft(false);
+            setRight(rightActive => !rightActive);
+        }
     };
 
     return (
         <div className="card bg-base-100 shadow-sm">
-        <div className="card-body">
+        <div className="card-body flex-col">
             <h1 className="text-xl font-bold flex-row">Vote for this mission:</h1>
             <div className="justify-center join join-horizontal">
                 {selectedPlayers.map((p) => (
