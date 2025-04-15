@@ -13,6 +13,19 @@ import { shuffle } from "@common/util/random";
 const MIN_PLAYERS: number = (process.env.NODE_ENV == 'development') ? 1 : 5;
 
 /**
+ * Handles ending the game, sending all information first
+ * then sending the game results when all clients are ready
+ */
+function sendGameResults(lobby: ServerLobby, results: GameResultEvent) {
+    // Prepare to send the results on ready
+    lobby.onReady(l => { l.send(results); });
+
+    // Send the full player map to all players
+    lobby.send(new UpdateEvent()
+        .setPlayers(lobby.getPlayerMap()));
+}
+
+/**
  * Handles a player's ready event
  */
 function handleReady(lobby: ServerLobby, event: ReadyEvent): void {
@@ -281,7 +294,7 @@ function handleMissionOutcome(lobby: ServerLobby): void {
         if (lobby.getNumPassedMissions() >= 3) {
             // If merlin is disabled, good players win right away
             if ((lobby.enabledRoles & Roles.MERLIN) === Roles.NONE) {
-                lobby.send(GameResultEvent.goodWin());
+                sendGameResults(lobby, GameResultEvent.goodWin());
                 return;
             }
 
@@ -296,7 +309,7 @@ function handleMissionOutcome(lobby: ServerLobby): void {
 
         // If three rounds have failed, evil wins right away
         if (lobby.getNumFailedMissions() >= 3) {
-            lobby.send(GameResultEvent.evilWin());
+            sendGameResults(lobby, GameResultEvent.evilWin());
             return;
         }
 
@@ -351,7 +364,7 @@ function handleAssassination(lobby: ServerLobby): void {
 
     // If there was no assassination, the good guys win!
     if (!assassinated) {
-        lobby.send(GameResultEvent.missedMerlin(assassinated));
+        sendGameResults(lobby, GameResultEvent.missedMerlin(assassinated));
         return;
     }
 
@@ -359,12 +372,12 @@ function handleAssassination(lobby: ServerLobby): void {
     const merlin = lobby.getMerlin()!; // assassination doesn't happen if there's no merlin
     if (merlin === assassinated) {
         // Evil wins!
-        lobby.send(GameResultEvent.guessedMerlin(merlin));
+        sendGameResults(lobby, GameResultEvent.guessedMerlin(merlin));
         return;
     }
 
     // Otherwise, good players win
-    lobby.send(GameResultEvent.missedMerlin(assassinated));
+    sendGameResults(lobby, GameResultEvent.missedMerlin(assassinated));
 }
 
 function handlebackToLobby(lobby: ServerLobby, event: BackToLobbyEvent): void {
