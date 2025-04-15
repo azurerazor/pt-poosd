@@ -18,3 +18,8 @@ export const TEAM_VOTE_TIME: number = 10 * SECONDS;
  * No chocie within this time period is considered a pass.
  */
 export const MISSION_CHOICE_TIME: number = 10 * SECONDS;
+
+/**
+ * Amount of time players have to guess Merlin for assassination.
+ */
+export const ASSASSINATION_TIME: number = 10 * SECONDS;
