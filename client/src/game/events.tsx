@@ -88,6 +88,14 @@ export class ClientEventBroker extends EventBroker {
         return this.instance;
     }
 
+    /**
+     * Forces a socket disconnect when leaving a lobby
+     */
+    public static disconnect(): void {
+        if (!this.instance) return;
+        this.instance.socket.close();
+    }
+
     public dispatch(lobby: Lobby, event: GameEvent): void {
         super.dispatch(lobby, event);
     }

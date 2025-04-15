@@ -133,13 +133,12 @@ export function initializeSockets(server: Server): void {
                 return;
             }
 
-            // Update other players in the lobby
+            // Otherwise, update other players in the lobby
             updatePlayers(lobby);
         });
 
         // Join the lobby, then update all players (now including this one)
         const lobby = getActiveLobby(user);
-        console.log("Active lobby for user", user, "is:", lobby);
         if (!lobby) {
             console.log(`User ${user} connected but lobby is null`);
             socket.disconnect(true);

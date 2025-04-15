@@ -6,6 +6,8 @@ import { getRoles, Roles } from "../../../../common/game/roles";
 import { Player } from "../../../../common/game/player";
 import { RolesetContextProvider } from 'util/rolesetContext';
 import FunctionButton from '../misc/FunctionButton';
+import { ClientEventBroker } from 'game/events';
+import { useNavigate } from 'react-router';
 
 type Props = {
   players: Map<string, Player>;
@@ -20,6 +22,8 @@ type Props = {
 export default function LobbyView({ players, changeView, setChangeView, lobbyId, enabledRoles, setEnabledRoles, myPlayer }: Props) {
     let specialRoles = getRoles(Roles.SPECIAL_ROLES);
     const grayscaleVal = (!myPlayer.isHost || players.size < 5) ? 100 : 0;
+
+    const navigate = useNavigate();
     return (
         <RolesetContextProvider>
             <div className="flex justify-center gap-4 p-4 h-screen">
@@ -42,9 +46,10 @@ export default function LobbyView({ players, changeView, setChangeView, lobbyId,
                                 onClick={() => { if(grayscaleVal === 0) setChangeView(true)}}
                             />
                         </div>
-                        <RouteButton to="/dashboard">
-                            Exit
-                        </RouteButton>
+                        <FunctionButton label={'Exit'} onClick={() => {
+                            ClientEventBroker.disconnect();
+                            navigate('/dashboard');
+                        }}/>
                     </div>
                 </div>
 
