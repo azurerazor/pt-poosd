@@ -73,7 +73,6 @@ export class ClientEventBroker extends EventBroker {
 
         // Register event callbacks
         socket.on('event', (packet: EventPacket) => {
-            console.log("Received event:", packet);
             ClientEventBroker.instance!.receive(packet);
         });
 
