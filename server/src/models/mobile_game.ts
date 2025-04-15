@@ -19,6 +19,19 @@ export const mobileGameSchema = new mongoose.Schema({
     },
 
     /**
+     * Number of players in the game
+     */
+    numPlayers: {
+        type: Number,
+        required: true,
+        validate: {
+            validator: function (v: number) {
+                return v >= 5 && v <= 10;
+            },
+        },
+    },
+
+    /**
      * Whether good won
      */
     goodWin: {

@@ -39,13 +39,19 @@ router.get('/get/:num?', async (req: Request, res: Response) => {
 // Posts a new mobile game to the user's history
 router.post('/put', async (req: Request, res: Response) => {
     const user = res.locals.user;
-    const { timeStarted, goodWin, roles, missionOutcomes } = req.body;
+    const { timeStarted, numPlayers, goodWin, roles, missionOutcomes } = req.body;
 
     // Validate input
-    if (!timeStarted || !goodWin || !roles || !missionOutcomes) {
+    if (!timeStarted || !numPlayers || !goodWin || !roles || !missionOutcomes) {
         res
             .status(400)
             .json({ message: "Missing required fields" });
+        return;
+    }
+    if (numPlayers < 5 || numPlayers > 10) {
+        res
+            .status(400)
+            .json({ message: "Invalid number of players" });
         return;
     }
     if (goodWin !== true && goodWin !== false) {
@@ -82,6 +88,7 @@ router.post('/put', async (req: Request, res: Response) => {
     await MobileGame.create({
         user,
         timeStarted,
+        numPlayers,
         goodWin,
         roles,
         missionOutcomes,
