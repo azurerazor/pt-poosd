@@ -323,10 +323,8 @@ function handleMissionOutcome(lobby: ServerLobby): void {
     lobby.state.outcomes[lobby.state.round] = fails;
 
     // Send the updated game state
-    updatePlayers(lobby, (event: UpdateEvent) => {
-        // Always set the mission outcome
-        event.setState(lobby.state);
-    });
+    lobby.send(new UpdateEvent()
+        .setState(lobby.state));
 
     // Wait for a ready response from all players before sending the outcome
     lobby.onReady(l => {
@@ -358,6 +356,7 @@ function handleMissionOutcome(lobby: ServerLobby): void {
 
         // If three rounds have failed, evil wins right away
         if (lobby.getNumFailedMissions() >= 3) {
+            console.log("Evil wins!\n");
             handleEndGame(lobby, GameResultEvent.evilWin());
             return;
         }
