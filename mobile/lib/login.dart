@@ -152,8 +152,6 @@ class _LoginFormState extends State<_LoginForm> {
       _isLoading = true;
     });
 
-    print('$URL/api/login');
-
     final response = await http.post(
       Uri.parse('$URL/api/login'),
       headers: <String, String>{
