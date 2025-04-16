@@ -6,6 +6,7 @@ import { AUTH_KEY } from '../routes/auth';
 import { ServerEventBroker } from './events';
 import { getActiveLobby, getLobbyById, setActiveLobby } from './lobbies';
 import { ServerLobby } from './lobby';
+import { acquireCat } from '../networking/cats';
 
 /**
  * Map of usernames to their sockets
@@ -89,7 +90,7 @@ export function initializeSockets(server: Server): void {
         }
     });
 
-    io!.on('connection', (socket: Socket) => {
+    io!.on('connection', async (socket: Socket) => {
         const user: string = socket.data.username;
         console.log(`User ${user} opened a socket connection`);
 
@@ -174,6 +175,10 @@ export function initializeSockets(server: Server): void {
 
             // If not, add them to the lobby
             lobby.addPlayer(user);
+
+            // Assign the player a new cat image
+            const cat = await acquireCat();
+            lobby.getPlayer(user)!.avatar = cat;
         }
 
         // Update the player order
@@ -196,6 +201,14 @@ export function initializeSockets(server: Server): void {
 
         // Handle events
         socket.on('event', (packet: EventPacket) => {
+            // Check if the lobby still exists
+            const lobby = getActiveLobby(packet.origin);
+            if (!lobby) {
+                console.error(`User ${packet.origin} is sending events to a dead lobby; killing connection`);
+                socket.disconnect(true);
+                return;
+            }
+
             ServerEventBroker.getInstance().receive(packet);
         });
     });

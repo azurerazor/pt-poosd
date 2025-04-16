@@ -29,6 +29,7 @@ class _AssassinateState extends State<Assassinate> {
   Widget build(BuildContext context) {
     if (discussing) {
       return DiscussionTemplate(
+        key: UniqueKey(),
         endDiscussion: () => setState(() {
           discussing = false;
         }), 
@@ -38,6 +39,7 @@ class _AssassinateState extends State<Assassinate> {
       );
     } else {
       return VoteTemplate(
+        key: UniqueKey(),
         displayText: "${widget.includesAssassin ? "Assassin, decide!" : "Minions, vote!"}\nDid you successfully assassinate Merlin?", 
         succeedText: "YES", 
         failText: "NO", 

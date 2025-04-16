@@ -25,7 +25,7 @@ const GameMission: React.FC<Props> = ({ round, numberOfPlayers, status = -1, pco
 
   return (
     <div className="join-item avatar p-4">
-      <div className={`relative w-45 rounded-full border-8 ${(fails[numberOfPlayers][round] > 1) ? 'border-red-400' : 'border-transparent'}`}>
+      <div className={`relative w-45 rounded-full border-8 ${(fails[numberOfPlayers][round] > 1) ? 'border-red-400' : 'border-black'}`}>
         <img src={image}/>
         {(status === -1) &&
         <div className="absolute inset-0 flex items-center justify-center text-7xl  font-bold">
