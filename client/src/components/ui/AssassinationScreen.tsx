@@ -1,8 +1,9 @@
 import { Player } from "../../../../common/game/player";
 import { Roles, getRoles } from "../../../../common/game/roles";
 import FunctionButton from "../misc/FunctionButton";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AssassinationPlayerSelect from "./AssassinationPlayerSelect";
+import { ASSASSINATION_TIME, SECONDS } from "@common/game/timing";
 
 interface Props {
     player: Player;
@@ -15,8 +16,29 @@ const AssassinationScreen: React.FC<Props> = ({ player, players, goodPlayers, se
     console.log(goodPlayers);
     const [selected, setSelected] = useState(-1);
 
+    const [counter, setCounter] = useState(ASSASSINATION_TIME / SECONDS);
+            
+    useEffect(() => {
+        const interval = setInterval(() => {
+        setCounter((prev) => {
+            if (prev <= 1) {
+            clearInterval(interval);
+            return 0;
+            }
+            return prev - 1;
+        });
+        }, 1000);
+    
+        return () => clearInterval(interval);
+    }, []);
+
     return (
         <div className="card bg-base-100 shadow-sm">
+        <div className="absolute top-4 right-4">
+            <span id="counterElement" className="countdown">
+                {counter}
+            </span>
+        </div>
         <div className="card-body w-full">
             <h1 className="text-xl font-bold flex-row">Pick who you think is Merlin:</h1>
             <div className="join join-horizontal flex flex-row flex-wrap justify-center">
@@ -36,7 +58,6 @@ const AssassinationScreen: React.FC<Props> = ({ player, players, goodPlayers, se
                     );
                 })}
             </div>
-            <div className="flex-row"><FunctionButton label="Submit" /></div>
         </div>
         </div>
     );

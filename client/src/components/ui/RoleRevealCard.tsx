@@ -45,7 +45,7 @@ const RoleRevealCard: React.FC<Props> = ({ player, players, onClose }) => {
 
   return (
     <div className="card card-side bg-base-100 shadow-sm w-[42rem] h-[24rem]">
-      <div className="relative top-4 right-4">
+      <div className="absolute top-4 right-4">
         <span id="counterElement" className="countdown">
           {counter}
         </span>

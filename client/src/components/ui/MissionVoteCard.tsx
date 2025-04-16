@@ -2,7 +2,8 @@ import { Player } from "../../../../common/game/player";
 import { Roles, getRoles } from "../../../../common/game/roles";
 import { ClientLobby } from "../../game/lobby";
 import FunctionButton from "../misc/FunctionButton";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { TEAM_VOTE_TIME, SECONDS } from "@common/game/timing";
 
 interface Props {
   selectedTeam: string[];
@@ -14,6 +15,23 @@ const MissionVoteCard: React.FC<Props> = ({ selectedTeam, players, setAcceptReje
     const selectedPlayers = Array.from(players)
       .filter(([_, player]) => selectedTeam.includes(player.username))
       .map(([_, player]) => player);
+
+    const [counter, setCounter] = useState(TEAM_VOTE_TIME / SECONDS);
+    
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setCounter((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+  
+      return () => clearInterval(interval);
+    }, []);
+    
     const accept = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/SMirC-thumbsup.svg/2048px-SMirC-thumbsup.svg.png";
     const reject = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/SMirC-thumbsdown.svg/1200px-SMirC-thumbsdown.svg.png";
 
@@ -40,18 +58,25 @@ const MissionVoteCard: React.FC<Props> = ({ selectedTeam, players, setAcceptReje
 
     return (
         <div className="card bg-base-100 shadow-sm">
+        <div className="absolute top-4 right-4">
+            <span id="counterElement" className="countdown">
+                {counter}
+            </span>
+        </div>
         <div className="card-body flex-col">
             <h1 className="text-xl font-bold flex-row">Vote for this mission:</h1>
             <div className="justify-center join join-horizontal">
                 {selectedPlayers.map((p) => (
-                    <div key={p.username} className="flex flex-col">
-                    <div className="avatar p-1">
-                      <div className="w-14 rounded border-4">
+                  <div className="relative">
+                    <div className="avatar join-item p-1">
+                      <div className="w-24 rounded relative border-6 border-transparent">
                         <img src={p.avatar} alt={p.username} />
                       </div>
                     </div>
-                    <h2 className="text-sm font-semibold">{p.username}</h2>
-                  </div>                
+                    <div className="join-item">
+                      <h2 className="font-bold">{p.username}</h2>
+                    </div>
+                  </div>
                 ))}
             </div>
             <div className="join join-horizontal flex justify-between space-x-5">

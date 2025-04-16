@@ -60,7 +60,7 @@ export default function Dashboard() {
       <h2 className="text-3xl font-bold">Welcome, {username}!</h2>
 
       <div className="flex flex-col w-md mt-12">
-        <div className="flex items-center gap-4 justify-center">
+        <div className="flex items-center gap-4 justify-center mb-6">
           <InputText
             name="Game Code"
             placeholder="Enter game code"
@@ -75,7 +75,7 @@ export default function Dashboard() {
           />
         </div>
 
-        <div className="divider">OR</div>
+        <div className="divider">or</div>
 
         <div className="flex justify-center">
           <FunctionButton
