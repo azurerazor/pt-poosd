@@ -1,23 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import GameAvatar from "../ui/GameAvatar";
 import GameMission from "../ui/GameMission";
 import MissionPlayerSelect from "../ui/MissionPlayerSelect";
 import GameCard from "../ui/GameCard";
-import { Roles, getRoleByName, getRoles } from "../../../../common/game/roles";
-import { Player } from "../../../../common/game/player"
+import { getRoles } from "../../../../common/game/roles";
+import { Player } from "../../../../common/game/player";
 import FunctionButton from "../misc/FunctionButton";
-import { useUser } from '../../util/auth';
 import { useNavigate } from 'react-router';
 import { HiddenContextProvider } from "../../util/hiddenContext";
-import VoteMission from '../ui/VoteMission';
-import RoleRevealCard from "../ui/RoleRevealCard"
-import {quests, fails} from "./GameFlow"
-import { LobbyState, GameState } from "../../../../common/game/state";
 import SuccessFailCard from '../ui/SuccessFailCard';
 import LoadingCard from '../ui/LoadingCard';
 import MissionVoteCard from '../ui/MissionVoteCard';
 import MissionRevealCard from '../ui/MissionRevealCard';
 import AssassinationScreen from 'components/ui/AssassinationScreen';
+import RoleRevealCard from "../ui/RoleRevealCard";
+import { quests } from "./GameFlow";
 import { ClientEventBroker } from 'game/events';
 
 type Props = {
@@ -40,7 +37,25 @@ type Props = {
   showAssassinationCard: boolean;
 };
 
-export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam, successFail, setSuccessFail, setAcceptReject, setAssassinate, goodPlayers, outcomes, round, order, showRoleCard, showMissionVote, showSuccessFail, showMissionOutcome, showAssassinationCard }: Props) {
+export default function GameView({
+  players,
+  myPlayer,
+  selectedTeam,
+  setSelectedTeam,
+  successFail,
+  setSuccessFail,
+  setAcceptReject,
+  setAssassinate,
+  goodPlayers,
+  outcomes,
+  round,
+  order,
+  showRoleCard,
+  showMissionVote,
+  showSuccessFail,
+  showMissionOutcome,
+  showAssassinationCard
+}: Props) {
   const navigate = useNavigate();
   const [selectedGuys, setSelectedGuys] = useState<string[]>([]);
   const grayscaleVal = !myPlayer.isLeader ? 100 : 0;
@@ -64,80 +79,66 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
   };
 
   return (
-    <div style={{
-        backgroundImage: `url(${"https://images.rawpixel.com/image_800/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvcHg4OTA3MTAtaW1hZ2Uta3d2dXZhYjUuanBn.jpg"})`,
-        backgroundSize: 'cover',
-        backgroundRepeat: 'no-repeat',
-        height: '100vh',
-        width: '100vw',
-        backdropFilter: 'blur(8px)',
-        WebkitBackdropFilter: 'blur(8px)',
-      }
-    }>
-    <HiddenContextProvider>
-        
-        {
-        /**
-         * Display's the player's role and information about it at the start of the game
-         */
-        }
-        {showRoleCard && (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center"
-            style={{
-              backdropFilter: 'blur(8px)',
-              backgroundColor: 'rgba(0, 0, 0, 0.3)',
-              WebkitBackdropFilter: 'blur(8px)',
-            }}
-          >
-            <div
-              className="rounded-lg p-8 max-w-xl w-full text-center"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <RoleRevealCard player={myPlayer} players={players} />
+    <div className="relative w-full h-full min-h-screen">
+      {/* Blurred background */}
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          backgroundImage: `url("https://images.rawpixel.com/image_800/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvcHg4OTA3MTAtaW1hZ2Uta3d2dXZhYjUuanBn.jpg")`,
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat',
+          filter: 'blur(3px)',
+          WebkitFilter: 'blur(8px)',
+        }}
+      />
+
+      {/* Foreground content */}
+      <div className="relative z-10">
+        <HiddenContextProvider>
+          {showRoleCard && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
+              <div className="rounded-lg p-8 max-w-xl w-full text-center">
+                <RoleRevealCard player={myPlayer} players={players} />
+              </div>
             </div>
-          </div>
-        )}
-        <div className="hero-content w-full text-center m-auto flex-col gap-0 h-screen">
-          {
-          /**
-           * Displays the list of players on the top of the screen
-           */
-          }
-          <div className="join join-vertical lg:join-horizontal absolute top-1">
-            {orderedPlayers.map((player, idx) => (
-              <GameAvatar key={player.username} player={player} myPlayer={myPlayer} />
-            ))}
-          </div>
-          {
-          /**
-           * Displays each quest and whether they have succeeded, failed, or haven't been completed
-           */
-          }
-          <div className="join join-vertical lg:join-horizontal">
-            {[...Array(5)].map((_, i) => (
-              <GameMission key={i} round={i} numberOfPlayers={players.size} status={outcomes[i]} pcount={quests[players.size][i]} />
-            ))}
-          </div>
-          <div className="justify-between">
-            {
-            /**
-             * Button and menu for selecting the team for the current quest
-             */
-            }
+          )}
+
+          <div className="hero-content w-full text-center m-auto flex-col gap-0 min-h-screen">
+            <div className="join join-vertical lg:join-horizontal absolute top-1">
+              {orderedPlayers.map((player) => (
+                <GameAvatar key={player.username} player={player} myPlayer={myPlayer} />
+              ))}
+            </div>
+
+            <div className="join join-vertical lg:join-horizontal">
+              {[...Array(5)].map((_, i) => (
+                <GameMission
+                  key={i}
+                  round={i}
+                  numberOfPlayers={players.size}
+                  status={outcomes[i]}
+                  pcount={quests[players.size][i]}
+                />
+              ))}
+            </div>
+
             <div className="bottom-4">
-              <div style={{ filter: `grayscale(${grayscaleVal}%)` }} className='mt-auto flex justify-center p-4'>
+              <div style={{ filter: `grayscale(${grayscaleVal}%)` }} className="mt-auto flex justify-center p-4">
                 <FunctionButton
                   label="Mission Select"
-                  onClick={() => { if(myPlayer.isLeader) (document.getElementById("MissionSelect") as HTMLDialogElement)?.showModal() }}
+                  onClick={() => {
+                    if (myPlayer.isLeader)
+                      (document.getElementById("MissionSelect") as HTMLDialogElement)?.showModal();
+                  }}
                 />
               </div>
+
               <dialog id="MissionSelect" className="modal">
                 <div className="modal-box">
-                <h1 className="text-xl font-bold flex-row">Select {quests[players.size][round]} players:</h1>
+                  <h1 className="text-xl font-bold">Select {quests[players.size][round]} players:</h1>
                   <div className="join join-horizontal flex flex-row flex-wrap justify-center">
-                    {orderedPlayers.map((player, idx) => (
-                      <MissionPlayerSelect 
+                    {orderedPlayers.map((player) => (
+                      <MissionPlayerSelect
                         key={player.username}
                         player={player}
                         selectedGuys={selectedGuys}
@@ -146,212 +147,67 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
                       />
                     ))}
                   </div>
-                  <FunctionButton label="Submit" onClick={handleSubmitMission}/>
+                  <FunctionButton label="Submit" onClick={handleSubmitMission} />
                 </div>
-                <form method="dialog" className="modal-backdrop">
-                </form>
+                <form method="dialog" className="modal-backdrop" />
               </dialog>
             </div>
-            {
-            /**
-             * very broken success/fail menu
-             * the button currently exists exclusively for testing
-             */
-            }
-            {(showSuccessFail && selectedTeam.includes(myPlayer.username)) && (
-              <div
-                className="fixed inset-0 z-50 flex items-center justify-center"
-                style={{
-                  backdropFilter: 'blur(8px)',
-                  backgroundColor: 'rgba(0, 0, 0, 0.3)',
-                  WebkitBackdropFilter: 'blur(8px)',
-                }}
-                >
-                <div className="rounded-lg p-8 max-w-xl w-full text-center">
-                  <SuccessFailCard player={myPlayer} players={players} setSuccessFail={setSuccessFail} />
+
+            {showSuccessFail && (
+              selectedTeam.includes(myPlayer.username) ? (
+                <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
+                  <div className="rounded-lg p-8 max-w-xl w-full text-center">
+                    <SuccessFailCard player={myPlayer} players={players} setSuccessFail={setSuccessFail} />
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
+                  <div className="rounded-lg p-8 max-w-xl w-full text-center">
+                    <LoadingCard message="Voting in progress..." />
+                  </div>
+                </div>
+              )
             )}
-            {
-            /**
-             * Voting on mission
-             */
-            }
+
             {showMissionVote && (
-              <div
-                className="fixed inset-0 z-50 flex items-center justify-center"
-                style={{
-                  backdropFilter: 'blur(8px)',
-                  backgroundColor: 'rgba(0, 0, 0, 0.3)',
-                  WebkitBackdropFilter: 'blur(8px)',
-                }}
-              >
+              <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
                 <div className="rounded-lg p-8 max-w-xl w-full text-center">
-                  <MissionVoteCard selectedTeam={selectedTeam} players={players}  setAcceptReject={setAcceptReject} />
+                  <MissionVoteCard selectedTeam={selectedTeam} players={players} setAcceptReject={setAcceptReject} />
                 </div>
               </div>
             )}
 
-            {
-            /**
-             * Screen for displaying result of mission
-             */
-            }
             {showMissionOutcome && (
-              <div
-                className="fixed inset-0 z-50 flex items-center justify-center"
-                style={{
-                  backdropFilter: 'blur(8px)',
-                  backgroundColor: 'rgba(0, 0, 0, 0.3)',
-                  WebkitBackdropFilter: 'blur(8px)',
-                }}
-              >
+              <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
                 <div className="rounded-lg p-8 max-w-xl w-full text-center">
                   <MissionRevealCard outcomes={outcomes} numberOfPlayers={players.size} round={round} />
                 </div>
               </div>
             )}
 
-            {
-            /**
-             * Assassination screen
-             * TO-DO Add check to only show evils in here
-             */
-            }
-            {(showAssassinationCard && !(getRoles(myPlayer.role!)[0].isGood())) && (
-              <div
-                className="fixed inset-0 z-50 flex items-center justify-center"
-                style={{
-                  backdropFilter: 'blur(8px)',
-                  backgroundColor: 'rgba(0, 0, 0, 0.3)',
-                  WebkitBackdropFilter: 'blur(8px)',
-                }}
-              >
+            {showAssassinationCard && !getRoles(myPlayer.role!)[0].isGood() && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
                 <div className="rounded-lg p-8 max-w-xl w-full text-center">
-                  <AssassinationScreen player={myPlayer} players={players} goodPlayers={goodPlayers} setAssassinate={setAssassinate} />
+                  <AssassinationScreen
+                    player={myPlayer}
+                    players={players}
+                    goodPlayers={goodPlayers}
+                    setAssassinate={setAssassinate}
+                  />
                 </div>
               </div>
             )}
 
-            {
-            /**
-             * Displays the player's role with a toggleable card
-             */
-            }
             <div className="absolute bottom-4 right-4 p-2">
-              <GameCard
-                role={getRoles(myPlayer.role!)[0]}
-              />
+              <GameCard role={getRoles(myPlayer.role!)[0]} />
+            </div>
+
+            <div className="absolute top-4 left-4 p-2">
+              <FunctionButton label="Leave" onClick={handleLeave} />
             </div>
           </div>
-          {
-          /**
-           * very broken success/fail menu
-           * the button currently exists exclusively for testing
-           */
-          }
-          {(showSuccessFail && selectedTeam.includes(myPlayer.username)) ? (
-            <div
-              className="fixed inset-0 z-50 flex items-center justify-center"
-              style={{
-                backdropFilter: 'blur(8px)',
-                backgroundColor: 'rgba(0, 0, 0, 0.3)',
-                WebkitBackdropFilter: 'blur(8px)',
-              }}
-              >
-              <div className="rounded-lg p-8 max-w-xl w-full text-center">
-                <SuccessFailCard player={myPlayer} players={players} setSuccessFail={setSuccessFail} />
-              </div>
-            </div>
-          ) : (showSuccessFail && (
-            <div
-              className="fixed inset-0 z-50 flex items-center justify-center"
-              style={{
-                backdropFilter: 'blur(8px)',
-                backgroundColor: 'rgba(0, 0, 0, 0.3)',
-                WebkitBackdropFilter: 'blur(8px)',
-              }}
-              >
-              <div className="rounded-lg p-8 max-w-xl w-full text-center">
-                <LoadingCard message="Voting in progress..." />
-              </div>
-            </div>
-          ))}
-          {
-          /**
-           * Voting on mission
-           */
-          }
-          {showMissionVote && (
-            <div
-              className="fixed inset-0 z-50 flex items-center justify-center"
-              style={{
-                backdropFilter: 'blur(8px)',
-                backgroundColor: 'rgba(0, 0, 0, 0.3)',
-                WebkitBackdropFilter: 'blur(8px)',
-              }}
-            >
-              <div className="rounded-lg p-8 max-w-xl w-full text-center">
-                <MissionVoteCard selectedTeam={selectedTeam} players={players}  setAcceptReject={setAcceptReject} />
-              </div>
-            </div>
-          )}
-
-          {
-          /**
-           * Screen for displaying result of mission
-           */
-          }
-          {showMissionOutcome && (
-            <div
-              className="fixed inset-0 z-50 flex items-center justify-center"
-              style={{
-                backdropFilter: 'blur(8px)',
-                backgroundColor: 'rgba(0, 0, 0, 0.3)',
-                WebkitBackdropFilter: 'blur(8px)',
-              }}
-            >
-              <div className="rounded-lg p-8 max-w-xl w-full text-center">
-                <MissionRevealCard outcomes={outcomes} numberOfPlayers={players.size} round={round} />
-              </div>
-            </div>
-          )}
-
-          {
-          /**
-           * Assassination screen
-           */
-          }
-          {(showAssassinationCard && !(getRoles(myPlayer.role!)[0].isGood())) && (
-            <div
-              className="fixed inset-0 z-50 flex items-center justify-center"
-              style={{
-                backdropFilter: 'blur(8px)',
-                backgroundColor: 'rgba(0, 0, 0, 0.3)',
-                WebkitBackdropFilter: 'blur(8px)',
-              }}
-            >
-              <div className="rounded-lg p-8 max-w-xl w-full text-center">
-                <AssassinationScreen player={myPlayer} players={players} goodPlayers={goodPlayers} setAssassinate={setAssassinate} />
-              </div>
-            </div>
-          )}
-
-          {
-          /**
-           * Displays the player's role with a toggleable card
-           */
-          }
-          <div className="absolute bottom-4 right-4 p-2">
-            <GameCard
-              role={getRoles(myPlayer.role!)[0]}
-            />
-          </div>
-          <div className="absolute top-4 left-4 p-2">
-            <FunctionButton label="Leave" onClick={handleLeave} />
-          </div>
-        </div>
-      </HiddenContextProvider>
+        </HiddenContextProvider>
+      </div>
     </div>
   );
 }
