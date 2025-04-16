@@ -9,6 +9,7 @@ import 'package:mobile/lobby.dart';
 
 import 'game_phases/night.dart';
 import 'game_phases/quest.dart';
+import 'main.dart';
 
 enum Team { good, evil, }
 
@@ -55,7 +56,7 @@ class _GamePageContent extends StatefulWidget {
 class _GamePageContentState extends State<_GamePageContent> {
   final DateTime startTime = DateTime.now();
 
-  int gamePhase = 0; // 0: start, 1: quests (+ killing merlin), 2: end
+  int gamePhase = 1; // 0: start, 1: quests (+ killing merlin), 2: end
 
   Team? victor;
   List<Team?> questResults = List<Team?>.generate(5, (int idx) => null, growable: false);
@@ -65,7 +66,7 @@ class _GamePageContentState extends State<_GamePageContent> {
   @override
   void initState() {
     super.initState();
-    gamePhase = 0;
+    gamePhase = 1;
   }
 
   @override
@@ -124,7 +125,7 @@ class _GamePageContentState extends State<_GamePageContent> {
             if (globalToken != null) {
               return saveStatus(context);
             } else {
-              return const SizedBox.shrink();
+              return const Text("Login to save game history!", style: TextStyle(fontStyle: FontStyle.italic));
             }
           }
         ),
@@ -203,9 +204,6 @@ class _GamePageContentState extends State<_GamePageContent> {
     );
   }
 
-  // TODO: send game results to server
-  // time started, victor, numPlayers, special roles used (probably just as 'RoleName':'True/False'), whether each round suceeded/failed
-  // remember to send time as UTC!
   Future<bool> trySave() async {
     String? token = await webTokenStorage?.read(key: "token");
     Map<String, dynamic> requestBody = {
@@ -219,15 +217,15 @@ class _GamePageContentState extends State<_GamePageContent> {
       "missionOutcomes": questResults.map((outcome) => (outcome != null ? (outcome == Team.good) : null)).toList(),
     };
 
+    print('$URL/api/game_history/get');
+
     final response = await http.put(
-      Uri.parse('http://45.55.60.192:5050/api/game_history/get'),
-      headers: {HttpHeaders.cookieHeader: token!},
+      Uri.parse('$URL/api/game_history/get'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.cookieHeader: "token=${token!}"},
       body: jsonEncode(requestBody),
     );
-
-    if (response.statusCode != 200) {
-      print(response.body);
-    }
 
     return (response.statusCode == 200);
   }

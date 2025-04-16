@@ -7,6 +7,7 @@ import 'package:mobile/escavalon_material.dart';
 import 'package:http/http.dart' as http;
 
 import 'game.dart';
+import 'main.dart';
 
 FlutterSecureStorage webTokenStorage = FlutterSecureStorage();
 
@@ -48,12 +49,21 @@ class _HistoryPageContentState extends State<_HistoryPageContent> {
   void _loadGames() async {
     final String? token = await webTokenStorage.read(key: "token");
 
+    print('$URL/api/game_history/get');
+
     final response = await http.get(
-      Uri.parse('http://45.55.60.192:5050/api/game_history/get'),
-      headers: {HttpHeaders.cookieHeader: token!},
+      Uri.parse('$URL/api/game_history/get'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.cookieHeader: "token=${token!}"
+      },
     );
 
+    print(response.statusCode);
+    print(response.body);
+
     if (response.statusCode == 200) {
+      print("yippee!");
       List<dynamic> gamesList = jsonDecode(response.body)['games'];
 
       for (var info in gamesList) {
