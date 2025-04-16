@@ -108,50 +108,130 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
             <GameMission key={i} round={i} numberOfPlayers={players.size} status={outcomes[i]} pcount={quests[players.size][i]} />
           ))}
         </div>
-      <div className="justify-between">
-        {
-        /**
-         * Displays the vote tracker
-         */
-        }
-        <h1 className="text-3xl font-bold absolute bottom-35 left-8">Vote Tracker:</h1>
-        <div className="absolute bottom-4 left-4">
-          {[...Array(5)].map((_, i) => (
-            <VoteMission key={i} status={false} />
-          ))}
-        </div>
+        <div className="justify-between">
+          {
+          /**
+           * Button and menu for selecting the team for the current quest
+           */
+          }
+          <div className="bottom-4">
+            <div style={{ filter: `grayscale(${grayscaleVal}%)` }} className='mt-auto flex justify-center p-4'>
+              <FunctionButton
+                label="Mission Select"
+                onClick={() => { if(myPlayer.isLeader) (document.getElementById("MissionSelect") as HTMLDialogElement)?.showModal() }}
+              />
+            </div>
+            <dialog id="MissionSelect" className="modal">
+              <div className="modal-box">
+              <h1 className="text-xl font-bold flex-row">Select {quests[players.size][round]} players:</h1>
+                <div className="join join-horizontal flex flex-row flex-wrap justify-center">
+                  {orderedPlayers.map((player, idx) => (
+                    <MissionPlayerSelect 
+                      key={player.username}
+                      player={player}
+                      selectedGuys={selectedGuys}
+                      setSelectedGuys={setSelectedGuys}
+                      numberOfGuys={quests[players.size][round]}
+                    />
+                  ))}
+                </div>
+                <FunctionButton label="Submit" onClick={handleSubmitMission}/>
+              </div>
+              <form method="dialog" className="modal-backdrop">
+              </form>
+            </dialog>
+          </div>
+          {
+          /**
+           * very broken success/fail menu
+           * the button currently exists exclusively for testing
+           */
+          }
+          {(showSuccessFail && selectedTeam.includes(myPlayer.username)) && (
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center"
+              style={{
+                backdropFilter: 'blur(8px)',
+                backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                WebkitBackdropFilter: 'blur(8px)',
+              }}
+              >
+              <div className="rounded-lg p-8 max-w-xl w-full text-center">
+                <SuccessFailCard player={myPlayer} players={players} setSuccessFail={setSuccessFail} />
+              </div>
+            </div>
+          )}
+          {
+          /**
+           * Voting on mission
+           */
+          }
+          {showMissionVote && (
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center"
+              style={{
+                backdropFilter: 'blur(8px)',
+                backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                WebkitBackdropFilter: 'blur(8px)',
+              }}
+            >
+              <div className="rounded-lg p-8 max-w-xl w-full text-center">
+                <MissionVoteCard selectedTeam={selectedTeam} players={players}  setAcceptReject={setAcceptReject} />
+              </div>
+            </div>
+          )}
 
-        {
-        /**
-         * Button and menu for selecting the team for the current quest
-         */
-        }
-        <div className="absolute bottom-4">
-          <div style={{ filter: `grayscale(${grayscaleVal}%)` }}>
-            <FunctionButton
-              label="Mission Select"
-              onClick={() => { if(myPlayer.isLeader) (document.getElementById("MissionSelect") as HTMLDialogElement)?.showModal() }}
+          {
+          /**
+           * Screen for displaying result of mission
+           */
+          }
+          {showMissionOutcome && (
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center"
+              style={{
+                backdropFilter: 'blur(8px)',
+                backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                WebkitBackdropFilter: 'blur(8px)',
+              }}
+            >
+              <div className="rounded-lg p-8 max-w-xl w-full text-center">
+                <MissionRevealCard outcomes={outcomes} numberOfPlayers={players.size} round={round} />
+              </div>
+            </div>
+          )}
+
+          {
+          /**
+           * Assassination screen
+           * TO-DO Add check to only show evils in here
+           */
+          }
+          {(showAssassinationCard && !(getRoles(myPlayer.role!)[0].isGood())) && (
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center"
+              style={{
+                backdropFilter: 'blur(8px)',
+                backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                WebkitBackdropFilter: 'blur(8px)',
+              }}
+            >
+              <div className="rounded-lg p-8 max-w-xl w-full text-center">
+                <AssassinationScreen player={myPlayer} players={players} setAssassinate={setAssassinate} />
+              </div>
+            </div>
+          )}
+
+          {
+          /**
+           * Displays the player's role with a toggleable card
+           */
+          }
+          <div className="absolute bottom-4 right-4 p-2">
+            <GameCard
+              role={getRoles(myPlayer.role!)[0]}
             />
           </div>
-        <dialog id="MissionSelect" className="modal">
-          <div className="modal-box">
-          <h1 className="text-xl font-bold flex-row">Select {quests[players.size][round]} players:</h1>
-            <div className="join join-horizontal flex flex-row flex-wrap justify-center">
-              {orderedPlayers.map((player, idx) => (
-                <MissionPlayerSelect 
-                  key={player.username}
-                  player={player}
-                  selectedGuys={selectedGuys}
-                  setSelectedGuys={setSelectedGuys}
-                  numberOfGuys={quests[players.size][round]}
-                />
-              ))}
-            </div>
-            <FunctionButton label="Submit" onClick={handleSubmitMission}/>
-          </div>
-          <form method="dialog" className="modal-backdrop">
-          </form>
-        </dialog>
         </div>
         {
         /**
@@ -257,21 +337,9 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
             role={getRoles(myPlayer.role!)[0]}
           />
         </div>
-      </div>
-      <div className="absolute top-4 left-4 p-2">
-        <FunctionButton
-          label="Options"
-          onClick={() => (document.getElementById("Options") as HTMLDialogElement)?.showModal()}
-        />
-        <dialog id="Options" className="modal">
-          <div className="modal-box">
-            <FunctionButton label="Leave" onClick={handleLeave} />
-          </div>
-          <form method="dialog" className="modal-backdrop">
-            <button>close</button>
-          </form>
-        </dialog>
-      </div>
+        <div className="absolute top-4 left-4 p-2">
+          <FunctionButton label="Leave" onClick={handleLeave} />
+        </div>
       </div>
     </HiddenContextProvider>
   );
