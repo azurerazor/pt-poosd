@@ -201,6 +201,14 @@ export function initializeSockets(server: Server): void {
 
         // Handle events
         socket.on('event', (packet: EventPacket) => {
+            // Check if the lobby still exists
+            const lobby = getActiveLobby(packet.origin);
+            if (!lobby) {
+                console.error(`User ${packet.origin} is sending events to a dead lobby; killing connection`);
+                socket.disconnect(true);
+                return;
+            }
+
             ServerEventBroker.getInstance().receive(packet);
         });
     });
