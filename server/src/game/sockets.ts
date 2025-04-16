@@ -6,7 +6,7 @@ import { AUTH_KEY } from '../routes/auth';
 import { ServerEventBroker } from './events';
 import { getActiveLobby, getLobbyById, setActiveLobby } from './lobbies';
 import { ServerLobby } from './lobby';
-import { acquireCat } from 'networking/cats';
+import { acquireCat } from '../networking/cats';
 
 /**
  * Map of usernames to their sockets
