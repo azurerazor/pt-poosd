@@ -56,7 +56,7 @@ class _GamePageContent extends StatefulWidget {
 class _GamePageContentState extends State<_GamePageContent> {
   final DateTime startTime = DateTime.now();
 
-  int gamePhase = 1; // 0: start, 1: quests (+ killing merlin), 2: end
+  int gamePhase = 0; // 0: start, 1: quests (+ killing merlin), 2: end
 
   Team? victor;
   List<Team?> questResults = List<Team?>.generate(5, (int idx) => null, growable: false);
@@ -66,7 +66,7 @@ class _GamePageContentState extends State<_GamePageContent> {
   @override
   void initState() {
     super.initState();
-    gamePhase = 1;
+    gamePhase = 0;
   }
 
   @override
@@ -90,14 +90,11 @@ class _GamePageContentState extends State<_GamePageContent> {
             }),
           )
         );
-      case 2:
-        return endGame();
       default:
-        throw ErrorDescription("Invalid game phase: $gamePhase");
+        return endGame();
     }
   }
 
-  // not yet tested
   Widget endGame() {
     // if user is logged in, we can try to save the game
     if (globalToken != null) {
