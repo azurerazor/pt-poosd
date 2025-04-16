@@ -75,7 +75,6 @@ export default function GameFlow() {
   const [gameReady, setGameReady] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [changeView, setChangeView] = useState(false);
-  const [hasReceivedFirstUpdate, setHasReceivedFirstUpdate] = useState(false);
   const [hasResolvedPlayer, setHasResolvedPlayer] = useState(false);
   const [updating, setUpdating] = useState(false);
   const [sentTeamProposal, setSentTeamProposal] = useState(false);
@@ -97,7 +96,7 @@ export default function GameFlow() {
     ClientEventBroker.initialize(username, token);
 
     ClientEventBroker.on('update', (lobby: ClientLobby, event: UpdateEvent) => {
-      console.log("Received Update Event", event, "First Update Received? :", hasReceivedFirstUpdate);
+      console.log("Received Update Event", event);
         setUpdating(true);
         const updateGuys = async () => {     
           if(event.leader !== username){
@@ -122,7 +121,6 @@ export default function GameFlow() {
           }
           if(event.playerOrder !== null)setOrder(event.playerOrder);
           setUpdating(false);
-          setHasReceivedFirstUpdate(true);
         };
 
       updateGuys();
@@ -247,11 +245,11 @@ export default function GameFlow() {
 
   // If done updating send a ready event to socket
   useEffect(() => {
-    if(!updating && hasReceivedFirstUpdate && myPlayer){
+    if(!updating && myPlayer){
       console.log("Sending ready event");
       ClientEventBroker.getInstance().send(new ReadyEvent());
     }
-  }, [updating, hasReceivedFirstUpdate, myPlayer]);
+  }, [updating, myPlayer]);
 
   // Send a mission choice event whenever you make a choice
   useEffect(() => {
