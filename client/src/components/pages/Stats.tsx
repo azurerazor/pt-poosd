@@ -88,7 +88,7 @@ export default function Stats() {
           return (
             <StatsCard key={name} played={played} won={won} role={name} />
           );
-        })}
+        })} 
       </div>
     </div>
   );

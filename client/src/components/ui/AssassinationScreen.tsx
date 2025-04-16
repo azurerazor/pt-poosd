@@ -13,7 +13,6 @@ interface Props {
 }
 
 const AssassinationScreen: React.FC<Props> = ({ player, players, goodPlayers, setAssassinate }) => {
-    console.log(goodPlayers);
     const [selected, setSelected] = useState(-1);
 
     const [counter, setCounter] = useState(ASSASSINATION_TIME / SECONDS);

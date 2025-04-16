@@ -11,8 +11,9 @@ interface Props {
 
 const AssassinationPlayerSelect: React.FC<Props> = ({ player, id, selected, setSelected, setAssassinate }) => {
   const handleClick = () => {
-    if (selected === id) setSelected(-1);
-    else {
+    if (selected === id) {
+      setSelected(-1);
+    } else {
       setAssassinate(player.username);
       setSelected(id);
     }

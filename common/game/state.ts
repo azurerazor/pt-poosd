@@ -84,7 +84,7 @@ export class Lobby {
     /**
      * The info + state of all users in the lobby
      */
-    private players: Map<string, Player>;
+    protected players: Map<string, Player>;
 
     /**
      * A callback to run when closing the lobby
@@ -440,7 +440,7 @@ export class Lobby {
         const player = this.getPlayer(username);
         if (!player) return false;
         if (!player.role) return false;
-
+        
         return (player.role & canAssassinate) !== Roles.NONE;
     }
 }

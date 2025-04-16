@@ -16,6 +16,7 @@ type Props = {
 export default function ResultsView({ myPlayer, allPlayers, winner, assassinated, message, setBackToLobby }: Props) {
   const navigate = useNavigate();
   const players = Array.from(allPlayers.values());
+  const grayscaleVal = !myPlayer.isHost ? 100 : 0;
 
   return (
     <div className="flex flex-row h-screen">
@@ -39,8 +40,9 @@ export default function ResultsView({ myPlayer, allPlayers, winner, assassinated
           <p className="text-lg mb-2">The assassin targeted: <strong>{assassinated}</strong></p>
         )}
         <p className="text-xl italic mb-8">{message}</p>
-
-        <FunctionButton label="Back to Lobby" onClick={() => { if(myPlayer.isHost) setBackToLobby(true) }} />
+        <div style={{ filter: `grayscale(${grayscaleVal}%)` }}>
+          <FunctionButton label="Back to Lobby" onClick={() => { if(myPlayer.isHost) setBackToLobby(true) }} />
+        </div>
       </div>
     </div>
   );
