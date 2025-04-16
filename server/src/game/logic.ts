@@ -15,51 +15,6 @@ import { Player } from "@common/game/player";
 const MIN_PLAYERS: number = (process.env.NODE_ENV == 'development') ? 1 : 5;
 
 /**
- * Handles ending the game, sending all information first
- * then sending the game results when all clients are ready
- */
-function handleEndGame(lobby: ServerLobby, results: GameResultEvent) {
-    // Commit stats for all users
-    for (const player of lobby.getPlayers()) {
-        const user = player.username;
-
-        const role = player.getPossibleRoles()![0];
-        const isGood = role.isGood();
-        const isEvil = !isGood;
-        const didWin = role.alignment === results.winner;
-
-        // update the mongoose stat block using old values and incrementing
-        // Create the stats object if it doesn't exist
-        Stats.findOne({ user }).then(async stats => {
-            if (!stats) return await Stats.create({ user });
-            return stats;
-        }).then(async stats => {
-            await stats.updateOne({
-                $inc: {
-                    gamesPlayed: 1,
-                    gamesPlayedAsGood: isGood ? 1 : 0,
-                    gamesPlayedAsEvil: isEvil ? 1 : 0,
-                    [`gamesPlayedAs.${role.name}`]: 1,
-
-                    gamesWon: didWin ? 1 : 0,
-                    gamesWonAsGood: didWin && isGood ? 1 : 0,
-                    gamesWonAsEvil: didWin && isEvil ? 1 : 0,
-                    [`gamesWonAs.${role.name}`]: didWin ? 1 : 0,
-                }
-            });
-        });
-    }
-
-    // Prepare to send the results on ready
-    lobby.onReady(l => { l.send(results); });
-
-    // Send the full player map to all players
-    lobby.send(new UpdateEvent()
-        .setPlayers(lobby.getPlayerMap())
-        .setPlayerOrder(lobby.playerOrder));
-}
-
-/**
  * Handles a player's ready event
  */
 function handleReady(lobby: ServerLobby, event: ReadyEvent): void {
@@ -429,6 +384,50 @@ function handleAssassination(lobby: ServerLobby): void {
 
     // Otherwise, good players win
     handleEndGame(lobby, GameResultEvent.missedMerlin(assassinated));
+}
+/**
+ * Handles ending the game, sending all information first
+ * then sending the game results when all clients are ready
+ */
+function handleEndGame(lobby: ServerLobby, results: GameResultEvent) {
+    // Commit stats for all users
+    for (const player of lobby.getPlayers()) {
+        const user = player.username;
+
+        const role = player.getPossibleRoles()![0];
+        const isGood = role.isGood();
+        const isEvil = !isGood;
+        const didWin = role.alignment === results.winner;
+
+        // update the mongoose stat block using old values and incrementing
+        // Create the stats object if it doesn't exist
+        Stats.findOne({ user }).then(async stats => {
+            if (!stats) return await Stats.create({ user });
+            return stats;
+        }).then(async stats => {
+            await stats.updateOne({
+                $inc: {
+                    gamesPlayed: 1,
+                    gamesPlayedAsGood: isGood ? 1 : 0,
+                    gamesPlayedAsEvil: isEvil ? 1 : 0,
+                    [`gamesPlayedAs.${role.name}`]: 1,
+
+                    gamesWon: didWin ? 1 : 0,
+                    gamesWonAsGood: didWin && isGood ? 1 : 0,
+                    gamesWonAsEvil: didWin && isEvil ? 1 : 0,
+                    [`gamesWonAs.${role.name}`]: didWin ? 1 : 0,
+                }
+            });
+        });
+    }
+
+    // Prepare to send the results on ready
+    lobby.onReady(l => { l.send(results); });
+
+    // Send the full player map to all players
+    lobby.send(new UpdateEvent()
+        .setPlayers(lobby.getPlayerMap())
+        .setPlayerOrder(lobby.playerOrder));
 }
 
 function handlebackToLobby(lobby: ServerLobby, event: BackToLobbyEvent): void {
