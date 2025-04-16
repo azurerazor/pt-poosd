@@ -96,17 +96,20 @@ function handleStartGame(lobby: ServerLobby, event: StartGameEvent): void {
     };
 
     // Get roleset
-    const roles = getRoles(lobby.enabledRoles);
+    let roleset = lobby.enabledRoles;
+    const roles = getRoles(roleset);
 
     // Add minions if not enough special evil roles
     const num_evil = roles.filter(role => role.alignment === Alignment.EVIL).length;
     for (let i = num_evil; i < lobby.getEvilPlayerCount(); i++) {
         roles.push(minion);
+        roleset |= Roles.MINION_OF_MORDRED;
     }
 
     // Add servants if not enough roles
     while (roles.length < lobby.getPlayerCount()) {
         roles.push(servant);
+        roleset |= Roles.SERVANT_OF_ARTHUR;
     }
 
     // Shuffle roles and assign to players

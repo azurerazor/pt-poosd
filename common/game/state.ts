@@ -416,7 +416,7 @@ export class Lobby {
             // Check if role is visible to the requested player
             if (role.canSeeRoles(player.role!)) {
                 // If so, this role is treated as any one of the roles they can see
-                newPlayer.role = role.information & (this.enabledRoles | Roles.SERVANT_OF_ARTHUR | Roles.MINION_OF_MORDRED);
+                newPlayer.role = role.information & this.enabledRoles;
             }
 
             res.set(name, newPlayer);
