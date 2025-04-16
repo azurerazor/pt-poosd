@@ -12,7 +12,7 @@ const functionButton: React.FC<Props> = ({ label, onClick = (_) => {}, className
       <button
         type="button"
         onClick={onClick}
-        className="btn-deco text-lg serif font-semibold text-accent bg-paper-darker px-4"
+        className={`btn-deco text-lg serif font-semibold text-accent bg-paper-darker px-4 ${className}`}
       >
         {label}
       </button>

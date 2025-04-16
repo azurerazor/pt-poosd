@@ -59,14 +59,14 @@ export default function Dashboard() {
       <img src="../../../images/logo.png" className="justify-center" />
       <h2 className="text-3xl font-bold">Welcome, {username}!</h2>
 
-      <div className="flex flex-col w-md mt-12">
-        <div className="flex items-center gap-4 justify-center mb-6">
+      <div className="flex flex-col w-md mt-16">
+        <div className="flex items-center gap-4 justify-center">
           <InputText
             name="Game Code"
             placeholder="Enter game code"
             label=""
             onChange={(event) => setGameCode(event.target.value)}
-            className="h-12 w-64chrome mt-4"
+            className="h-12 w-64 chrome mt-4"
           />
 
           <FunctionButton
@@ -77,10 +77,11 @@ export default function Dashboard() {
 
         <div className="divider">or</div>
 
-        <div className="flex justify-center">
+        <div className="w-full">
           <FunctionButton
             label="Make A Lobby"
             onClick={handleMake}
+            className=""
           />
         </div>
       </div>

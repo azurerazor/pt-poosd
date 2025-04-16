@@ -76,7 +76,7 @@ const SuccessFailCard: React.FC<Props> = ({ player, players, setSuccessFail}) =>
     return (
         <div className="card bg-base-100 shadow-sm">
         <div className="absolute top-4 right-4">
-            <span id="counterElement" className="countdown">
+            <span id="counterElement" className="countdown font-bold">
                 {counter}
             </span>
         </div>
