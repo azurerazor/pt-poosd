@@ -218,7 +218,7 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
               }}
             >
               <div className="rounded-lg p-8 max-w-xl w-full text-center">
-                <AssassinationScreen player={myPlayer} players={players} setAssassinate={setAssassinate} />
+                <AssassinationScreen player={myPlayer} players={players} goodPlayers={goodPlayers} setAssassinate={setAssassinate} />
               </div>
             </div>
           )}
