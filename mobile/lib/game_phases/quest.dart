@@ -164,9 +164,17 @@ class _QuestState extends State<Quest> {
 
     if (currentQuest == 5) {
       if (_successes >= 3) {
-        setState(() {
-          currentQuestPhase = -1;  // assassinating merlin
-        });
+        if (globalRolesSelected["Merlin"] == true) {
+          setState(() {
+            currentQuestPhase = -1;  // assassinating merlin
+          });
+        } else {
+          widget.sendQuestResults((
+            Team.good, 
+            questResults
+          ));
+        }
+
       } else {
         widget.sendQuestResults(
           (
@@ -187,6 +195,7 @@ class _QuestState extends State<Quest> {
 
       if (numFailedVotes == 5) {
         numFailedVotes = 0;
+        currentQuestPhase = 2;
         updateQuestPhaseWithQuestVictor(Team.evil);
         return;
       }
