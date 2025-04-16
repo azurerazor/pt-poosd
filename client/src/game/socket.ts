@@ -16,5 +16,6 @@ export function acquireSocket(lobby_id: string, token: string): SocketIOClient.S
         forceNew: true,
     });
 
+    // return the socket
     return sock;
 }
