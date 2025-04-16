@@ -5,6 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile/escavalon_material.dart';
+import 'package:fading_edge_scrollview/fading_edge_scrollview.dart';
 import 'package:http/http.dart' as http;
 
 import 'game.dart';
@@ -123,12 +124,22 @@ class _HistoryPageContentState extends State<_HistoryPageContent> {
                   );
                 }
 
-                return SizedBox(
-                  height: 500,
-                  child: ListView(
-                    scrollDirection: Axis.vertical,
-                    children: games
+                return Expanded(
+                  child: FadingEdgeScrollView.fromScrollView(
+                    gradientFractionOnStart: 0.05,
+                    gradientFractionOnEnd: 0.05,
+
+                    child: ListView(
+                      scrollDirection: Axis.vertical,
+                      controller: ScrollController(keepScrollOffset: false),
+                      children: games
+                    ),
                   )
+                  // child: ListView(
+                  //     scrollDirection: Axis.vertical,
+                  //     controller: ScrollController(keepScrollOffset: false),
+                  //     children: games
+                  //   ),
                 );
               } else {
                 return Row(
