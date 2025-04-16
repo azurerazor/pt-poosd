@@ -25,7 +25,7 @@ class _DiscussionTemplateState extends State<DiscussionTemplate> {
   @override
   void initState() {
     super.initState();
-    // readScript();
+    readScript();
   }
 
   @override
@@ -112,7 +112,7 @@ class _VoteTemplateState extends State<VoteTemplate> {
   @override
   void initState() {
     super.initState();
-    // readScript();
+    readScript();
   }
 
   @override
@@ -195,7 +195,7 @@ List<(String, int)> getMissionScript(bool twoFailsRequired) {
 }
 
 List<(String, int)> getVoteScript(int numOnQuest) {
-    List<(String, int)> script = [("Leader, propose a team of $numOnQuest players.", 20)];
+    List<(String, int)> script = [("Leader, propose a team of $numOnQuest players.", 5)];
     script.add(("Everybody, in 3", 1));
     script.add(("2", 1));
     script.add(("1", 1));
