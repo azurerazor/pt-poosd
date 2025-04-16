@@ -21,10 +21,12 @@ class DiscussionTemplate extends StatefulWidget {
 
 class _DiscussionTemplateState extends State<DiscussionTemplate> {
   bool isSpeaking = false;
+  late FlutterTts thisTts;
 
   @override
   void initState() {
     super.initState();
+    thisTts = createTts();
     readScript();
   }
 
@@ -57,7 +59,6 @@ class _DiscussionTemplateState extends State<DiscussionTemplate> {
       isSpeaking = true;
     });
 
-    FlutterTts thisTts = createTts();
     thisTts.setCompletionHandler(
       () => setState(() {
         isSpeaking = false;
@@ -84,6 +85,12 @@ class _DiscussionTemplateState extends State<DiscussionTemplate> {
     
     thisTts.speak(widget.endingScript);
   }
+
+  @override
+  void dispose() {
+    thisTts.stop();
+    super.dispose();
+  }
 }
 
 class VoteTemplate extends StatefulWidget {
@@ -108,10 +115,12 @@ class VoteTemplate extends StatefulWidget {
 
 class _VoteTemplateState extends State<VoteTemplate> {
   bool isSpeaking = false;
+  late FlutterTts thisTts;
 
   @override
   void initState() {
     super.initState();
+    thisTts = createTts();
     readScript();
   }
 
@@ -157,8 +166,6 @@ class _VoteTemplateState extends State<VoteTemplate> {
       isSpeaking = true;
     });
 
-    FlutterTts thisTts = createTts();
-
     for (var line in widget.script) {
       await thisTts.speak(line.$1);
       Completer<void> completer = Completer<void>();
@@ -174,6 +181,12 @@ class _VoteTemplateState extends State<VoteTemplate> {
     setState(() {
       isSpeaking = false;
     });
+  }
+
+  @override
+  void dispose() {
+    thisTts.stop();
+    super.dispose();
   }
 }
 
