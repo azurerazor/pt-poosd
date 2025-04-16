@@ -203,7 +203,7 @@ export default function GameView({
               ) : (
                 <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
                   <div className="rounded-lg p-8 max-w-xl w-full text-center">
-                    <LoadingCard message="Merling assassination in progress..." timer={ASSASSINATION_TIME / SECONDS} />
+                    <LoadingCard message="Merlin assassination in progress..." timer={ASSASSINATION_TIME / SECONDS} />
                   </div>
                 </div>
               )
