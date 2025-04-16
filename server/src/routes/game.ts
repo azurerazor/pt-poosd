@@ -2,7 +2,7 @@ import { Request, Response, Router } from 'express';
 import { getLobby, putLobby } from '../game/lobbies.js';
 import { ServerLobby } from '../game/lobby.js';
 import { requireAuth } from '../middleware/auth.js';
-import { acquireCat } from 'networking/cats.js';
+import { acquireCat } from '../networking/cats.js';
 
 // Set up the Express router
 const router = Router();
