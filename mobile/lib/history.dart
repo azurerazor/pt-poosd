@@ -51,8 +51,6 @@ class _HistoryPageContentState extends State<_HistoryPageContent> {
   void _loadGames() async {
     final String? token = await webTokenStorage.read(key: "token");
 
-    print('$URL/api/game_history/get');
-
     final response = await http.get(
       Uri.parse('$URL/api/game_history/get'),
       headers: {
@@ -61,11 +59,7 @@ class _HistoryPageContentState extends State<_HistoryPageContent> {
       },
     );
 
-    print(response.statusCode);
-    print(response.body);
-
     if (response.statusCode == 200) {
-      print("yippee!");
       List<dynamic> gamesList = jsonDecode(response.body)['games'];
 
       for (var info in gamesList) {
@@ -129,10 +123,13 @@ class _HistoryPageContentState extends State<_HistoryPageContent> {
                   );
                 }
 
-                return SizedBox.expand(child: ListView(
-                  scrollDirection: Axis.vertical,
-                  children: games,
-                ));
+                return SizedBox(
+                  height: 500,
+                  child: ListView(
+                    scrollDirection: Axis.vertical,
+                    children: games
+                  )
+                );
               } else {
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.center,
