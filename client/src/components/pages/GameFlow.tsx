@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { MissionChoiceEvent, ReadyEvent, StartGameEvent, UpdateEvent, SetRoleListEvent, TeamProposalEvent, TeamVoteEvent, TeamVoteChoiceEvent, RoleRevealEvent, MissionEvent, MissionOutcomeEvent, AssassinationEvent, AssassinationChoiceEvent, GameResultEvent, BackToLobbyEvent } from "@common/game/events";
+import { MissionChoiceEvent, ReadyEvent, StartGameEvent, UpdateEvent, SetRoleListEvent, TeamProposalEvent, TeamVoteEvent, TeamVoteChoiceEvent, RoleRevealEvent, MissionEvent, MissionOutcomeEvent, AssassinationEvent, AssassinationChoiceEvent, GameResultEvent, BackToLobbyEvent, DisconnectEvent } from "@common/game/events";
 import { ROLE_REVEAL_TIME, TEAM_VOTE_TIME, MISSION_CHOICE_TIME, MISSION_OUTCOME_TIME, ASSASSINATION_TIME } from "../../../../common/game/timing";
 import { ClientEventBroker } from "game/events";
 import LobbyView from "./LobbyView";
@@ -11,6 +11,7 @@ import { useUser } from '../../util/auth';
 import { ClientLobby } from "../../game/lobby";
 import Loading from "./Loading";
 import { GameState, Lobby } from "../../../../common/game/state";
+import { useNavigate } from "react-router";
 
 export const quests = [
   [],[],[],[],[],
@@ -33,6 +34,9 @@ export const fails = [
 ];
 
 export default function GameFlow() {
+  // Navigate
+  const navigate = useNavigate();
+
   // Get lobby ID from query params
   const urlParams = new URLSearchParams(window.location.search);
   const lobbyId = urlParams.get("id") || "none";
@@ -207,6 +211,11 @@ export default function GameFlow() {
       setGameReady(false);
       setChangeView(false);
       setSentTeamProposal(false);
+    });
+
+    ClientEventBroker.on('disconnect', (lobby: ClientLobby, event: DisconnectEvent) => {
+      console.log("Disconnected from server:", event.reason)
+      navigate('/dashboard', { replace: true });
     });
   }, []);
 
