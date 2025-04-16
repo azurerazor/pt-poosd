@@ -323,8 +323,10 @@ function handleMissionOutcome(lobby: ServerLobby): void {
     lobby.state.outcomes[lobby.state.round] = fails;
 
     // Send the updated game state
-    lobby.send(new UpdateEvent()
-        .setState(lobby.state));
+    updatePlayers(lobby, (event: UpdateEvent) => {
+        // Always set the mission outcome
+        event.setState(lobby.state);
+    });
 
     // Wait for a ready response from all players before sending the outcome
     lobby.onReady(l => {
