@@ -180,7 +180,7 @@ class _VoteTemplateState extends State<VoteTemplate> {
 List<(String, int)> getMissionScript(bool twoFailsRequired) {
   List<(String, int)> script = [("Distribute vote cards among players on mission.", 5)];
   script.add(("Loyal Servants of Arthur, vote success.", 1));
-  script.add(("Minions of Mordred, you can choose to between chosing to suceed or fail.", 1));
+  script.add(("Minions of Mordred, you can choose to between choosing to suceed or fail.", 1));
   script.add(("1", 1));
 
   if (twoFailsRequired) {
