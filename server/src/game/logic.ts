@@ -308,6 +308,7 @@ function handleMissionOutcome(lobby: ServerLobby): void {
             }
             lobby.clearMerlinGuesses();
             lobby.send(new AssassinationEvent(goodPlayers));
+            lobby.waitingFor = WaitingFor.ASSASSINATION_GUESSES;
 
             // Wait for merlin guesses
             setTimeout(() => handleAssassination(lobby), ASSASSINATION_TIME);
@@ -372,7 +373,7 @@ function handleAssassination(lobby: ServerLobby): void {
     lobby.clearMerlinGuesses();
 
     // If there was no assassination, the good guys win!
-    if (!assassinated) {
+    if (assassinated === null) {
         handleEndGame(lobby, GameResultEvent.missedMerlin(assassinated));
         return;
     }
@@ -388,6 +389,7 @@ function handleAssassination(lobby: ServerLobby): void {
     // Otherwise, good players win
     handleEndGame(lobby, GameResultEvent.missedMerlin(assassinated));
 }
+
 /**
  * Handles ending the game, sending all information first
  * then sending the game results when all clients are ready
@@ -433,7 +435,7 @@ function handleEndGame(lobby: ServerLobby, results: GameResultEvent) {
         .setPlayerOrder(lobby.playerOrder));
 }
 
-function handlebackToLobby(lobby: ServerLobby, event: BackToLobbyEvent): void {
+function handleBackToLobby(lobby: ServerLobby, event: BackToLobbyEvent): void {
     // Ensure the event came from the host
     if (event.origin !== lobby.host) {
         console.error("Received back_to_lobby event from non-host:", event.origin);
@@ -474,5 +476,5 @@ export function bootstrapEvents(): void {
     ServerEventBroker.on("team_vote_choice", handleTeamVoteChoice);
     ServerEventBroker.on("mission_choice", handleMissionChoice);
     ServerEventBroker.on("assassination_choice", handleAssassinationChoice);
-    ServerEventBroker.on("back_to_lobby", handlebackToLobby);
+    ServerEventBroker.on("back_to_lobby", handleBackToLobby);
 }
