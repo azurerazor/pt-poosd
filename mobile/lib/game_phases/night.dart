@@ -102,7 +102,7 @@ enum _NightPhase {
 List<(_NightPhase, String, int)> _getNightScript(int numEvil, bool? includesMerlin, bool? includesPercival, bool? includesOberon, bool? includesMordred) {
   List<(_NightPhase, String, int)> result = [];
 
-  result.add((_NightPhase.start, "Starting Escavalon game. Everybody, close your eyes.", 3));
+  result.add((_NightPhase.start, "Starting Escavalon game. Everybody, close your eyes.", 2));
 
   result.addAll(
     _getEvilScript(numEvil, includesOberon)
@@ -120,7 +120,7 @@ List<(_NightPhase, String, int)> _getNightScript(int numEvil, bool? includesMerl
     );
   }
 
-  result.add((_NightPhase.end, "Everybody, open your eyes. The night is over. Good luck on your quests!", 3));
+  result.add((_NightPhase.end, "Everybody, open your eyes. The night is over. Good luck on your quests!", 2));
 
   return result;
 
@@ -149,8 +149,8 @@ List<(_NightPhase, String, int)> _getEvilScript(int numEvil, bool? includesObero
   }
 
   List<(_NightPhase, String, int)> result = [
-    (_NightPhase.evil, firstPart, 8), 
-    (_NightPhase.evil, "All Minions of Mordred, close your eyes and put your hands down.", 3)
+    (_NightPhase.evil, firstPart, 2), 
+    (_NightPhase.evil, "All Minions of Mordred, close your eyes and put your hands down.", 2)
   ];
   return result;
 }
@@ -175,16 +175,16 @@ List <(_NightPhase, String, int)> _getMerlinScript(int numEvil, bool? includesMo
   }
 
   List<(_NightPhase, String, int)> result = [
-    (_NightPhase.merlin, firstPart, 8), 
-    (_NightPhase.merlin, "Merlin, close your eyes. All Minions of Mordred, put your hands down.", 3),
+    (_NightPhase.merlin, firstPart, 2), 
+    (_NightPhase.merlin, "Merlin, close your eyes. All Minions of Mordred, put your hands down.", 2),
   ];
   return result;
 }
 
 List<(_NightPhase, String, int)> _getPercivalScript() {
   List<(_NightPhase, String, int)> result = [
-    (_NightPhase.percival, "Percival, open your eyes. Merlin and Morgana, keep your eyes closed and raise your hands. Percival, you should see 2 players with their hands raised.", 8),
-    (_NightPhase.percival, "Percival, close your eyes. Merlin and Morgana, put your hands down. ", 3),
+    (_NightPhase.percival, "Percival, open your eyes. Merlin and Morgana, keep your eyes closed and raise your hands. Percival, you should see 2 players with their hands raised.", 2),
+    (_NightPhase.percival, "Percival, close your eyes. Merlin and Morgana, put your hands down. ", 2),
   ];
   return result;
 }
