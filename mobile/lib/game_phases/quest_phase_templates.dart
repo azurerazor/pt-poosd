@@ -25,7 +25,7 @@ class _DiscussionTemplateState extends State<DiscussionTemplate> {
   @override
   void initState() {
     super.initState();
-    startDiscussion();
+    // readScript();
   }
 
   @override
@@ -52,7 +52,7 @@ class _DiscussionTemplateState extends State<DiscussionTemplate> {
     );
   }
   
-  void startDiscussion() async {
+  void readScript() async {
     setState(() {
       isSpeaking = true;
     });
@@ -112,7 +112,7 @@ class _VoteTemplateState extends State<VoteTemplate> {
   @override
   void initState() {
     super.initState();
-    readScript();
+    // readScript();
   }
 
   @override
