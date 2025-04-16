@@ -66,7 +66,7 @@ export default function Stats() {
 
   return (
     <div className="min-h-screen py-10 px-4">
-      <div className="top-4 left-4">
+      <div className="absolute top-4 left-8">
         <RouteButton to={`/dashboard`} >
           Back
         </RouteButton>
