@@ -124,19 +124,19 @@ export function initializeSockets(server: Server): void {
                     lobby.reassignHost();
                     reassignedHost = true;
                 }
+
+                // If the player is in the player ordering, remove them
+                const playerOrder = lobby.playerOrder;
+                const index = playerOrder.indexOf(user);
+                if (index !== -1) {
+                    playerOrder.splice(index, 1);
+                }
+                lobby.playerOrder = playerOrder;
             } else {
                 // Otherwise, keep the player in the lobby but disconnect them
                 if (!lobby.getPlayer(user)) return;
                 lobby.getPlayer(user)!.isConnected = false;
             }
-
-            // If the player is in the player ordering, remove them
-            const playerOrder = lobby.playerOrder;
-            const index = playerOrder.indexOf(user);
-            if (index !== -1) {
-                playerOrder.splice(index, 1);
-            }
-            lobby.playerOrder = playerOrder;
 
             // If this was the last player, clean up the lobby
             if (lobby.getConnectedPlayerCount() === 0) {
