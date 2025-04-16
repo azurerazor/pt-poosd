@@ -81,10 +81,10 @@ export default function GameFlow() {
   const [goodPlayers, setGoodPlayers] = useState<string[]>([]);
 
   // End state variables
-  let winner = Alignment.GOOD;
-  let message = "";
-  let assassinated = "";
-  let allPlayers = [];
+  const [winner, setWinner] = useState(Alignment.GOOD);
+  const [message, setMessage] = useState<string | null>(null);
+  const [assassinated, setAssassinated] = useState<string | null>(null);
+  const [allPlayers, setAllPlayers] = useState<string[]>([]);
 
 
   // Update all the necessary useStates whenever socket updates
@@ -96,7 +96,7 @@ export default function GameFlow() {
     ClientEventBroker.initialize(username, token);
 
     ClientEventBroker.on('update', (lobby: ClientLobby, event: UpdateEvent) => {
-      console.log("Received Update Event", event, "THIS IS THE UPDATING BEFORE UPDATE", updating);
+      console.log("Received Update Event", event);
       const updateGuys = async () => {
         if(event.leader !== username){
           console.log("Resetting accept/reject for mission choice and team vote because leader changed");
@@ -106,10 +106,12 @@ export default function GameFlow() {
           setSelectedTeam([]);
         }   
         if(event.players !== null){
+          ClientLobby.getInstance().setPlayers(event.players);
           setMyPlayer(event.players.get(username));
           setPlayers(event.players);
         }
         if (event.enabledRoles !== null) {
+          ClientLobby.getInstance().setEnabledRoles(event.enabledRoles);
           setEnabledRoles(event.enabledRoles);
         }
         if(event.state !== null){
@@ -119,7 +121,6 @@ export default function GameFlow() {
           setRound(event.state.round);
         }
         if(event.playerOrder !== null)setOrder(event.playerOrder);
-        console.log("Done updating this is updating", updating);
         setUpdating((prev) => prev+1);
       }
 
@@ -187,9 +188,10 @@ export default function GameFlow() {
     });
 
     ClientEventBroker.on('game_result', (lobby: ClientLobby, event: GameResultEvent) => {
-      winner = event.winner;
-      message = event.message;
-      assassinated = event.assassinated !== null ? event.assassinated : "";
+      console.log("Game Result Event", event);
+      setWinner(event.winner);
+      setMessage(event.message);
+      setAssassinated(event.assassinated !== null ? event.assassinated : "");
       setEndState(true);
       setEnabledRoles(Roles.NONE);
       setSelectedTeam([]);
@@ -287,7 +289,7 @@ export default function GameFlow() {
   }, [acceptReject]);
 
   useEffect(() => {
-    if(myPlayer && ClientLobby.getInstance().canAssassinateMerlin(myPlayer!.username)){
+    if(assassinate && myPlayer && ClientLobby.getInstance().canAssassinateMerlin(myPlayer!.username)){
       console.log("Sending AssassinateChoiceEvent", assassinate);
       ClientEventBroker.getInstance().send(new AssassinationChoiceEvent(assassinate!));
     }
@@ -313,7 +315,7 @@ export default function GameFlow() {
           myPlayer={myPlayer}
           allPlayers={players}
           winner={winner}
-          message={message}
+          message={message!}
           assassinated={assassinated}
           setBackToLobby={setBackToLobby}
         />

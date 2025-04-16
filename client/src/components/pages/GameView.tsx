@@ -5,6 +5,8 @@ import MissionPlayerSelect from "../ui/MissionPlayerSelect";
 import GameCard from "../ui/GameCard";
 import { getRoles } from "../../../../common/game/roles";
 import { Player } from "../../../../common/game/player";
+import { Lobby } from "../../../../common/game/state";
+import { ClientLobby } from "../../game/lobby";
 import FunctionButton from "../misc/FunctionButton";
 import { useNavigate } from 'react-router';
 import { HiddenContextProvider } from "../../util/hiddenContext";
@@ -185,7 +187,7 @@ export default function GameView({
               </div>
             )}
 
-            {showAssassinationCard && !getRoles(myPlayer.role!)[0].isGood() && (
+            {showAssassinationCard && ClientLobby.getInstance().canAssassinateMerlin(myPlayer.username) && (
               <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
                 <div className="rounded-lg p-8 max-w-xl w-full text-center">
                   <AssassinationScreen

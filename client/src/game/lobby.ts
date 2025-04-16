@@ -1,4 +1,5 @@
 import { Lobby } from "@common/game/state";
+import { Player } from "@common/game/player"
 
 export class ClientLobby extends Lobby {
     /**
@@ -16,5 +17,9 @@ export class ClientLobby extends Lobby {
 
     public static getInstance(): ClientLobby {
         return this.instance!;
+    }
+
+    public setPlayers(playerMap: Map<string, Player>): void {
+        this.players = playerMap;
     }
 }
