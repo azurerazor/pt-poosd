@@ -375,6 +375,7 @@ function handleMissionOutcome(lobby: ServerLobby): void {
                     .setLeader(lobby.leader!);
             });
         });
+
         // Now send the outcome event
         l.send(new MissionOutcomeEvent(outcome, fails));
 

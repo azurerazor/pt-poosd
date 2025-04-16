@@ -105,6 +105,7 @@ export class ServerLobby extends Lobby {
      * The callback is reset after it is called.
      */
     public onReady(callback: (lobby: ServerLobby) => void): void {
+        this.clearReady(); // Clear the ready map
         this.onReadyCallback = callback;
     }
 
