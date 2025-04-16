@@ -178,15 +178,15 @@ class _VoteTemplateState extends State<VoteTemplate> {
 }
 
 List<(String, int)> getMissionScript(bool twoFailsRequired) {
-  List<(String, int)> script = [("Distribute vote cards among players on mission.", 5)];
+  List<(String, int)> script = [("Distribute vote cards among players on mission.", 2)];
   script.add(("Loyal Servants of Arthur, vote success.", 1));
-  script.add(("Minions of Mordred, you can choose to between choosing to suceed or fail.", 1));
+  script.add(("Minions of Mordred, you can either succeed or fail.", 1));
   script.add(("1", 1));
 
   if (twoFailsRequired) {
-    script.add(("Remember, you need two fail votes for the entire quest to fail.", 7));
+    script.add(("Remember, you need two fail votes for the entire quest to fail.", 2));
   } else {
-    script.add(("Remember, even one fail vote will cause the entire quest to fail.", 7));
+    script.add(("Remember, even one fail vote will cause the entire quest to fail.", 2));
   }
 
   script.add(("Reveal the vote cards. Did the quest succeed or fail?", 0));
@@ -195,11 +195,11 @@ List<(String, int)> getMissionScript(bool twoFailsRequired) {
 }
 
 List<(String, int)> getVoteScript(int numOnQuest) {
-    List<(String, int)> script = [("Leader, propose a team of $numOnQuest players.", 5)];
+    List<(String, int)> script = [("Leader, propose a team of $numOnQuest players.", 2)];
     script.add(("Everybody, in 3", 1));
     script.add(("2", 1));
     script.add(("1", 1));
-    script.add(("vote!", 5));
+    script.add(("vote!", 2));
     script.add(("Did the vote pass or fail?", 0));
 
   return script;
