@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'home.dart';
 
+// ignore: constant_identifier_names
+const String URL = 'http://escavalon.quest:5050';
 void main() {
   runApp(const Escavalon());
 }

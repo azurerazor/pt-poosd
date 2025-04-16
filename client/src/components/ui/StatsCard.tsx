@@ -16,7 +16,7 @@ const StatsCard: React.FC<Props> = ({ played, won, role = "Overall" }) => {
   const percentage = played > 0 ? Math.round((won / played) * 100) : 0;
 
   return (
-    <div className="stats bg-base-200 shadow w-full">
+    <div className="stats bg-base-100 shadow w-full">
       <div className="stat flex items-center gap-4 w-full">
         {actualRole?.image && (
           <img

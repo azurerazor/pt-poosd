@@ -6,7 +6,7 @@ import 'package:mobile/game.dart';
 import 'assassinate.dart';
 import 'quest_phase_templates.dart';
 
-int _deltaQuestsWon = 0; // positive if good, negative if evil
+int _successes = 0, _fails = 0;
 
 class Quest extends StatefulWidget {
   final Function((Team, List<Team?>)) sendQuestResults;
@@ -30,7 +30,8 @@ class _QuestState extends State<Quest> {
   @override
   void initState() {
     super.initState();
-    _deltaQuestsWon = 0;
+    _successes = 0;
+    _fails = 0;
     currentQuest = 0;
     currentQuestPhase = 0;
     numFailedVotes = 0;
@@ -162,7 +163,7 @@ class _QuestState extends State<Quest> {
     });
 
     if (currentQuest == 5) {
-      if (_deltaQuestsWon > 0 && globalRolesSelected["Merlin"] == true) {
+      if (_successes >= 3) {
         setState(() {
           currentQuestPhase = -1;  // assassinating merlin
         });
@@ -203,26 +204,29 @@ class _QuestState extends State<Quest> {
     });
 
     if (questVictor == Team.good) {
-      _deltaQuestsWon++;
+      _successes++;
     } else {
-      _deltaQuestsWon--;
+      _fails++;
     }
 
-    if (_deltaQuestsWon.abs() >= 3) {
-      if (_deltaQuestsWon > 0 && globalRolesSelected["Merlin"] == true) {
+    if (_successes >= 3) {
+      if (globalRolesSelected["Merlin"] == true) {
         setState(() {
           currentQuestPhase = -1; // assassinating merlin
         });
       } else {
-        widget.sendQuestResults(
-          (
-            Team.evil, 
-            questResults
-          ),
-        );
+        widget.sendQuestResults((          
+          Team.good,
+          questResults
+        ));
       }
+    }
 
-      return;
+    if (_fails >= 3) {
+      widget.sendQuestResults((          
+        Team.evil,
+        questResults
+      ));
     }
 
     updateQuestPhase();

@@ -7,6 +7,8 @@ import 'package:loading_indicator/loading_indicator.dart';
 import 'package:mobile/escavalon_material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import 'main.dart';
+
 final webTokenStorage = const FlutterSecureStorage();
 
 class LoginPage extends StatelessWidget {
@@ -151,7 +153,7 @@ class _LoginFormState extends State<_LoginForm> {
     });
 
     final response = await http.post(
-      Uri.parse('http://45.55.60.192:5050/api/login'),
+      Uri.parse('$URL/api/login'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
