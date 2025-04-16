@@ -9,6 +9,7 @@ import { bootstrapEvents } from './game/logic.js';
 import { initializeSockets } from './game/sockets.js';
 import { login, logout, register, verifyEmail } from './routes/auth.js';
 import game from './routes/game.js';
+import history from './routes/history.js';
 import get_user from './routes/get_user.js';
 import stats from './routes/stats.js';
 
@@ -65,7 +66,7 @@ app.post('/api/verify/:token', verifyEmail);
 app.use('/api/get_user', get_user);
 app.use('/api/stats', stats);
 app.use('/api/game', game);
-app.use('/api/game_history', game);
+app.use('/api/game_history', history);
 
 // Listen for incoming requests
 httpServer.listen(PORT, () => {
