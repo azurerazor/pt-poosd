@@ -2,6 +2,7 @@ import { Request, Response, Router } from 'express';
 import { getLobby, putLobby } from '../game/lobbies.js';
 import { ServerLobby } from '../game/lobby.js';
 import { requireAuth } from '../middleware/auth.js';
+import { acquireCat } from 'networking/cats.js';
 
 // Set up the Express router
 const router = Router();
@@ -21,6 +22,10 @@ router.get('/create', async (req: Request, res: Response) => {
     // Create the new lobby and add it to the store
     const lobby = new ServerLobby(lobbyId, user);
     putLobby(lobby);
+
+    // Assign a cat to the host
+    const cat = await acquireCat();
+    lobby.getPlayer(user)!.avatar = cat;
 
     console.log(`Lobby ${lobbyId} created by ${user}`);
 
