@@ -76,7 +76,7 @@ export default function GameFlow() {
   const [isLoading, setIsLoading] = useState(false);
   const [changeView, setChangeView] = useState(false);
   const [hasResolvedPlayer, setHasResolvedPlayer] = useState(false);
-  const [updating, setUpdating] = useState(false);
+  const [updating, setUpdating] = useState(0);
   const [sentTeamProposal, setSentTeamProposal] = useState(false);
   const [goodPlayers, setGoodPlayers] = useState<string[]>([]);
 
@@ -96,32 +96,32 @@ export default function GameFlow() {
     ClientEventBroker.initialize(username, token);
 
     ClientEventBroker.on('update', (lobby: ClientLobby, event: UpdateEvent) => {
-      console.log("Received Update Event", event);
-        setUpdating(true);
-        const updateGuys = async () => {     
-          if(event.leader !== username){
-            console.log("Resetting accept/reject for mission choice and team vote because leader changed");
-            setSentTeamProposal(false);
-            setSuccessFail(null);
-            setAcceptReject(null);
-            setSelectedTeam([]);
-          }   
-          if(event.players !== null){
-            setMyPlayer(event.players.get(username));
-            setPlayers(event.players);
-          }
-          if (event.enabledRoles !== null) {
-            setEnabledRoles(event.enabledRoles);
-          }
-          if(event.state !== null){
-            setGameState(event.state.state);
-            if(event.state.state === GameState.LOBBY)setEndState(false);
-            setOutcomes(event.state.outcomes!);
-            setRound(event.state.round);
-          }
-          if(event.playerOrder !== null)setOrder(event.playerOrder);
-          setUpdating(false);
-        };
+      console.log("Received Update Event", event, "THIS IS THE UPDATING BEFORE UPDATE", updating);
+      const updateGuys = async () => {
+        if(event.leader !== username){
+          console.log("Resetting accept/reject for mission choice and team vote because leader changed");
+          setSentTeamProposal(false);
+          setSuccessFail(null);
+          setAcceptReject(null);
+          setSelectedTeam([]);
+        }   
+        if(event.players !== null){
+          setMyPlayer(event.players.get(username));
+          setPlayers(event.players);
+        }
+        if (event.enabledRoles !== null) {
+          setEnabledRoles(event.enabledRoles);
+        }
+        if(event.state !== null){
+          setGameState(event.state.state);
+          if(event.state.state === GameState.LOBBY)setEndState(false);
+          setOutcomes(event.state.outcomes!);
+          setRound(event.state.round);
+        }
+        if(event.playerOrder !== null)setOrder(event.playerOrder);
+        console.log("Done updating this is updating", updating);
+        setUpdating((prev) => prev+1);
+      }
 
       updateGuys();
     });
@@ -245,7 +245,7 @@ export default function GameFlow() {
 
   // If done updating send a ready event to socket
   useEffect(() => {
-    if(!updating && myPlayer){
+    if(updating && myPlayer){
       console.log("Sending ready event");
       ClientEventBroker.getInstance().send(new ReadyEvent());
     }
@@ -302,7 +302,7 @@ export default function GameFlow() {
     }
   }, [backToLobby]);
 
-  if(isLoading || updating || !myPlayer){
+  if(isLoading || !myPlayer){
     return <Loading />;
   }
 
