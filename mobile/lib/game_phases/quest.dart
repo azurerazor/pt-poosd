@@ -40,7 +40,7 @@ class _QuestState extends State<Quest> {
   }
 
   @override
-  Widget build(BuildContext context) {   
+  Widget build(BuildContext context) {  
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -64,7 +64,7 @@ class _QuestState extends State<Quest> {
                     Text(
                       (currentQuestPhase != -1) ?
                       "Number of players on quest: ${questRequirements[globalNumPlayers]![currentQuest + 1]}\n${twoFailsRequired ? "Two traitors" : "One traitor"} required for mission to fail.\nNumber of failed proposals: $numFailedVotes"
-                      : "Three missions have succeeded!\nGood will win, unless Merlin dies.\nMinions of Mordred, who do you think is Merlin?"
+                      : "Three missions have succeeded!\nGood will win, unless Merlin dies.\nMinions of Mordred, which player is Merlin?"
                       ,
                       textAlign: TextAlign.center,
                     ),
@@ -131,13 +131,17 @@ class _QuestState extends State<Quest> {
               }
 
               // otherwise we're assassinating merlin
-              return Assassinate(
-                includesAssassin: globalRolesSelected["Assassin"]!, 
-                sendAssassinationResults: (bool assassinationSuccessful) => widget.sendQuestResults((
-                  assassinationSuccessful ? Team.evil : Team.good,
-                  questResults
-                ))
-              );
+              if (currentQuestPhase == -1) {
+                return Assassinate(
+                  includesAssassin: globalRolesSelected["Assassin"]!, 
+                  sendAssassinationResults: (bool assassinationSuccessful) => widget.sendQuestResults((
+                    assassinationSuccessful ? Team.evil : Team.good,
+                    questResults
+                  ))
+                );
+              }
+
+              throw Exception();
 
             }),
           )
@@ -161,27 +165,26 @@ class _QuestState extends State<Quest> {
         twoFailsRequired = false;
       }
     });
-
-    if (currentQuest == 5) {
-      if (_successes >= 3) {
-        if (globalRolesSelected["Merlin"] == true) {
-          setState(() {
-            currentQuestPhase = -1;  // assassinating merlin
-          });
-        } else {
-          widget.sendQuestResults((
-            Team.good, 
-            questResults
-          ));
-        }
+    
+    if (_successes >= 3) {
+      if (globalRolesSelected["Merlin"] == true) {
+        
+        setState(() {
+          currentQuestPhase = -1;  // assassinating merlin
+        });
       } else {
-        widget.sendQuestResults(
-          (
-            Team.evil, 
-            questResults
-          ),
-        );
+        widget.sendQuestResults((
+          Team.good, 
+          questResults
+        ));
       }
+    }
+
+    if (_fails >= 3) {
+        widget.sendQuestResults((
+          Team.evil, 
+          questResults
+        ));
     }
   }
 
