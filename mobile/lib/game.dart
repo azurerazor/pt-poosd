@@ -1,9 +1,11 @@
-// import 'dart:convert';
-// import 'dart:io';
+import 'dart:convert';
+import 'dart:io';
+import 'package:http/http.dart' as http;
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/escavalon_material.dart';
+import 'package:mobile/lobby.dart';
 
 import 'game_phases/night.dart';
 import 'game_phases/quest.dart';
@@ -97,9 +99,9 @@ class _GamePageContentState extends State<_GamePageContent> {
   // not yet tested
   Widget endGame() {
     // if user is logged in, we can try to save the game
-    // if (globalToken != null) {
-    //   _gameSavedSuccessfully = trySave();
-    // }
+    if (globalToken != null) {
+      _gameSavedSuccessfully = trySave();
+    }
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -205,19 +207,28 @@ class _GamePageContentState extends State<_GamePageContent> {
   // time started, victor, numPlayers, special roles used (probably just as 'RoleName':'True/False'), whether each round suceeded/failed
   // remember to send time as UTC!
   Future<bool> trySave() async {
-    return true;
-    // final HttpResponse response;
+    String? token = await webTokenStorage?.read(key: "token");
+    Map<String, dynamic> requestBody = {
+      "timeStarted": startTime.toUtc().toString(),
+      "numPlayers": globalNumPlayers,
+      "goodWin": victor == Team.good,
+      "roles": globalRolesSelected.entries
+        .where((entry) => entry.value == true)
+        .map((entry) => entry.key)
+        .toList(),
+      "missionOutcomes": questResults.map((outcome) => (outcome != null ? (outcome == Team.good) : null)).toList(),
+    };
 
-    // if (response.statusCode == 201) {
-    //   return true;
-    // } else {
-    //   final dynamic responseBody = jsonDecode(response.body);
-    //   if (responseBody is Map<String, dynamic>) {
-    //     final String errorMessage = responseBody['message'] ?? "Unknown error";
-    //     throw Exception(errorMessage);
-    //   } else {
-    //     throw Exception("Unknown error");
-    //   }
-    // }
+    final response = await http.put(
+      Uri.parse('http://45.55.60.192:5050/api/game_history/get'),
+      headers: {HttpHeaders.cookieHeader: token!},
+      body: jsonEncode(requestBody),
+    );
+
+    if (response.statusCode != 200) {
+      print(response.body);
+    }
+
+    return (response.statusCode == 200);
   }
 }

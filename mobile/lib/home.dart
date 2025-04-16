@@ -8,7 +8,7 @@ import 'login.dart';
 import 'register.dart';
 import 'history.dart';
 
-final Uri _url = Uri.parse('www.escavalon.quest');
+final Uri _url = Uri.parse('http://escavalon.quest');
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -87,7 +87,7 @@ class _HomeContentState extends State<_HomeContent> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => HistoryPage(token: webTokenStorage)
+                          builder: (context) => HistoryPage(token: webTokenStorage!)
                         )
                       );                    }
                   ),

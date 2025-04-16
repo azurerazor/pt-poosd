@@ -29,6 +29,7 @@ type Props = {
   setSuccessFail: React.Dispatch<React.SetStateAction<boolean | null>>;
   setAcceptReject: React.Dispatch<React.SetStateAction<boolean | null>>;
   setAssassinate: React.Dispatch<React.SetStateAction<string | null>>;
+  goodPlayers: string[];
   outcomes: number[];
   round: number;
   order: string[];
@@ -39,7 +40,7 @@ type Props = {
   showAssassinationCard: boolean;
 };
 
-export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam, successFail, setSuccessFail, setAcceptReject, setAssassinate, outcomes, round, order, showRoleCard, showMissionVote, showSuccessFail, showMissionOutcome, showAssassinationCard }: Props) {
+export default function GameView({ players, myPlayer, selectedTeam, setSelectedTeam, successFail, setSuccessFail, setAcceptReject, setAssassinate, goodPlayers, outcomes, round, order, showRoleCard, showMissionVote, showSuccessFail, showMissionOutcome, showAssassinationCard }: Props) {
   const navigate = useNavigate();
   const [selectedGuys, setSelectedGuys] = useState<string[]>([]);
   const grayscaleVal = !myPlayer.isLeader ? 100 : 0;
@@ -322,7 +323,7 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
             }}
           >
             <div className="rounded-lg p-8 max-w-xl w-full text-center">
-              <AssassinationScreen player={myPlayer} players={players} setAssassinate={setAssassinate} />
+              <AssassinationScreen player={myPlayer} players={players} goodPlayers={goodPlayers} setAssassinate={setAssassinate} />
             </div>
           </div>
         )}
