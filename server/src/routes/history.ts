@@ -1,7 +1,6 @@
 import { Request, Response, Router } from 'express';
 import { requireAuth } from '../middleware/auth.js';
-import Stats from '../models/stats.js';
-import MobileGame from 'models/mobile_game.js';
+import MobileGame from '../models/mobile_game.js';
 import { MOBILE_ROLES } from '@common/game/mobile.js';
 
 // Set up the Express router
