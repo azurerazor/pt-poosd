@@ -20,7 +20,7 @@ export default function Dashboard() {
     })
       .then(() => {
         alert("Successfully logged out!");
-        navigate('/');
+        navigate('/login');
       })
       .catch(err => {
         console.error(err);

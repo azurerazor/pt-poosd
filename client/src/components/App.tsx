@@ -18,12 +18,12 @@ function App() {
                 <Route path='/test' element={<ProtectedRoute element={<TestPage />} />} />
 
                 {/* Main (non-game) pages */}
-                <Route path='/' Component={Login} />
                 <Route path='/login' Component={Login} />
                 <Route path='/signup' Component={Signup} />
                 <Route path="/verify" element={<Verify />} />
                 
                 {/* Protected Routes */}
+                <Route path='/' element={<ProtectedRoute element={<Dashboard />} />} />
                 <Route path='/dashboard' element={<ProtectedRoute element={<Dashboard />} />} />
                 <Route path='/stats' element={<ProtectedRoute element={<Stats />} />} />
 
