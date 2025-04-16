@@ -55,12 +55,12 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="hero-content w-full text-center m-auto flex-col gap-0 h-screen">
-      <h1 className="text-5xl font-bold flex-row mb-6">Escavalon</h1>
+    <div className="hero-content w-full text-center m-auto flex-col gap-0">
+      <img src="../../../images/logo.png" className="justify-center" />
       <h2 className="text-3xl font-bold">Welcome, {username}!</h2>
 
       <div className="flex flex-col w-md mt-12">
-        <div className="flex items-center gap-4 justify-center">
+        <div className="flex items-center gap-4 justify-center mb-6">
           <InputText
             name="Game Code"
             placeholder="Enter game code"
@@ -75,7 +75,7 @@ export default function Dashboard() {
           />
         </div>
 
-        <div className="divider">OR</div>
+        <div className="divider">or</div>
 
         <div className="flex justify-center">
           <FunctionButton
