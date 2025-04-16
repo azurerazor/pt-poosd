@@ -9,9 +9,9 @@ interface Props {
   pcount: number, // number of players required for this mission
 }
 
-const incomplete = "https://i.imgflip.com/45wu20.png?a484272";
-const success = "https://tr.rbxcdn.com/180DAY-9cb60006348d685d54dedf063358d491/420/420/Hat/Webp/noFilter";
-const fail = "https://www.calendarclub.ca/cdn/shop/files/8059074F-9CA8-456F-8371-D4552E772A9A_grande.jpg?v=1728040310";
+const incomplete = "/images/incomplete.png";
+const success = "/images/good.png";
+const fail = "/images/evil.png";
 
 const GameMission: React.FC<Props> = ({ round, numberOfPlayers, status = -1, pcount=0 }) => {
   let image: string;

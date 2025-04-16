@@ -64,7 +64,6 @@ const MissionVoteCard: React.FC<Props> = ({ selectedTeam, players, setAcceptReje
                   onClick={handleReject}
                 />
             </div>
-            <div className="flex-row"><FunctionButton label="Submit" /></div>
         </div>
         </div>
     );
