@@ -97,6 +97,7 @@ class _QuestState extends State<Quest> {
             child: Builder(builder: (context) {
               if (currentQuestPhase == 0) {
                 return DiscussionTemplate(
+                  key: UniqueKey(),
                   endDiscussion: updateQuestPhase, 
                   continueText: "Start vote", 
                   startingScript: "Create a team of ${questRequirements[globalNumPlayers]![currentQuest + 1]!} players to go on this mission. ${twoFailsRequired ? "Minions of Mordred, remember that you need two traitors to fail this mission for the entire quest to fail." : ""}", 
@@ -106,6 +107,7 @@ class _QuestState extends State<Quest> {
                 
               if (currentQuestPhase == 1) {
                 return VoteTemplate(
+                  key: ValueKey("vote $currentQuest"),
                   displayText: "Leader, propose a team.\nThen have everyone vote.\nDid the vote pass or fail?", 
                   succeedText: "PASS", 
                   failText: "FAIL", 
@@ -117,6 +119,7 @@ class _QuestState extends State<Quest> {
 
               if (currentQuestPhase == 2) {
                 return VoteTemplate(
+                  key: UniqueKey(),
                   displayText: "Distribute vote cards.\nThen, reveal the votes.\nDid the quest succeed?", 
                   succeedText: "SUCCEED", 
                   failText: "FAIL", 
