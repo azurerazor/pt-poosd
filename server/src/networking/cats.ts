@@ -1,4 +1,4 @@
-const CAT_URL = 'https://cataas.com/cat?width=500&height=500&json=true';
+const CAT_URL = 'https://cataas.com/cat?width=128&height=128&json=true';
 
 // requests a cat json object from https://cataas.com/cat?width=500&height=500&json=true
 export async function acquireCat(): Promise<string> {
