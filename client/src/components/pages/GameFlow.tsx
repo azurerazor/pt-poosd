@@ -97,7 +97,7 @@ export default function GameFlow() {
     ClientEventBroker.initialize(username, token);
 
     ClientEventBroker.on('update', (lobby: ClientLobby, event: UpdateEvent) => {
-      console.log("Received Update Event", event);
+      console.log("Received Update Event", event, "First Update Received? :", hasReceivedFirstUpdate);
         setUpdating(true);
         const updateGuys = async () => {     
           if(event.leader !== username){
@@ -169,7 +169,7 @@ export default function GameFlow() {
 
       const timer = setTimeout(() => {
         setShowMissionOutcome(false);
-        console.log("Sending Ready event");
+        console.log("Sending Ready event MissionOutcome");
         ClientEventBroker.getInstance().send(new ReadyEvent());
       }, MISSION_OUTCOME_TIME);
 
