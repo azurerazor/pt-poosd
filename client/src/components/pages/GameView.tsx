@@ -152,7 +152,9 @@ export default function GameView({
                   </div>
                   <FunctionButton label="Submit" onClick={handleSubmitMission} />
                 </div>
-                <form method="dialog" className="modal-backdrop" />
+                <form method="dialog" className="modal-backdrop" >
+                  <button aria-label="close" />
+                </form>
               </dialog>
             </div>
 
