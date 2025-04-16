@@ -68,7 +68,6 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
       {
       /**
        * Display's the player's role and information about it at the start of the game
-       * TO-DO Only show enabled roles in the info section
        */
       }
       {showRoleCard && (
@@ -310,7 +309,6 @@ export default function GameView({ players, myPlayer, selectedTeam, setSelectedT
         {
         /**
          * Assassination screen
-         * TO-DO Add check to only show evils in here
          */
         }
         {(showAssassinationCard && !(getRoles(myPlayer.role!)[0].isGood())) && (

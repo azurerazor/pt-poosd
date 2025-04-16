@@ -1,4 +1,4 @@
-const SECONDS: number = 1000;
+export const SECONDS: number = 1000;
 
 /**
  * Amount of time for the role reveal phase.
@@ -27,4 +27,4 @@ export const MISSION_OUTCOME_TIME: number = 10 * SECONDS;
 /**
  * Amount of time players have to guess Merlin for assassination.
  */
-export const ASSASSINATION_TIME: number = 10 * SECONDS;
+export const ASSASSINATION_TIME: number = 20 * SECONDS;

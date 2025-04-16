@@ -1,5 +1,7 @@
+import { useEffect, useState } from "react";
 import { Player } from "../../../../common/game/player";
 import { Role, getRoles } from "../../../../common/game/roles";
+import { ROLE_REVEAL_TIME, SECONDS } from "../../../../common/game/timing";
 import { ClientLobby } from "../../game/lobby";
 import RoleRevealInfo from "./RoleRevealInfo";
 
@@ -13,7 +15,23 @@ const RoleRevealCard: React.FC<Props> = ({ player, players, onClose }) => {
   const playersInfo = Array.from(players)
     .filter(([_, player]) => player.role)
     .map(([_, player]) => player);
-  
+
+  const [counter, setCounter] = useState(ROLE_REVEAL_TIME / SECONDS);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCounter((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   const myRole = getRoles(player.role!)[0];
   let otherRoles: Role[] = [];
   let otherPlayers: Player[] = [];
@@ -27,6 +45,11 @@ const RoleRevealCard: React.FC<Props> = ({ player, players, onClose }) => {
 
   return (
     <div className="card card-side bg-base-100 shadow-sm w-[42rem] h-[24rem]">
+      <div className="relative top-4 right-4">
+        <span id="counterElement" className="countdown">
+          {counter}
+        </span>
+      </div>
       <figure className="w-1/2 h-full">
         <img src={myRole.image} alt={myRole.name} />
       </figure>
@@ -74,4 +97,4 @@ const RoleRevealCard: React.FC<Props> = ({ player, players, onClose }) => {
   );
 };
 
-export default RoleRevealCard;
+export default RoleRevealCard
