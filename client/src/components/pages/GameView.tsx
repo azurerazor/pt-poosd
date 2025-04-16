@@ -18,6 +18,7 @@ import AssassinationScreen from 'components/ui/AssassinationScreen';
 import RoleRevealCard from "../ui/RoleRevealCard";
 import { quests } from "./GameFlow";
 import { ClientEventBroker } from 'game/events';
+import { ASSASSINATION_TIME, MISSION_CHOICE_TIME, SECONDS } from '@common/game/timing';
 
 type Props = {
   players: Map<string, Player>;
@@ -165,7 +166,7 @@ export default function GameView({
               ) : (
                 <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
                   <div className="rounded-lg p-8 max-w-xl w-full text-center">
-                    <LoadingCard message="Voting in progress..." />
+                    <LoadingCard message="Mission in progress..." timer={MISSION_CHOICE_TIME / SECONDS} />
                   </div>
                 </div>
               )
@@ -187,17 +188,25 @@ export default function GameView({
               </div>
             )}
 
-            {showAssassinationCard && ClientLobby.getInstance().canAssassinateMerlin(myPlayer.username) && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
-                <div className="rounded-lg p-8 max-w-xl w-full text-center">
-                  <AssassinationScreen
-                    player={myPlayer}
-                    players={players}
-                    goodPlayers={goodPlayers}
-                    setAssassinate={setAssassinate}
-                  />
+            {showAssassinationCard && (
+              ClientLobby.getInstance().canAssassinateMerlin(myPlayer.username) ? (
+                <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
+                  <div className="rounded-lg p-8 max-w-xl w-full text-center">
+                    <AssassinationScreen
+                      player={myPlayer}
+                      players={players}
+                      goodPlayers={goodPlayers}
+                      setAssassinate={setAssassinate}
+                    />
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
+                  <div className="rounded-lg p-8 max-w-xl w-full text-center">
+                    <LoadingCard message="Merling assassination in progress..." timer={ASSASSINATION_TIME / SECONDS} />
+                  </div>
+                </div>
+              )
             )}
 
             <div className="absolute bottom-4 right-4 p-2">

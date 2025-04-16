@@ -6,11 +6,12 @@ import AssassinationPlayerSelect from "./AssassinationPlayerSelect";
 import { MISSION_CHOICE_TIME, SECONDS } from "@common/game/timing";
 
 interface Props {
-    message: string
+    message: string,
+    timer: number
 }
 
-const LoadingCard: React.FC<Props> = ({ message }) => {
-    const [counter, setCounter] = useState(MISSION_CHOICE_TIME / SECONDS);
+const LoadingCard: React.FC<Props> = ({ message, timer }) => {
+    const [counter, setCounter] = useState(timer);
         
     useEffect(() => {
         const interval = setInterval(() => {
