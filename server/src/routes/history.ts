@@ -41,7 +41,14 @@ router.post('/put', async (req: Request, res: Response) => {
     const { timeStarted, numPlayers, goodWin, roles, missionOutcomes } = req.body;
 
     // Validate input
-    if (!timeStarted || !numPlayers || !goodWin || !roles || !missionOutcomes) {
+    if (timeStarted === undefined
+        || numPlayers === undefined
+        || goodWin === undefined
+        || roles === undefined
+        || missionOutcomes === undefined
+        || !Array.isArray(roles)
+        || !Array.isArray(missionOutcomes)
+    ) {
         res
             .status(400)
             .json({ message: "Missing required fields" });

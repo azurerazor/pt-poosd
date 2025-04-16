@@ -3,12 +3,15 @@ import 'dart:io';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:mobile/escavalon_material.dart';
 import 'package:http/http.dart' as http;
 
 import 'game.dart';
+import 'main.dart';
 
 FlutterSecureStorage webTokenStorage = FlutterSecureStorage();
+DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
 
 class HistoryPage extends StatelessWidget {
   final FlutterSecureStorage token;
@@ -48,12 +51,21 @@ class _HistoryPageContentState extends State<_HistoryPageContent> {
   void _loadGames() async {
     final String? token = await webTokenStorage.read(key: "token");
 
+    print('$URL/api/game_history/get');
+
     final response = await http.get(
-      Uri.parse('http://45.55.60.192:5050/api/game_history/get'),
-      headers: {HttpHeaders.cookieHeader: token!},
+      Uri.parse('$URL/api/game_history/get'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.cookieHeader: "token=${token!}"
+      },
     );
 
+    print(response.statusCode);
+    print(response.body);
+
     if (response.statusCode == 200) {
+      print("yippee!");
       List<dynamic> gamesList = jsonDecode(response.body)['games'];
 
       for (var info in gamesList) {
@@ -117,10 +129,10 @@ class _HistoryPageContentState extends State<_HistoryPageContent> {
                   );
                 }
 
-                return ListView(
+                return SizedBox.expand(child: ListView(
                   scrollDirection: Axis.vertical,
                   children: games,
-                );
+                ));
               } else {
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -172,8 +184,10 @@ class _GameRecord extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Text(DateTime.parse(timeStarted).toLocal().toString(), style: TextStyle(fontStyle: FontStyle.italic),),
+          Text(dateFormat.format(DateTime.parse(timeStarted).toLocal()), style: TextStyle(fontStyle: FontStyle.italic),),
+          SizedBox(height: 10,),
           Text("Victory for ${victor == Team.good ? "Good" : "Evil"}!", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+          SizedBox(height: 10,),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: List.generate(
@@ -189,6 +203,7 @@ class _GameRecord extends StatelessWidget {
               },
             ),
           ),
+          SizedBox(height: 10,),
           Text("Number of players: $numPlayers"),
           Text("Special Roles included: ${_getSpecialRoles()}"),
         ],

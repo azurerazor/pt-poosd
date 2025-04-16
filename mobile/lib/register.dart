@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'escavalon_material.dart';
 import 'login.dart';
+import 'main.dart';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -176,7 +177,7 @@ class _RegisterFormState extends State<_RegisterForm> {
     });
 
     final response = await http.post(
-      Uri.parse('http://escavalon.quest/api/register'),
+      Uri.parse('$URL/api/register'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
