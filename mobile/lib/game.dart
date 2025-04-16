@@ -90,10 +90,8 @@ class _GamePageContentState extends State<_GamePageContent> {
             }),
           )
         );
-      case 2:
-        return endGame();
       default:
-        throw ErrorDescription("Invalid game phase: $gamePhase");
+        return endGame();
     }
   }
 

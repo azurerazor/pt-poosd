@@ -113,8 +113,8 @@ class _QuestState extends State<Quest> {
                   succeedText: "PASS", 
                   failText: "FAIL", 
                   script: getVoteScript(questRequirements[globalNumPlayers]![currentQuest + 1]!), 
-                  onSucceed: () => updateQuestPhaseWithPossibleRepeat(false), 
-                  onFail: () => updateQuestPhaseWithPossibleRepeat(true),
+                  onSucceed: () => updateQuestPhaseWithPossibleRepeat(true), 
+                  onFail: () => updateQuestPhaseWithPossibleRepeat(false),
                 );
               }
 
@@ -174,7 +174,6 @@ class _QuestState extends State<Quest> {
             questResults
           ));
         }
-
       } else {
         widget.sendQuestResults(
           (
@@ -186,24 +185,26 @@ class _QuestState extends State<Quest> {
     }
   }
 
-  void updateQuestPhaseWithPossibleRepeat(bool repeat) {
-    if (repeat) {
-      setState(() {
-        numFailedVotes++;
-        currentQuestPhase = 0;
-      });
-
-      if (numFailedVotes == 5) {
-        numFailedVotes = 0;
-        currentQuestPhase = 2;
-        updateQuestPhaseWithQuestVictor(Team.evil);
-        return;
-      }
-    } else {
+  void updateQuestPhaseWithPossibleRepeat(bool votePassed) {
+    if (votePassed) {
       setState(() {
         numFailedVotes = 0;
       });
       updateQuestPhase();
+    } else {
+      if (numFailedVotes == 4) {
+        currentQuestPhase++;
+        updateQuestPhaseWithQuestVictor(Team.evil);
+        setState(() {
+          numFailedVotes = 0;
+        });
+      } else {
+        setState(() {
+          numFailedVotes++;
+          currentQuestPhase = 0;
+        });
+      }
+
     }
   }
 
