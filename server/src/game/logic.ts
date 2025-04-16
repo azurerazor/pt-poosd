@@ -1,5 +1,5 @@
 import { AssassinationChoiceEvent, AssassinationEvent, BackToLobbyEvent, GameResultEvent, MissionChoiceEvent, MissionEvent, MissionOutcomeEvent, ReadyEvent, RoleRevealEvent, SetRoleListEvent, StartGameEvent, TeamProposalEvent, TeamVoteChoiceEvent, TeamVoteEvent, UpdateEvent } from "@common/game/events";
-import { Alignment, getRoles, minion, Roles, servant } from "@common/game/roles";
+import { Alignment, all_roles, getRoles, minion, Roles, servant } from "@common/game/roles";
 import { GameState, Lobby } from "@common/game/state";
 import { ASSASSINATION_TIME, MISSION_CHOICE_TIME, TEAM_VOTE_TIME } from "@common/game/timing";
 import { shuffle } from "@common/util/random";
@@ -112,8 +112,29 @@ function handleStartGame(lobby: ServerLobby, event: StartGameEvent): void {
         roleset |= Roles.SERVANT_OF_ARTHUR;
     }
 
-    // Shuffle roles and assign to players
+    // Shuffle roles
     shuffle(roles);
+
+    // For testing purposes: if a username is "always_{role}",
+    // always assign that role (if it's in the roleset)
+    for (const role of all_roles) {
+        const playerIndex = lobby.playerOrder.indexOf(`always_${role.name}`);
+        if (playerIndex == -1) continue;
+
+        // Find the role in the roleset
+        const roleIndex = roles.indexOf(role);
+        if (roleIndex == -1) {
+            console.error("Missing requested role for player:", lobby.playerOrder[playerIndex]);
+            continue;
+        }
+
+        // Put the role in this player's position
+        const temp = roles[playerIndex];
+        roles[playerIndex] = role;
+        roles[roleIndex] = temp;
+    }
+
+    // Assign the roles
     for (let i = 0; i < roles.length; i++) {
         const username = lobby.playerOrder[i];
         const role = roles[i].role;
