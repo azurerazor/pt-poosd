@@ -90,14 +90,14 @@
 }
 
 .bg-paper {
-    background-image: url('paper.jpg');
+    background-image: url('/paper.jpg');
     background-size: cover;
     background-position: center;
     background-blend-mode: darken;
 }
 
 .bg-paper-darker {
-    background: url('paper_darker.jpg') no-repeat center center;
+    background: url('/paper_darker.jpg') no-repeat center center;
 }
 
 .deco-primary {
