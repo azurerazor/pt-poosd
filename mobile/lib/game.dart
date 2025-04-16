@@ -217,10 +217,8 @@ class _GamePageContentState extends State<_GamePageContent> {
       "missionOutcomes": questResults.map((outcome) => (outcome != null ? (outcome == Team.good) : null)).toList(),
     };
 
-    print('$URL/api/game_history/get');
-
-    final response = await http.put(
-      Uri.parse('$URL/api/game_history/get'),
+    final response = await http.post(
+      Uri.parse('$URL/api/game_history/put'),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
         HttpHeaders.cookieHeader: "token=${token!}"},
