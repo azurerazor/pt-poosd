@@ -279,7 +279,7 @@ class _LobbyPageContentState extends State<_LobbyPageContent> {
         ),
       ),
       child: Image.asset(
-        'assets/role/${role.toLowerCase()}.png',
+        'assets/roles/${role.toLowerCase()}.png',
         width: 150,
         height: 220,
         fit: BoxFit.cover,
