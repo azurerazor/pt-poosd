@@ -75,11 +75,7 @@ export default function Login() {
                     <Submit value="Log in" />
                 </form>
                 <h4 className="text-bold text-red-600">{loginErr}</h4>
-                <p className="text-base-content mb-4">
-                    <Link to='/signup'>Forgot my password</Link>
-                </p>
             </FormCard>
         </div>
-
     );
 }

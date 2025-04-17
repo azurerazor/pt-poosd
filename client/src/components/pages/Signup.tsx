@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { API_URL } from '../../util/api';
 import FormCard from '../forms/FormCard';
-import InputEmail from '../forms/InputEmail';
 import InputPassword from '../forms/InputPassword';
 import InputTextRegex from '../forms/InputTextRegex';
 import Submit from '../forms/Submit';
@@ -12,7 +11,6 @@ import Link from '../misc/RouteLink';
 export default function Signup() {
     const navigate = useNavigate();
 
-    const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
@@ -21,12 +19,12 @@ export default function Signup() {
     function handleSignup(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
-        fetch(`${API_URL}/api/register`,{
+        fetch(`${API_URL}/api/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ email, username, password }),
+            body: JSON.stringify({ username, password }),
             credentials: 'include'
         }).then(response => {
             if (!response.ok) {
@@ -36,15 +34,15 @@ export default function Signup() {
             }
             return response.json();
         })
-        .then(_ => {
-            // alert("Signup successful!");
-            navigate('/login');
-        })
-        .catch(err => {
-            console.error(err);
-            // alert("Signup failed: " + err.message);
-            setSignupErr("Signup failed: " + err.message);
-        });
+            .then(_ => {
+                // alert("Signup successful!");
+                navigate('/');
+            })
+            .catch(err => {
+                console.error(err);
+                // alert("Signup failed: " + err.message);
+                setSignupErr("Signup failed: " + err.message);
+            });
     }
 
     return (
@@ -66,13 +64,6 @@ export default function Signup() {
                         placeholder="Enter username"
 
                         onChange={(event) => setUsername(event.target.value)}
-                    />
-                    <InputEmail
-                        name='email'
-                        label="Email"
-                        placeholder="Enter email"
-
-                        onChange={(event) => setEmail(event.target.value)}
                     />
                     <InputPassword
                         name='password'
