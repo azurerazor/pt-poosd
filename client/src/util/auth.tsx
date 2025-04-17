@@ -7,57 +7,58 @@ type UserContextType = {
   username: string;
 };
 
-export const UserContext = createContext<UserContextType>({ username: '' });
+export const UserContext = createContext<UserContextType>({ username: "" });
 
 export const useUser = () => useContext(UserContext);
 
+function ProtectedRoute({
+  element,
+}: {
+  element: React.ReactElement;
+}): React.ReactElement {
+  const [isLoading, setIsLoading] = useState(true);
+  const [username, setUsername] = useState("");
 
-function ProtectedRoute({ element }: { element: React.ReactElement }): React.ReactElement {
-    const [isLoading, setIsLoading] = useState(true);
-    const [username, setUsername] = useState('');
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/get_user`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        });
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const res = await fetch(`${API_URL}/api/get_user`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'include'
-                });
+        if (res.status !== 200) {
+          throw new Error(res.statusText);
+        }
 
-                if (res.status !== 200) {
-                    throw new Error(res.statusText);
-                }
+        const data = await res.json();
+        setUsername(data.username);
+      } catch (err) {
+        console.log("Auth error:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-                const data = await res.json();
-                setUsername(data.username);
-            } catch (err) {
-                console.log('Auth error:', err);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        
-        fetchData();
-    }, []);
+    fetchData();
+  }, []);
 
-    if(isLoading) {
-        return <Loading />;
-    }
+  if (isLoading) {
+    return <Loading />;
+  }
 
-    if(!username) {
-        return <Navigate to="/login" />
-    }
+  if (!username) {
+    return <Navigate to="/login" />;
+  }
 
-    return (
-        <UserContext.Provider value={{ username }}>
-            {element}
-        </UserContext.Provider>
-    );
+  return (
+    <UserContext.Provider value={{ username }}>{element}</UserContext.Provider>
+  );
 
-    //shit shiiiiiit sheeeet
+  //shit shiiiiiit sheeeet
 }
 
 export default ProtectedRoute;
