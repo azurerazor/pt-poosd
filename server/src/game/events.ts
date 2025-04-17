@@ -1,5 +1,5 @@
-import { GameEvent } from "@common/game/events";
-import { createEventRegistry } from "@common/game/event_registries";
+import { GameEvent } from "@common/game/events.js";
+import { createEventRegistry } from "@common/game/event_registries.js";
 
 class ServerEvent<TData> implements GameEvent<TData> {
   constructor(

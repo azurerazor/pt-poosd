@@ -1,8 +1,8 @@
 import { Request, Response, Router } from "express";
 
-import { requireAuth } from "@api/middleware/auth";
-import Stats from "@api/models/Stats";
-import User from "@api/models/User";
+import { requireAuth } from "@api/middleware/auth.js";
+import Stats from "@api/models/Stats.js";
+import User from "@api/models/User.js";
 
 // Set up the Express router
 const router = Router();

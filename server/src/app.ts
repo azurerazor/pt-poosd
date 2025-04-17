@@ -5,13 +5,13 @@ import http from "http";
 import mongoose from "mongoose";
 import { Server } from "socket.io";
 
-import { login, logout, register } from "@api/routes/auth";
-import get_user from "@api/routes/get_user";
-import history from "@api/routes/history";
-import stats from "@api/routes/stats";
+import { login, logout, register } from "@api/routes/auth.js";
+import get_user from "@api/routes/get_user.js";
+import history from "@api/routes/history.js";
+import stats from "@api/routes/stats.js";
 
 // Constants (duh)
-require("dotenv").config();
+import {} from "dotenv/config";
 const PORT = process.env.PORT!;
 const MONGO_URI = process.env.MONGO_URI!;
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN!;

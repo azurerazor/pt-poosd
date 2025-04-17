@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
-import User from "@api/models/User";
+import User from "@api/models/User.js";
 import { validatePassword, validateUsername } from "@common/util/validation.js";
 
 require("dotenv").config();

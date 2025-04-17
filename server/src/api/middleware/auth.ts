@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
-import User from "@api/models/User";
+import User from "@api/models/User.js";
 
 require("dotenv").config();
 const AUTH_KEY = process.env.AUTH_KEY!;
