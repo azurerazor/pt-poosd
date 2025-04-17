@@ -1,30 +1,30 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router';
-import { API_URL } from '../../util/api';
-import InputText from '../forms/InputText';
-import FunctionButton from '../misc/FunctionButton';
-import { useUser } from '../../util/auth';
+import { useState } from "react";
+import { useNavigate } from "react-router";
+import { API_URL } from "../../util/api";
+import InputText from "../forms/InputText";
+import FunctionButton from "../misc/FunctionButton";
+import { useUser } from "../../util/auth";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const [gameCode, setGameCode] = useState('');
+  const [gameCode, setGameCode] = useState("");
   const { username } = useUser();
 
   const handleLogout = () => {
     fetch(`${API_URL}/api/logout`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
-      credentials: 'include'
+      credentials: "include",
     })
       .then(() => {
-        navigate('/login');
+        navigate("/login");
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
         alert("Logout failed: " + err.response.data.message);
-      });        
+      });
   };
 
   const handleJoin = () => {
@@ -34,11 +34,11 @@ export default function Dashboard() {
   const handleMake = async () => {
     try {
       const res = await fetch(`${API_URL}/api/game/create`, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
-        credentials: 'include'
+        credentials: "include",
       });
 
       if (res.status !== 201) {
@@ -68,10 +68,7 @@ export default function Dashboard() {
             className="h-12 w-64 chrome mt-4"
           />
 
-          <FunctionButton
-            label="Join A Lobby"
-            onClick={handleJoin}
-          />
+          <FunctionButton label="Join A Lobby" onClick={handleJoin} />
         </div>
 
         <div className="divider">or</div>
@@ -86,7 +83,7 @@ export default function Dashboard() {
       </div>
 
       <div className="absolute top-4 right-4 p-2 flex gap-2">
-        <FunctionButton label="Stats" onClick={() => navigate('/stats')} />
+        <FunctionButton label="Stats" onClick={() => navigate("/stats")} />
         <FunctionButton label="Logout" onClick={handleLogout} />
       </div>
     </div>

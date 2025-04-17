@@ -1,60 +1,60 @@
 name: Build + Deploy
 on:
-    push:
-        branches:
-            - 'main'
-        paths:
-            - 'client/**'
-            - 'common/**'
-            - 'server/**'
-            - '.github/workflows/**'
+  push:
+    branches:
+      - "main"
+    paths:
+      - "client/**"
+      - "common/**"
+      - "server/**"
+      - ".github/workflows/**"
 
 jobs:
-    build:
-        name: Build
-        runs-on: ubuntu-latest
+  build:
+    name: Build
+    runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-            - name: Set up Node.js
-              uses: actions/setup-node@v4
-              with:
-                node-version: '22.x'
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
 
-            - name: Install common dependencies
-              run: cd common && npm i --include=dev
+      - name: Install common dependencies
+        run: cd common && npm i --include=dev
 
-            - name: Install client dependencies
-              run: cd client && npm i --include=dev
+      - name: Install client dependencies
+        run: cd client && npm i --include=dev
 
-            - name: Build client
-              run: cd client && npm run build
+      - name: Build client
+        run: cd client && npm run build
 
-            - name: Install server dependencies
-              run: cd server && npm i --include=dev
+      - name: Install server dependencies
+        run: cd server && npm i --include=dev
 
-            - name: Build server
-              run: cd server && npm run build
+      - name: Build server
+        run: cd server && npm run build
 
-    deploy:
-        name: Deploy
-        runs-on: ubuntu-latest
-        needs: [ build ]
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: [build]
 
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-            - name: Deploy to camelot
-              uses: appleboy/ssh-action@v1
-              with:
-                host: 45.55.60.192
-                username: root
-                key: ${{ secrets.CAMELOT_PRIVATE_KEY }}
-                port: 22
-                script: |
-                    cd pt-poosd
-                    git pull
-                    ./deploy.bash
+      - name: Deploy to camelot
+        uses: appleboy/ssh-action@v1
+        with:
+          host: 45.55.60.192
+          username: root
+          key: ${{ secrets.CAMELOT_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd pt-poosd
+            git pull
+            ./deploy.bash

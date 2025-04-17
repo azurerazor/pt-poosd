@@ -1,40 +1,40 @@
 name: Build
 on:
-    push:
-        branches:
-            - '**'
-            - '!main'
-        paths:
-            - 'client/**'
-            - 'common/**'
-            - 'server/**'
-            - '.github/workflows/**'
+  push:
+    branches:
+      - "**"
+      - "!main"
+    paths:
+      - "client/**"
+      - "common/**"
+      - "server/**"
+      - ".github/workflows/**"
 
 jobs:
-    build:
-        name: Build
-        runs-on: ubuntu-latest
+  build:
+    name: Build
+    runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-            - name: Set up Node.js
-              uses: actions/setup-node@v4
-              with:
-                node-version: '22.x'
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
 
-            - name: Install common dependencies
-              run: cd common && npm i --include=dev
+      - name: Install common dependencies
+        run: cd common && npm i --include=dev
 
-            - name: Install client dependencies
-              run: cd client && npm i --include=dev
+      - name: Install client dependencies
+        run: cd client && npm i --include=dev
 
-            - name: Build client
-              run: cd client && npm run build
+      - name: Build client
+        run: cd client && npm run build
 
-            - name: Install server dependencies
-              run: cd server && npm i --include=dev
+      - name: Install server dependencies
+        run: cd server && npm i --include=dev
 
-            - name: Build server
-              run: cd server && npm run build
+      - name: Build server
+        run: cd server && npm run build

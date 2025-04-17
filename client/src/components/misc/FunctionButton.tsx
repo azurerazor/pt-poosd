@@ -6,9 +6,15 @@ interface Props {
   className?: string;
 }
 
-const functionButton: React.FC<Props> = ({ label, onClick = (_) => {}, className = '' }) => {
+const functionButton: React.FC<Props> = ({
+  label,
+  onClick = (_) => {},
+  className = "",
+}) => {
   return (
-    <span className={`btn mt-4 w-auto h-auto p-0 deco deco-accent ${className}`}>
+    <span
+      className={`btn mt-4 w-auto h-auto p-0 deco deco-accent ${className}`}
+    >
       <button
         type="button"
         onClick={onClick}

@@ -1,113 +1,116 @@
-@import url('https://fonts.googleapis.com/css2?family=Bona+Nova+SC:ital,wght@0,400;0,700;1,400&display=swap');
-@import 'tailwindcss';
+@import url("https://fonts.googleapis.com/css2?family=Bona+Nova+SC:ital,wght@0,400;0,700;1,400&display=swap");
+@import "tailwindcss";
 
 @plugin '@tailwindcss/forms';
 @plugin 'daisyui';
 
 @plugin "daisyui/theme" {
-    name: "avalon";
-    default: false;
-    prefersdark: false;
-    color-scheme: "light";
-    --color-base-100: oklch(97% 0.005 67.78);
-    --color-base-200: oklch(92% 0.01 58.071);
-    --color-base-300: oklch(80% 0.015 58.071);
-    --color-base-content: oklch(35% 0.0181 61.42);
+  name: "avalon";
+  default: false;
+  prefersdark: false;
+  color-scheme: "light";
+  --color-base-100: oklch(97% 0.005 67.78);
+  --color-base-200: oklch(92% 0.01 58.071);
+  --color-base-300: oklch(80% 0.015 58.071);
+  --color-base-content: oklch(35% 0.0181 61.42);
 
-    --color-primary: oklch(80% 0.14 70.08);
-    --color-primary-content: oklch(98% 0.003 247.858);
-    --color-accent: oklch(0.4 0.07 34.18);
-    --color-accent-content: oklch(85% 0.1 70.08);
-    --color-secondary: oklch(33.27% 0.0249 284.3);
-    --color-secondary-content: oklch(75% 0.12 70.08);
+  --color-primary: oklch(80% 0.14 70.08);
+  --color-primary-content: oklch(98% 0.003 247.858);
+  --color-accent: oklch(0.4 0.07 34.18);
+  --color-accent-content: oklch(85% 0.1 70.08);
+  --color-secondary: oklch(33.27% 0.0249 284.3);
+  --color-secondary-content: oklch(75% 0.12 70.08);
 
-    --color-neutral: oklch(20% 0 0);
-    --color-neutral-content: oklch(80% 0.0081 61.42);
-    --color-info: oklch(80.39% 0.1148 241.68);
-    --color-info-content: oklch(30.39% 0.1148 241.68);
-    --color-success: oklch(83.92% 0.0901 136.87);
-    --color-success-content: oklch(23.92% 0.0901 136.87);
-    --color-warning: oklch(82% 0.119 84.429);
-    --color-warning-content: oklch(43.92% 0.1085 80);
-    --color-error: oklch(75.1% 0.1814 22.37);
-    --color-error-content: oklch(35.1% 0.1814 22.37);
-    --radius-selector: 0.5rem;
-    --radius-field: 0.5rem;
-    --radius-box: 0.5rem;
-    --size-selector: 0.25rem;
-    --size-field: 0.25rem;
-    --border: 2px;
-    --depth: 1;
-    --noise: 1;
+  --color-neutral: oklch(20% 0 0);
+  --color-neutral-content: oklch(80% 0.0081 61.42);
+  --color-info: oklch(80.39% 0.1148 241.68);
+  --color-info-content: oklch(30.39% 0.1148 241.68);
+  --color-success: oklch(83.92% 0.0901 136.87);
+  --color-success-content: oklch(23.92% 0.0901 136.87);
+  --color-warning: oklch(82% 0.119 84.429);
+  --color-warning-content: oklch(43.92% 0.1085 80);
+  --color-error: oklch(75.1% 0.1814 22.37);
+  --color-error-content: oklch(35.1% 0.1814 22.37);
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 2px;
+  --depth: 1;
+  --noise: 1;
 }
 
-
 .validator-hint {
-    margin-top: 0 !important;
+  margin-top: 0 !important;
 }
 
 .serif {
-    font-family: 'Bona Nova SC', serif;
+  font-family: "Bona Nova SC", serif;
 }
 
 .deco {
-    --c: var(--color-base-content);
-    --bg: var(--color-base-100);
-    --w: 2px;
-    --o1: 8px;
-    --o2: 6px;
-    /* --o1: 14px;
+  --c: var(--color-base-content);
+  --bg: var(--color-base-100);
+  --w: 2px;
+  --o1: 8px;
+  --o2: 6px;
+  /* --o1: 14px;
     --o2: 7px; */
 
-    box-shadow: none !important;
-    border-radius: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
 
-    box-sizing: border-box;
-    display: inline-block;
-    height: auto;
-    border: var(--o1) solid transparent;
-    outline: var(--w) solid var(--c);
-    outline-offset: calc(-1*var(--o2));
-    background:
-        conic-gradient(from 90deg at var(--w) var(--w), transparent 25%, var(--c) 0) 0 0/calc(100% - var(--w)) calc(100% - var(--w)) padding-box border-box;
-    transition: all .1s;
+  box-sizing: border-box;
+  display: inline-block;
+  height: auto;
+  border: var(--o1) solid transparent;
+  outline: var(--w) solid var(--c);
+  outline-offset: calc(-1 * var(--o2));
+  background: conic-gradient(
+      from 90deg at var(--w) var(--w),
+      transparent 25%,
+      var(--c) 0
+    )
+    0 0 / calc(100% - var(--w)) calc(100% - var(--w)) padding-box border-box;
+  transition: all 0.1s;
 }
 
 .deco .btn-deco {
-    cursor: pointer;
-    border: var(--w) solid var(--c);
-    text-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    box-shadow: 0 5px 5px rgba(0, 0, 0, 0);
+  cursor: pointer;
+  border: var(--w) solid var(--c);
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 5px rgba(0, 0, 0, 0);
 }
 
 .btn:hover,
 .btn:focus-within {
-    transform: translateY(-1px);
+  transform: translateY(-1px);
 }
 
 .btn:active {
-    transform: translateY(0px);
+  transform: translateY(0px);
 }
 
 .bg-paper {
-    background-image: url('/paper.jpg');
-    background-size: cover;
-    background-position: center;
-    background-blend-mode: darken;
+  background-image: url("/paper.jpg");
+  background-size: cover;
+  background-position: center;
+  background-blend-mode: darken;
 }
 
 .bg-paper-darker {
-    background: url('/paper_darker.jpg') no-repeat center center;
+  background: url("/paper_darker.jpg") no-repeat center center;
 }
 
 .deco-primary {
-    --c: var(--color-primary);
+  --c: var(--color-primary);
 }
 
 .deco-accent {
-    --c: var(--color-accent);
+  --c: var(--color-accent);
 }
 
 .deco-secondary {
-    --c: var(--color-secondary);
+  --c: var(--color-secondary);
 }

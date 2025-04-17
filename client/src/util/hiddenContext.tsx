@@ -8,7 +8,11 @@ interface HiddenContextType {
 
 const HiddenContext = createContext<HiddenContextType | undefined>(undefined);
 
-export const HiddenContextProvider = ({ children }: { children: React.ReactNode }) => {
+export const HiddenContextProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const [isHidden, setIsHidden] = useState(true);
 
   return (
@@ -20,6 +24,7 @@ export const HiddenContextProvider = ({ children }: { children: React.ReactNode 
 
 export const useHiddenContext = () => {
   const context = useContext(HiddenContext);
-  if (!context) throw new Error("useHiddenContext must be used within a ContextProvider");
+  if (!context)
+    throw new Error("useHiddenContext must be used within a ContextProvider");
   return context;
 };
