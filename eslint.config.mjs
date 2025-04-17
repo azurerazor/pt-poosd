@@ -5,7 +5,7 @@ import pluginReact from "eslint-plugin-react";
 import json from "@eslint/json";
 import markdown from "@eslint/markdown";
 import css from "@eslint/css";
-import { defineConfig } from "eslint/config";
+import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig([
   {
@@ -17,6 +17,7 @@ export default defineConfig([
     files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"],
     languageOptions: { globals: { ...globals.browser, ...globals.node } },
   },
+  globalIgnores(["**/dist/", "**/node_modules/"]),
   pluginReact.configs.flat.recommended,
   tseslint.configs.recommended,
   // { files: ["**/*.json"], plugins: { json }, language: "json/json", extends: ["json/recommended"] },
