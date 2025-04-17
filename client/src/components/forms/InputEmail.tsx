@@ -13,7 +13,7 @@ const InputEmail: React.FC<Props> = ({
   label,
   placeholder = "",
   value = "",
-  onChange = (_) => {},
+  onChange = () => {},
 }) => {
   return (
     <>

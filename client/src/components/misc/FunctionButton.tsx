@@ -8,7 +8,7 @@ interface Props {
 
 const functionButton: React.FC<Props> = ({
   label,
-  onClick = (_) => {},
+  onClick = () => {},
   className = "",
 }) => {
   return (

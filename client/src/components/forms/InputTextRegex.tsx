@@ -21,7 +21,7 @@ const InputText: React.FC<Props> = ({
   validatorHint,
   placeholder = "",
   value = "",
-  onChange = (_) => {},
+  onChange = () => {},
 }) => {
   return (
     <>
@@ -33,9 +33,8 @@ const InputText: React.FC<Props> = ({
         type="text"
         className="input validator w-full text-base-content"
         required
-        // @ts-expect-error
-        minlength={minLength}
-        maxlength={maxLength}
+        minLength={minLength}
+        maxLength={maxLength}
         pattern={pattern}
         id={name}
         name={name}

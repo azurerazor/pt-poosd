@@ -38,7 +38,7 @@ export default function Login() {
         }
         return response.json();
       })
-      .then((_) => {
+      .then(() => {
         // alert("Successfully logged in!");
         navigate("/dashboard");
       })
@@ -58,7 +58,7 @@ export default function Login() {
         <form onSubmit={handleLogin}>
           <h2 className="text-3xl font-bold">Log in</h2>
           <p className="text-base-content mb-4">
-            Don't have an account? <Link to="/signup">Sign up here</Link>
+            Don&apos;t have an account? <Link to="/signup">Sign up here</Link>
           </p>
           <InputTextRegex
             name="username"

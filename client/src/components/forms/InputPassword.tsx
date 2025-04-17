@@ -18,7 +18,7 @@ const InputPassword: React.FC<Props> = ({
   label,
   placeholder = "",
   value = "",
-  onChange = (_) => {},
+  onChange = () => {},
 }) => {
   return (
     <>
@@ -29,9 +29,8 @@ const InputPassword: React.FC<Props> = ({
       <input
         type="password"
         className="input validator w-full text-base-content"
-        // @ts-expect-error
-        minlength={PASSWORD_MIN_LENGTH}
-        maxlength={PASSWORD_MAX_LENGTH}
+        minLength={PASSWORD_MIN_LENGTH}
+        maxLength={PASSWORD_MAX_LENGTH}
         required
         id={name}
         name={name}
