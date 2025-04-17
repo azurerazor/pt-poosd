@@ -4,7 +4,7 @@ import {
   EventSocket,
   EventType,
   GameEvent,
-} from "@common/game/events";
+} from "@common/game/events.js";
 
 /**
  * Maps event identifiers to event type instances
