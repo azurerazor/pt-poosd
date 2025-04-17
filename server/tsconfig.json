@@ -17,9 +17,18 @@
         "skipLibCheck": true,
         "baseUrl": "./src",
         "paths": {
+            "@api/*": [
+                "./api/*",
+            ],
+            "@game/*": [
+                "./game/*",
+            ],
+            "@util/*": [
+                "./util/*",
+            ],
             "@common/*": [
-                "../../common/dist/*"
-            ]
+                "../../common/dist/*",
+            ],
         },
     },
     "references": [

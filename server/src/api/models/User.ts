@@ -3,15 +3,6 @@ import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
     /**
-     * The user's email address (unique)
-     */
-    email: {
-        type: String,
-        required: [true, 'Email address is required'],
-        unique: true,
-    },
-
-    /**
      * The user's username (unique; used as an identifier)
      */
     username: {
@@ -26,14 +17,6 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: [true, 'Password is required'],
-    },
-
-    /**
-     * Whether the user has verified their email address
-     */
-    isVerified: {
-        type: Boolean,
-        default: false,
     },
 });
 

@@ -1,17 +1,14 @@
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
-import mongoose from 'mongoose';
-
 import http from 'http';
+import mongoose from 'mongoose';
 import { Server } from 'socket.io';
-import { bootstrapEvents } from './game/logic.js';
-import { initializeSockets } from './game/sockets.js';
-import { login, logout, register, verifyEmail } from './routes/auth.js';
-import game from './routes/game.js';
-import history from './routes/history.js';
-import get_user from './routes/get_user.js';
-import stats from './routes/stats.js';
+
+import { login, logout, register } from '@api/routes/auth';
+import get_user from '@api/routes/get_user';
+import history from '@api/routes/history';
+import stats from '@api/routes/stats';
 
 // Constants (duh)
 require('dotenv').config();
@@ -53,19 +50,17 @@ const ioServer = new Server(httpServer, {
         credentials: true
     }
 });
-initializeSockets(ioServer);
-bootstrapEvents();
+// initializeSockets(ioServer);
+// bootstrapEvents();
 
 // Auth routes
 app.post('/api/register', register);
 app.post('/api/login', login);
 app.post('/api/logout', logout);
-app.post('/api/verify/:token', verifyEmail);
 
 // Protected routes
 app.use('/api/get_user', get_user);
 app.use('/api/stats', stats);
-app.use('/api/game', game);
 app.use('/api/game_history', history);
 
 // Listen for incoming requests

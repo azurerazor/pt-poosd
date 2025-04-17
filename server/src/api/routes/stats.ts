@@ -1,7 +1,8 @@
 import { Request, Response, Router } from 'express';
-import { requireAuth } from '../middleware/auth.js';
-import Stats from '../models/stats.js';
-import User from '../models/user.js';
+
+import { requireAuth } from '@api/middleware/auth';
+import Stats from '@api/models/Stats';
+import User from '@api/models/User';
 
 // Set up the Express router
 const router = Router();
@@ -68,7 +69,7 @@ router.get('/top/:statKey/:num(\\d+)?', async (req: Request, res: Response) => {
             .sort({ [statKey]: 'descending' })
             .limit(num))
         .map(statsToJson);
-    
+
     // Respond
     res
         .status(200)

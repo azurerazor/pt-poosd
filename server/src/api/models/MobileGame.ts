@@ -1,5 +1,16 @@
 import mongoose from 'mongoose';
-import { MOBILE_ROLES } from '@common/game/mobile';
+
+/**
+ * Valid roles on mobile
+ */
+export const MOBILE_ROLES = [
+    "Merlin",
+    "Percival",
+    "Assassin",
+    "Morgana",
+    "Oberon",
+    "Mordred"
+]
 
 export const mobileGameSchema = new mongoose.Schema({
     /**
