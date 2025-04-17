@@ -19,7 +19,6 @@ export default function Dashboard() {
       credentials: 'include'
     })
       .then(() => {
-        alert("Successfully logged out!");
         navigate('/login');
       })
       .catch(err => {
