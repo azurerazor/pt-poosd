@@ -29,11 +29,7 @@ class _LoginForm extends StatefulWidget {
 
 class _LoginFormState extends State<_LoginForm> {
   String? username, password;
-  final String usernameRequirements = "3-16 letters, numbers, underscores or hyphens";
-  final String passwordRequirements = "Password must be at least 8 characters";
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  final RegExp checkUsername = RegExp(r'^[A-Za-z0-9]+(?:[-_]*[A-Za-z0-9]+)*[A-Za-z0-9]+$');
 
   bool _isLoading = false;
 

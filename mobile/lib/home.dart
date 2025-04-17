@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:mobile/main.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'escavalon_material.dart';
@@ -7,8 +8,6 @@ import 'lobby.dart';
 import 'login.dart';
 import 'register.dart';
 import 'history.dart';
-
-final Uri _url = Uri.parse('http://escavalon.quest');
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -72,7 +71,7 @@ class _HomeContentState extends State<_HomeContent> {
         EscavalonButton(
           text: 'Open Web App', 
           onPressed: () {
-            launchUrl(_url);
+            launchUrl(Uri.dataFromString(webAppURL));
           }
         ),
 
@@ -139,7 +138,7 @@ class _HomeContentState extends State<_HomeContent> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => RegisterPage()
+                          builder: (context) => EscavalonPage(child:RegisterPage())
                         )
                       );
                     }

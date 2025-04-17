@@ -9,31 +9,23 @@ import 'main.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class RegisterPage extends StatelessWidget {
+/// Should be wrapped in an EscavalonPage widget. Changed it while cleaning up code,
+/// might revert it back to using RegisterPage and RegisterPageContent if dealing with 
+/// other pages ends up being uglier.
+class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return EscavalonPage(child: _RegisterForm());
+  State<RegisterPage> createState() {
+    return _RegisterPageState();
   }
 }
 
-class _RegisterForm extends StatefulWidget {
-  @override
-  State<_RegisterForm> createState() {
-    return _RegisterFormState();
-  }
-}
+class _RegisterPageState extends State<RegisterPage> {
+  String? _username, _email, _password;
 
-class _RegisterFormState extends State<_RegisterForm> {
-  String? username, email, password;
-  final String usernameRequirements = "3-16 letters, numbers, underscores or hyphens";
-  final String emailRequirements = "Enter a valid email address";
-  final String passwordRequirements = "Password must be at least 8 characters";
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  final RegExp checkUsername = RegExp(r'^[A-Za-z0-9]+(?:[-_]*[A-Za-z0-9]+)*[A-Za-z0-9]+$');
-  final RegExp checkEmail = RegExp(r"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$");
 
   bool _isLoading = false;
 
@@ -53,12 +45,12 @@ class _RegisterFormState extends State<_RegisterForm> {
                   TextFormField(
                     decoration: const InputDecoration(
                       icon: Icon(Icons.person),
-                      hintText: "cool-username",
+                      hintText: "cool-_username",
                       labelText: "Username"
                     ),
                     onChanged: (String? value) {
                       setState(() {
-                        username = value;
+                        _username = value;
                       });               
                     },
 
@@ -87,7 +79,7 @@ class _RegisterFormState extends State<_RegisterForm> {
 
                     onChanged: (String? value) {
                       setState(() {
-                        email = value;
+                        _email = value;
                       });
                     },
 
@@ -117,7 +109,7 @@ class _RegisterFormState extends State<_RegisterForm> {
 
                     onChanged: (String? value) {
                       setState(() {
-                        password = value;
+                        _password = value;
                       });
                     },
 
@@ -147,7 +139,7 @@ class _RegisterFormState extends State<_RegisterForm> {
                     text: 'Register', 
                     onPressed: () {
                       if (_formKey.currentState!.validate() == false) return;
-                      _tryRegister(username!, email!, password!);
+                      _tryRegister(_username!, _email!, _password!);
                     },
                   );
                 } else {
@@ -171,11 +163,13 @@ class _RegisterFormState extends State<_RegisterForm> {
     );
   }
 
+  /// Tries to register with username, email, and password, and then processes register response. 
   Future<void> _tryRegister(String username, String email, String password) async {
     setState(() {
       _isLoading = true;
     });
 
+    // sends post request
     final response = await http.post(
       Uri.parse('$URL/api/register'),
       headers: <String, String>{
@@ -188,52 +182,59 @@ class _RegisterFormState extends State<_RegisterForm> {
       }),
     );
 
+    // register was successful
     if (response.statusCode == 201) {
       return _processRegisterResponse(null);
+    // otherwise it wasn't. send error message from response if found, otherwise, sends an unknown error
     } else {
       final dynamic responseBody = jsonDecode(response.body);
       if (responseBody is Map<String, dynamic>) {
-        return _processRegisterResponse(responseBody['message'] ?? "Unknown error");
+        return _processRegisterResponse(responseBody['message'] ?? 'Unknown error');
       } else {
-        return _processRegisterResponse("Unknown error");
+        return _processRegisterResponse('Unknown error');
       }
     }
   }  
 
-  void _processRegisterResponse(String? message) {
+  /// Proccesses register response.
+  /// If error is null, will assume register was successful and display a dialog to send user to login.
+  /// Otherwise, will display a dialog displaying the error.
+  void _processRegisterResponse(String? error) {
     setState(() {
       _isLoading = false;
     });
 
-    if (message != null) {
+    // if there is a message, we've encountered an error
+    if (error != null) {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
           title: Text("Error registering"),
-          content: Text(message),
+          content: Text(error),
           actions: <Widget>[
             TextButton(
               child: Text("OK"),
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.pop(context); // delete dialog
               },
             )
           ]
         ),
       );
+     // otherwise we're good to login
     } else {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
           title: Text("Registered successfully!"),
-          content: Text("Check your email for a verification link.\nUsername: $username\nEmail: $email"),
+          content: Text("Check your email for a verification link.\nUsername: $_username\nEmail: $_email"),
           actions: <Widget>[
             TextButton(
               child: Text("Proceed to login"),
               onPressed: () {
-                Navigator.pop(context);
-                Navigator.pop(context);
-                Navigator.push(
+                Navigator.pop(context); // remove dialog box
+                Navigator.pop(context); // go back to home
+                Navigator.push( // go to login page
                   context,
                   MaterialPageRoute(
                     builder: (context) => LoginPage(),
@@ -245,7 +246,5 @@ class _RegisterFormState extends State<_RegisterForm> {
         ),
       );
     }
-
   }
 }
-
