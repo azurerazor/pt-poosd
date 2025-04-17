@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 
 import User from "@api/models/User.js";
 
-require("dotenv").config();
+dotenv.config();
 const AUTH_KEY = process.env.AUTH_KEY!;
 
 /**

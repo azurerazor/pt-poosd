@@ -1,11 +1,12 @@
 import bcrypt from "bcrypt";
+import dotenv from "dotenv";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
 import User from "@api/models/User.js";
 import { validatePassword, validateUsername } from "@common/util/validation.js";
 
-require("dotenv").config();
+dotenv.config();
 export const AUTH_KEY = process.env.AUTH_KEY!;
 
 /**
