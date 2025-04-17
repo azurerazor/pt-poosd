@@ -1,3 +1,5 @@
+import React from "react";
+
 import {
   PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,

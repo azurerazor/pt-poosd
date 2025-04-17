@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router";
-
+import React from "react";
 import ProtectedRoute from "util/auth";
 import Dashboard from "./pages/Dashboard";
 import Game from "./pages/Game";

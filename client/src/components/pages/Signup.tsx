@@ -4,7 +4,7 @@ import {
   USERNAME_MIN_LENGTH,
   USERNAME_PATTERN,
 } from "@common/util/validation.js";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import { API_URL } from "../../util/api";
 import FormCard from "../forms/FormCard";
@@ -40,7 +40,7 @@ export default function Signup() {
         }
         return response.json();
       })
-      .then((_) => {
+      .then(() => {
         // alert("Signup successful!");
         navigate("/");
       })

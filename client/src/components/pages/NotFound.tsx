@@ -1,3 +1,4 @@
+import React from "react";
 import RouteButton from "../misc/RouteButton";
 
 export default function NotFound() {
