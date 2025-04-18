@@ -3,7 +3,6 @@ import cors from "cors";
 import express from "express";
 import http from "http";
 import mongoose from "mongoose";
-import { Server } from "socket.io";
 
 import { login, logout, register } from "@api/routes/auth.js";
 import get_user from "@api/routes/get_user.js";
@@ -52,13 +51,13 @@ app.use(express.json());
 
 // Set up the socket.io server
 const httpServer = http.createServer(app);
-const ioServer = new Server(httpServer, {
-  cors: {
-    origin: checkOrigin,
-    methods: ["GET", "POST"],
-    credentials: true,
-  },
-});
+// const ioServer = new Server(httpServer, {
+//   cors: {
+//     origin: checkOrigin,
+//     methods: ["GET", "POST"],
+//     credentials: true,
+//   },
+// });
 // initializeSockets(ioServer);
 // bootstrapEvents();
 

@@ -45,7 +45,7 @@ export async function register(req: Request, res: Response, next: () => void) {
     }
 
     // Create the new user
-    const user = await User.create({ username, password });
+    await User.create({ username, password });
 
     // Respond (duh)
     const token = acquireToken(username);

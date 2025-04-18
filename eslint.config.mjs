@@ -9,6 +9,14 @@ import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig([
   {
+    rules: {
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        { ignoreRestSiblings: true },
+      ],
+    },
+  },
+  {
     files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"],
     plugins: { js },
     extends: ["js/recommended"],

@@ -19,23 +19,21 @@ export function requireAuth(req: Request, res: Response, next: () => void) {
   }
 
   // Check authenticity
-  jwt.verify(token, AUTH_KEY, async (err: any, data: any) => {
+  jwt.verify(token, AUTH_KEY, async (err: unknown, data: unknown) => {
     if (err) {
       res.status(401).json({ message: "Unauthorized" });
       return;
     }
 
-    // Check if the user exists
-    const user = await User.findOne({ username: data.username });
-    if (!user) {
-      res.status(401).json({ message: "Invalid token" });
-      return;
+    if (data instanceof Object && "username" in data) {
+      const user = await User.findOne({ username: data.username });
+      if (user) {
+        // TODO: Check whether the user has verified their email address
+        // All good
+        res.locals.user = user.username;
+        return next();
+      }
     }
-
-    // TODO: Check whether the user has verified their email address
-
-    // All good
-    res.locals.user = user.username;
-    next();
+    res.status(401).json({ message: "Invalid token" });
   });
 }

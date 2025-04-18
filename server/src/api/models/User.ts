@@ -22,10 +22,8 @@ const userSchema = new mongoose.Schema({
 
 // Hash the user's password before serializing
 userSchema.pre("save", async function () {
-  const user = this;
-
-  if (!user.isModified("password")) return;
-  user.password = await bcrypt.hash(user.password, 12);
+  if (!this.isModified("password")) return;
+  this.password = await bcrypt.hash(this.password, 12);
 });
 
 const User = mongoose.model("User", userSchema);

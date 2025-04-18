@@ -10,12 +10,10 @@ router.use(requireAuth);
 /**
  * Removes fields from a mobile game block that should not be exposed to the client
  */
-function gameToJson(game: any): any {
-  let json: { [P in keyof typeof game]?: (typeof game)[P] } = game.toJSON();
-  delete json.user;
-  delete json._id;
-  delete json.__v;
-  return json;
+function gameToJson(game: InstanceType<typeof MobileGame>): object {
+  const json = game.toJSON();
+  const { user, _id, __v, ...res } = json;
+  return res;
 }
 
 // Fetches mobile game history for the authenticated user

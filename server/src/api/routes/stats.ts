@@ -11,12 +11,10 @@ router.use(requireAuth);
 /**
  * Removes fields from a stat block that should not be exposed to the client
  */
-function statsToJson(stats: any): any {
-  let json: { [P in keyof typeof stats]?: (typeof stats)[P] } = stats.toJSON();
-  delete json.user;
-  delete json._id;
-  delete json.__v;
-  return json;
+function statsToJson(stats: InstanceType<typeof Stats>): object {
+  const json = stats.toJSON();
+  const { user, _id, __v, ...res } = json;
+  return res;
 }
 
 // Fetches stats for a given username (or the currently authenticated user, if omitted)
