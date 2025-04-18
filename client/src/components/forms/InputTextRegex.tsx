@@ -12,7 +12,7 @@ interface Props {
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const InputText: React.FC<Props> = ({
+const InputText = ({
   name,
   label,
   minLength,
@@ -22,7 +22,7 @@ const InputText: React.FC<Props> = ({
   placeholder = "",
   value = "",
   onChange = () => {},
-}) => {
+}: Props) => {
   return (
     <>
       <label htmlFor={name} className="label w-full text-base-content">

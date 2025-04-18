@@ -6,11 +6,11 @@ interface Props {
   className?: string;
 }
 
-const functionButton: React.FC<Props> = ({
+const FunctionButton = ({
   label,
   onClick = () => {},
   className = "",
-}) => {
+}: Props) => {
   return (
     <span
       className={`btn mt-4 w-auto h-auto p-0 deco deco-accent ${className}`}
@@ -26,4 +26,4 @@ const functionButton: React.FC<Props> = ({
   );
 };
 
-export default functionButton;
+export default FunctionButton;

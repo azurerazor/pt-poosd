@@ -5,7 +5,7 @@ interface Props extends PropsWithChildren {
   to: string;
 }
 
-const RouteButton: React.FC<Props> = ({ to, children }) => {
+const RouteButton = ({ to, children }: Props) => {
   return (
     <span className="btn mt-4 w-auto h-auto p-0 deco deco-accent">
       <Link

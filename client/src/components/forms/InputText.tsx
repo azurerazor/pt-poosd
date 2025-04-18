@@ -9,14 +9,14 @@ interface Props {
   className?: string;
 }
 
-const InputText: React.FC<Props> = ({
+const InputText = ({
   name,
   label,
   placeholder = "",
   value = "",
   onChange = () => {},
   className = "",
-}) => {
+}: Props) => {
   return (
     <>
       {label && (

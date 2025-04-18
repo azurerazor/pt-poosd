@@ -8,13 +8,13 @@ interface Props {
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const InputEmail: React.FC<Props> = ({
+const InputEmail = ({
   name,
   label,
   placeholder = "",
   value = "",
   onChange = () => {},
-}) => {
+}: Props) => {
   return (
     <>
       <label htmlFor={name} className="label w-full text-base-content">

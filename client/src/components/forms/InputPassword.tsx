@@ -13,13 +13,13 @@ interface Props {
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const InputPassword: React.FC<Props> = ({
+const InputPassword = ({
   name,
   label,
   placeholder = "",
   value = "",
   onChange = () => {},
-}) => {
+}: Props) => {
   return (
     <>
       <label htmlFor={name} className="label w-full text-base-content">

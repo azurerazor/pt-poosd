@@ -5,7 +5,7 @@ interface Props extends PropsWithChildren {
   to: string;
 }
 
-const RouteLink: React.FC<Props> = ({ to, children }) => {
+const RouteLink = ({ to, children }: Props) => {
   return (
     <Link to={to} className="link link-hover text-primary">
       {children}
