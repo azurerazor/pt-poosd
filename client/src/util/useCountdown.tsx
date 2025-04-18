@@ -4,7 +4,7 @@ export default function useCountdown(
   initTime: number = 0,
 ): [number, (next: number) => void] {
   const [secondsLeft, setSecondsLeft] = useState(initTime);
-  const interval = useRef<NodeJS.Timeout | null>(null);
+  const interval = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const resetInterval = () => {
     if (interval.current) clearInterval(interval.current);
