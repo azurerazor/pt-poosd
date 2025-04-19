@@ -22,7 +22,9 @@
     "baseUrl": "./src",
     "paths": {
       "@common/*": ["../../common/*"]
-    }
+    },
+    "typeRoots": [],
+    "types": []
   },
   "references": [
     {
