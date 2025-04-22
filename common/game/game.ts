@@ -9,7 +9,16 @@ type GamePhase =
   | "assassination"
   | "game_over";
 
-// TODO: round configurations
+type WithVotesFailed<T> = T extends `round:${RoundPhase}`
+  ? { votesFailed: number }
+  : unknown;
+type WithCurrentTeam<T> =
+  T extends Exclude<`round:${RoundPhase}`, "round:team_select">
+    ? { currentTeam: User[] }
+    : unknown;
+type WithVotes<T> = T extends "round:mission_reveal"
+  ? { votes: { success: number; fail: number } }
+  : unknown;
 type GameState = {
   [P in GamePhase]: {
     phase: P;
@@ -17,24 +26,22 @@ type GameState = {
     roles: Map<User, RoleId>;
     missionResults: boolean[];
     leader: number;
-  } & (P extends `round:${RoundPhase}` ? { votesFailed: number } : object) &
-    (P extends Exclude<`round:${RoundPhase}`, "round:team_select">
-      ? { currentTeam: User[] }
-      : object) &
-    (P extends "round:mission_reveal"
-      ? { votes: { success: number; fail: number } }
-      : object);
+  } & WithVotesFailed<P> &
+    WithCurrentTeam<P> &
+    WithVotes<P>;
 }[GamePhase];
 
 type GameStateInPhase<T extends GamePhase> = GameState & { phase: T };
 
-// prettier-ignore
-type UserInput<T extends GamePhase> =
-    T extends "round:team_select" ? User[] :
-    T extends "round:team_vote" ? boolean :
-    T extends "round:mission" ? boolean :
-    T extends "assassination" ? User
-    : never;
+type UserInputByPhase = {
+  "round:team_select": User[];
+  "round:team_vote": boolean;
+  "round:mission": boolean;
+  assassination: User;
+};
+type UserInput<T extends GamePhase> = T extends keyof UserInputByPhase
+  ? UserInputByPhase[T]
+  : unknown;
 
 abstract class GameEvent<T extends GamePhase> {
   abstract getTargetPlayers(state: GameStateInPhase<T>): User[];
