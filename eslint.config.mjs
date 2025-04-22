@@ -6,14 +6,6 @@ import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig([
   {
-    rules: {
-      "@typescript-eslint/no-unused-vars": [
-        "error",
-        { ignoreRestSiblings: true },
-      ],
-    },
-  },
-  {
     files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"],
     plugins: { js },
     extends: ["js/recommended"],
@@ -25,6 +17,14 @@ export default defineConfig([
   globalIgnores(["**/dist/", "**/node_modules/"]),
   pluginReact.configs.flat.recommended,
   tseslint.configs.recommended,
+  {
+    rules: {
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { ignoreRestSiblings: true, argsIgnorePattern: "^_" },
+      ],
+    },
+  },
   // { files: ["**/*.json"], plugins: { json }, language: "json/json", extends: ["json/recommended"] },
   // { files: ["**/*.jsonc"], plugins: { json }, language: "json/jsonc", extends: ["json/recommended"] },
   // { files: ["**/*.json5"], plugins: { json }, language: "json/json5", extends: ["json/recommended"] },

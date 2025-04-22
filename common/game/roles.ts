@@ -16,11 +16,11 @@ export const ROLE_IDS = [
 /**
  * Describes the identifier of a certain role
  */
-export type RoleId = typeof ROLE_IDS[number];
+export type RoleId = (typeof ROLE_IDS)[number];
 
 /**
  * Describes a single role or set of roles
- * 
+ *
  * We have to override set operations for proper typing
  */
 export class RoleSet {
@@ -82,7 +82,9 @@ export class RoleSet {
   /**
    * Filters this set based on a given predicate for RoleData
    */
-  public filter(predicate: (role_id: RoleId, role: RoleData) => boolean): RoleSet {
+  public filter(
+    predicate: (role_id: RoleId, role: RoleData) => boolean,
+  ): RoleSet {
     const roles = new Set<RoleId>();
     for (const role_id of this.roles) {
       const role = ROLES[role_id];
@@ -102,7 +104,7 @@ export class RoleSet {
    * Iterates over the roles in this set
    */
   public forEach(callback: (role_id: RoleId, role: RoleData) => void): void {
-    this.roles.forEach(role_id => callback(role_id, ROLES[role_id]));
+    this.roles.forEach((role_id) => callback(role_id, ROLES[role_id]));
   }
 }
 
