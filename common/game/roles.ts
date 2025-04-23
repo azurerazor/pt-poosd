@@ -7,35 +7,24 @@ export type Alignment = "good" | "evil";
  * Map of alignments to role identifiers (values are used for RoleId)
  */
 export const TEAMS = {
-  "good": [
-    "servant",
-    "merlin",
-    "percival",
-  ],
-
-  "evil": [
-    "minion",
-    "morgana",
-    "mordred",
-    "assassin",
-    "oberon",
-  ],
+  good: ["servant", "merlin", "percival"],
+  evil: ["minion", "morgana", "mordred", "assassin", "oberon"],
 } as const;
+
+/**
+ * Describes the identifier of a role given a certain alignment
+ */
+export type RoleIdOfTeam<T extends Alignment> = (typeof TEAMS)[T][number];
 
 /**
  * Describes the identifier of a certain role
  */
-export type RoleId = (typeof TEAMS)[Alignment][number];
+export type RoleId = (typeof TEAMS)[keyof typeof TEAMS][number];
 
 /**
  * Describes information and dependencies for all roles
  */
-export const RoleRelations: {
-  readonly [role in RoleId]: {
-    dependencies: readonly RoleId[],
-    information: readonly RoleId[]
-  }
-} = {
+export const ROLE_RELATIONS = {
   servant: {
     dependencies: [],
     information: [],
@@ -69,7 +58,29 @@ export const RoleRelations: {
     dependencies: [],
     information: [],
   },
-};
+} as const;
+
+/**
+ * Describes the alignment of a role given its identifier
+ */
+export type AlignmentOf<TRole extends RoleId> =
+  TRole extends RoleIdOfTeam<"good">
+    ? "good"
+    : TRole extends RoleIdOfTeam<"evil">
+      ? "evil"
+      : Alignment;
+
+/**
+ * Describes the dependencies of a role given its identifier
+ */
+export type DependenciesOf<TRole extends RoleId> =
+  (typeof ROLE_RELATIONS)[TRole]["dependencies"];
+
+/**
+ * Describes the information a role can see given its identifier
+ */
+export type InformationOf<TRole extends RoleId> =
+  (typeof ROLE_RELATIONS)[TRole]["information"];
 
 /**
  * Describes a single role or set of roles
@@ -77,7 +88,9 @@ export const RoleRelations: {
  * We have to override set operations for proper typing
  */
 export class RoleSet {
-  public static readonly ALL: RoleSet = new RoleSet(...Object.values(TEAMS).flat());
+  public static readonly ALL: RoleSet = new RoleSet(
+    ...Object.values(TEAMS).flat(),
+  );
   public static readonly NONE: RoleSet = new RoleSet();
   public static readonly GOOD: RoleSet = new RoleSet(...TEAMS.good);
   public static readonly EVIL: RoleSet = new RoleSet(...TEAMS.evil);
@@ -135,9 +148,7 @@ export class RoleSet {
   /**
    * Filters this set based on a given predicate for RoleData
    */
-  public filter(
-    predicate: (role_id: RoleId) => boolean,
-  ): RoleSet {
+  public filter(predicate: (role_id: RoleId) => boolean): RoleSet {
     const roles = new Set<RoleId>();
     for (const role_id of this.roles) {
       if (predicate(role_id)) roles.add(role_id);
@@ -163,12 +174,7 @@ export class RoleSet {
 /**
  * Describes information about a role for display and logic
  */
-export class RoleData {
-  /**
-   * The role's identifier
-   */
-  public readonly id: RoleId;
-
+export class RoleData<TRole extends RoleId> {
   /**
    * The human-readable name of the role
    */
@@ -182,29 +188,29 @@ export class RoleData {
   /**
    * The role's alignment
    */
-  public readonly alignment: Alignment;
-
-  /**
-   * The set of roles this role can see
-   */
-  public readonly information: RoleSet;
+  public readonly alignment: AlignmentOf<TRole>;
 
   /**
    * The set of roles that must be present for this role to be enabled
    */
   public readonly dependencies: RoleSet;
 
+  /**
+   * The set of roles this role can see
+   */
+  public readonly information: RoleSet;
+
   public constructor(
-    id: RoleId,
+    id: TRole,
     name: string,
     description: string,
+    alignment: AlignmentOf<TRole>,
   ) {
-    this.id = id;
     this.name = name;
     this.description = description;
-    this.alignment = RoleSet.GOOD.has(id) ? "good" : "evil";
-    this.information = RoleSet.of(...RoleRelations[id].information);
-    this.dependencies = RoleSet.of(...RoleRelations[id].dependencies);
+    this.alignment = alignment;
+    this.dependencies = RoleSet.of(...ROLE_RELATIONS[id].dependencies);
+    this.information = RoleSet.of(...ROLE_RELATIONS[id].information);
   }
 
   /**
@@ -232,52 +238,60 @@ export class RoleData {
 /**
  * Holds the properties of all roles in the game
  */
-export const ROLES: { [role in RoleId]: RoleData } = {
+export const ROLES: { [TRole in RoleId]: RoleData<TRole> } = {
   servant: new RoleData(
     "servant",
     "Servant of Arthur",
     "A loyal servant of Arthur. Does not know any other players' roles.",
+    "good",
   ),
 
   merlin: new RoleData(
     "merlin",
     "Merlin",
     "A loyal servant of Arthur. Knows the evil players (except Mordred), but must be careful not to reveal himself.",
+    "good",
   ),
 
   percival: new RoleData(
     "percival",
     "Percival",
     "A loyal servant of Arthur. Sees Merlin and Morgana, but not which is which.",
+    "good",
   ),
 
   minion: new RoleData(
     "minion",
     "Minion of Mordred",
     "A servant of Mordred. Knows the other evil players (except Oberon).",
+    "evil",
   ),
 
   morgana: new RoleData(
     "morgana",
     "Morgana",
     "A servant of Mordred. Knows the other evil players (except Oberon). Appears as Merlin to Percival.",
+    "evil",
   ),
 
   mordred: new RoleData(
     "mordred",
     "Mordred",
     "The evil sorcerer. Knows the other evil players (except Oberon). Unknown to Merlin.",
+    "evil",
   ),
 
   assassin: new RoleData(
     "assassin",
     "Assassin",
     "A servant of Mordred. Knows the other evil players (except Oberon). Can assassinate Merlin at the end of the game.",
+    "evil",
   ),
 
   oberon: new RoleData(
     "oberon",
     "Oberon",
     "A servant of Mordred. Does not know and is unknown by the other evil players.",
+    "evil",
   ),
 };

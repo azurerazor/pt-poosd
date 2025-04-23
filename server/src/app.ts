@@ -9,6 +9,9 @@ import get_user from "@api/routes/get_user.js";
 import history from "@api/routes/history.js";
 import stats from "@api/routes/stats.js";
 
+import "@common/game/roles.js";
+import "@common/game/game.js";
+
 // Constants (duh)
 import {} from "dotenv/config";
 const PORT = process.env.PORT!;

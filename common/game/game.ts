@@ -22,13 +22,13 @@ type GamePhase =
   | "assassination"
   | "game_over";
 
-type WithVotesFailed<T> = T extends `round:${RoundPhase}`
+type WithVotesFailed<T> = T extends "round:team_select" | "round:team_vote"
   ? { votesFailed: number }
   : unknown;
 type WithCurrentTeam<T> =
   T extends Exclude<`round:${RoundPhase}`, "round:team_select">
-  ? { currentTeam: UserId[] }
-  : unknown;
+    ? { currentTeam: UserId[] }
+    : unknown;
 type WithVotes<T> = T extends "round:mission_reveal"
   ? { votes: { success: number; fail: number } }
   : unknown;
@@ -42,8 +42,8 @@ type GameState = {
     currentMission: number;
     leaderIndex: number;
   } & WithVotesFailed<P> &
-  WithCurrentTeam<P> &
-  WithVotes<P>;
+    WithCurrentTeam<P> &
+    WithVotes<P>;
 }[GamePhase];
 
 type GameStateInPhase<T extends GamePhase> = GameState & { phase: T };
