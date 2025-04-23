@@ -28,6 +28,50 @@ export const TEAMS = {
 export type RoleId = (typeof TEAMS)[Alignment][number];
 
 /**
+ * Describes information and dependencies for all roles
+ */
+export const RoleRelations: {
+  readonly [role in RoleId]: {
+    dependencies: readonly RoleId[],
+    information: readonly RoleId[]
+  }
+} = {
+  servant: {
+    dependencies: [],
+    information: [],
+  },
+  merlin: {
+    dependencies: [],
+    information: TEAMS.evil.filter((role) => role !== "mordred"),
+  },
+  percival: {
+    dependencies: ["merlin", "morgana"],
+    information: ["merlin", "morgana"],
+  },
+
+  minion: {
+    dependencies: [],
+    information: TEAMS.evil.filter((role) => role !== "oberon"),
+  },
+  morgana: {
+    dependencies: ["merlin", "percival"],
+    information: TEAMS.evil.filter((role) => role !== "oberon"),
+  },
+  mordred: {
+    dependencies: [],
+    information: TEAMS.evil.filter((role) => role !== "oberon"),
+  },
+  assassin: {
+    dependencies: ["merlin"],
+    information: TEAMS.evil.filter((role) => role !== "oberon"),
+  },
+  oberon: {
+    dependencies: [],
+    information: [],
+  },
+};
+
+/**
  * Describes a single role or set of roles
  *
  * We have to override set operations for proper typing
@@ -154,15 +198,13 @@ export class RoleData {
     id: RoleId,
     name: string,
     description: string,
-    information: RoleSet = RoleSet.of(),
-    dependencies: RoleSet = RoleSet.of(),
   ) {
     this.id = id;
     this.name = name;
     this.description = description;
     this.alignment = RoleSet.GOOD.has(id) ? "good" : "evil";
-    this.information = information;
-    this.dependencies = dependencies;
+    this.information = RoleSet.of(...RoleRelations[id].information);
+    this.dependencies = RoleSet.of(...RoleRelations[id].dependencies);
   }
 
   /**
@@ -201,45 +243,36 @@ export const ROLES: { [role in RoleId]: RoleData } = {
     "merlin",
     "Merlin",
     "A loyal servant of Arthur. Knows the evil players (except Mordred), but must be careful not to reveal himself.",
-    RoleSet.EVIL.andNot("mordred"),
   ),
 
   percival: new RoleData(
     "percival",
     "Percival",
     "A loyal servant of Arthur. Sees Merlin and Morgana, but not which is which.",
-    RoleSet.of("merlin", "morgana"),
-    RoleSet.of("merlin", "morgana"),
   ),
 
   minion: new RoleData(
     "minion",
     "Minion of Mordred",
     "A servant of Mordred. Knows the other evil players (except Oberon).",
-    RoleSet.EVIL.andNot("oberon"),
   ),
 
   morgana: new RoleData(
     "morgana",
     "Morgana",
     "A servant of Mordred. Knows the other evil players (except Oberon). Appears as Merlin to Percival.",
-    RoleSet.EVIL.andNot("oberon"),
-    RoleSet.of("merlin", "percival"),
   ),
 
   mordred: new RoleData(
     "mordred",
     "Mordred",
     "The evil sorcerer. Knows the other evil players (except Oberon). Unknown to Merlin.",
-    RoleSet.EVIL.andNot("oberon"),
   ),
 
   assassin: new RoleData(
     "assassin",
     "Assassin",
     "A servant of Mordred. Knows the other evil players (except Oberon). Can assassinate Merlin at the end of the game.",
-    RoleSet.EVIL.andNot("oberon"),
-    RoleSet.of("merlin"),
   ),
 
   oberon: new RoleData(
