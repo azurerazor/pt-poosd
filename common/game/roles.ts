@@ -1,22 +1,31 @@
 /**
- * The set of all role identifiers
+ * Describes the alignment of a role
  */
-export const ROLE_IDS = [
-  "servant",
-  "merlin",
-  "percival",
+export type Alignment = "good" | "evil";
 
-  "minion",
-  "morgana",
-  "mordred",
-  "assassin",
-  "oberon",
-] as const;
+/**
+ * Map of alignments to role identifiers (values are used for RoleId)
+ */
+export const TEAMS = {
+  "good": [
+    "servant",
+    "merlin",
+    "percival",
+  ],
+
+  "evil": [
+    "minion",
+    "morgana",
+    "mordred",
+    "assassin",
+    "oberon",
+  ],
+} as const;
 
 /**
  * Describes the identifier of a certain role
  */
-export type RoleId = (typeof ROLE_IDS)[number];
+export type RoleId = (typeof TEAMS)[keyof typeof TEAMS][number];
 
 /**
  * Describes a single role or set of roles
@@ -24,13 +33,13 @@ export type RoleId = (typeof ROLE_IDS)[number];
  * We have to override set operations for proper typing
  */
 export class RoleSet {
+  public static readonly ALL: RoleSet = new RoleSet(...Object.values(TEAMS).flat());
+  public static readonly NONE: RoleSet = new RoleSet();
+  public static readonly GOOD: RoleSet = new RoleSet(...TEAMS.good);
+  public static readonly EVIL: RoleSet = new RoleSet(...TEAMS.evil);
+
   private readonly roles: ReadonlySet<RoleId>;
   public readonly size: number;
-
-  public static readonly EMPTY = RoleSet.of();
-  public static readonly ALL = RoleSet.of(...ROLE_IDS);
-  public static readonly GOOD = this.ALL.filter((_, role) => role.isGood());
-  public static readonly EVIL = this.ALL.filter((_, role) => role.isEvil());
 
   public constructor(...roles: RoleId[]) {
     this.roles = new Set<RoleId>(roles);
@@ -83,12 +92,11 @@ export class RoleSet {
    * Filters this set based on a given predicate for RoleData
    */
   public filter(
-    predicate: (role_id: RoleId, role: RoleData) => boolean,
+    predicate: (role_id: RoleId) => boolean,
   ): RoleSet {
     const roles = new Set<RoleId>();
     for (const role_id of this.roles) {
-      const role = ROLES[role_id];
-      if (predicate(role_id, role)) roles.add(role_id);
+      if (predicate(role_id)) roles.add(role_id);
     }
     return RoleSet.of(...Array.from(roles));
   }
@@ -103,23 +111,20 @@ export class RoleSet {
   /**
    * Iterates over the roles in this set
    */
-  public forEach(callback: (role_id: RoleId, role: RoleData) => void): void {
-    this.roles.forEach((role_id) => callback(role_id, ROLES[role_id]));
+  public forEach(callback: (role_id: RoleId) => void): void {
+    this.roles.forEach(callback);
   }
-}
-
-/**
- * Describes the alignment of a role (good or evil)
- */
-export enum Alignment {
-  GOOD = "good",
-  EVIL = "evil",
 }
 
 /**
  * Describes information about a role for display and logic
  */
 export class RoleData {
+  /**
+   * The role's identifier
+   */
+  public readonly id: RoleId;
+
   /**
    * The human-readable name of the role
    */
@@ -146,15 +151,16 @@ export class RoleData {
   public readonly dependencies: RoleSet;
 
   public constructor(
+    id: RoleId,
     name: string,
     description: string,
-    alignment: Alignment,
     information: RoleSet = RoleSet.of(),
     dependencies: RoleSet = RoleSet.of(),
   ) {
+    this.id = id;
     this.name = name;
     this.description = description;
-    this.alignment = alignment;
+    this.alignment = RoleSet.GOOD.has(id) ? "good" : "evil";
     this.information = information;
     this.dependencies = dependencies;
   }
@@ -163,14 +169,14 @@ export class RoleData {
    * Checks if this role is aligned with good
    */
   public isGood(): boolean {
-    return this.alignment === Alignment.GOOD;
+    return this.alignment === "good";
   }
 
   /**
    * Checks if this role is aligned with evil
    */
   public isEvil(): boolean {
-    return this.alignment === Alignment.EVIL;
+    return this.alignment === "evil";
   }
 
   /**
@@ -184,61 +190,61 @@ export class RoleData {
 /**
  * Holds the properties of all roles in the game
  */
-export const ROLES: Record<RoleId, RoleData> = {
+export const ROLES: { [role in RoleId]: RoleData } = {
   servant: new RoleData(
+    "servant",
     "Servant of Arthur",
     "A loyal servant of Arthur. Does not know any other players' roles.",
-    Alignment.GOOD,
   ),
 
   merlin: new RoleData(
+    "merlin",
     "Merlin",
     "A loyal servant of Arthur. Knows the evil players (except Mordred), but must be careful not to reveal himself.",
-    Alignment.GOOD,
     RoleSet.EVIL.andNot("mordred"),
   ),
 
   percival: new RoleData(
+    "percival",
     "Percival",
     "A loyal servant of Arthur. Sees Merlin and Morgana, but not which is which.",
-    Alignment.GOOD,
     RoleSet.of("merlin", "morgana"),
     RoleSet.of("merlin", "morgana"),
   ),
 
   minion: new RoleData(
+    "minion",
     "Minion of Mordred",
     "A servant of Mordred. Knows the other evil players (except Oberon).",
-    Alignment.EVIL,
     RoleSet.EVIL.andNot("oberon"),
   ),
 
   morgana: new RoleData(
+    "morgana",
     "Morgana",
     "A servant of Mordred. Knows the other evil players (except Oberon). Appears as Merlin to Percival.",
-    Alignment.EVIL,
     RoleSet.EVIL.andNot("oberon"),
     RoleSet.of("merlin", "percival"),
   ),
 
   mordred: new RoleData(
+    "mordred",
     "Mordred",
     "The evil sorcerer. Knows the other evil players (except Oberon). Unknown to Merlin.",
-    Alignment.EVIL,
     RoleSet.EVIL.andNot("oberon"),
   ),
 
   assassin: new RoleData(
+    "assassin",
     "Assassin",
     "A servant of Mordred. Knows the other evil players (except Oberon). Can assassinate Merlin at the end of the game.",
-    Alignment.EVIL,
     RoleSet.EVIL.andNot("oberon"),
     RoleSet.of("merlin"),
   ),
 
   oberon: new RoleData(
+    "oberon",
     "Oberon",
     "A servant of Mordred. Does not know and is unknown by the other evil players.",
-    Alignment.EVIL,
   ),
 };
