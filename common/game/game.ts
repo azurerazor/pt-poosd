@@ -22,7 +22,7 @@ type GamePhase =
   | "assassination"
   | "game_over";
 
-type WithVotesFailed<T> = T extends `round:${RoundPhase}`
+type WithVotesFailed<T> = T extends "round:team_select" | "round:team_vote"
   ? { votesFailed: number }
   : unknown;
 type WithCurrentTeam<T> =
