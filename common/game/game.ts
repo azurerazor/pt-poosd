@@ -3,12 +3,12 @@ import { InformationOf, RoleId, ROLES, RoleSet } from "@common/game/roles.js";
 /**
  * The type of a unique identifier for a user in the lobby
  */
-type UserId = string;
+export type UserId = string;
 
 /**
  * Describes configuration for a single round
  */
-type RoundConfig = {
+export type RoundConfig = {
   /**
    * The number of players required to go on this mission
    */
@@ -23,7 +23,7 @@ type RoundConfig = {
 /**
  * Describes configuration for a lobby (remains constant throughout the game)
  */
-type GameConfig = {
+export type GameConfig = {
   /**
    * The set of enabled roles for this game
    */
@@ -43,7 +43,7 @@ type GameConfig = {
 /**
  * Describes a phase within one of the 5 rounds
  */
-type RoundPhase =
+export type RoundPhase =
   | "team_select"
   | "team_vote"
   | "mission"
@@ -54,7 +54,7 @@ type RoundPhase =
 /**
  * Describes the current game phase, including a phase within a round
  */
-type GamePhase =
+export type GamePhase =
   | "role_reveal"
   | `round:${RoundPhase}`
   | "assassination"
@@ -63,7 +63,7 @@ type GamePhase =
 /**
  * Includes how many votes have failed in a row
  */
-type WithVotesFailed<TPhase> =
+export type WithVotesFailed<TPhase> =
   TPhase extends `round:${"team_select" | "team_vote"}`
     ? { votesFailed: number }
     : unknown;
@@ -71,7 +71,7 @@ type WithVotesFailed<TPhase> =
 /**
  * Includes the current team of players
  */
-type WithCurrentTeam<TPhase> =
+export type WithCurrentTeam<TPhase> =
   TPhase extends Exclude<`round:${RoundPhase}`, "round:team_select">
     ? { currentTeam: UserId[] }
     : unknown;
@@ -79,7 +79,7 @@ type WithCurrentTeam<TPhase> =
 /**
  * Includes a count of succeeded and failed votes
  */
-type WithVotes<TPhase> = TPhase extends "round:mission_reveal"
+export type WithVotes<TPhase> = TPhase extends "round:mission_reveal"
   ? { votes: { success: number; fail: number } }
   : unknown;
 
@@ -87,7 +87,7 @@ type WithVotes<TPhase> = TPhase extends "round:mission_reveal"
  * Describes the current state of the game, along with any available
  * information relevant to the current phase
  */
-type GameState = {
+export type GameState = {
   [TPhase in GamePhase]: {
     /**
      * The current phase of the game
@@ -132,12 +132,14 @@ type GameState = {
 /**
  * Describes the state of the game in a specific phase
  */
-type GameStateInPhase<TPhase extends GamePhase> = GameState & { phase: TPhase };
+export type GameStateInPhase<TPhase extends GamePhase> = GameState & {
+  phase: TPhase;
+};
 
 /**
  * Describes the client-side game state, with only information visible to the given role
  */
-type ClientGameState<TRole extends RoleId> = Omit<GameState, "roles"> & {
+export type ClientGameState<TRole extends RoleId> = Omit<GameState, "roles"> & {
   /**
    * The role of the user
    */
@@ -187,7 +189,7 @@ export function filterGameState<TRole extends RoleId>(
 /**
  * Maps the game phase to the type of user input required for that phase
  */
-type UserInputByPhase = {
+export type UserInputByPhase = {
   "round:team_select": UserId[];
   "round:team_vote": boolean;
   "round:mission": boolean;
@@ -197,16 +199,15 @@ type UserInputByPhase = {
 /**
  * Describes the type of user input required for a given phase
  */
-type UserInput<TPhase extends GamePhase> = TPhase extends keyof UserInputByPhase
-  ? UserInputByPhase[TPhase]
-  : unknown;
+export type UserInput<TPhase extends GamePhase> =
+  TPhase extends keyof UserInputByPhase ? UserInputByPhase[TPhase] : unknown;
 
 /**
  * Describes a transition from some game state (in a specific phase) to another,
  * along with the type of user input required for that transition and functions
  * to decide the new game state
  */
-abstract class GameTransition<TFrom extends GamePhase> {
+export abstract class GameTransition<TFrom extends GamePhase> {
   abstract getTargetPlayers(state: GameStateInPhase<TFrom>): UserId[];
   abstract processInteraction(
     state: GameStateInPhase<TFrom>,
