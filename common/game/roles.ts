@@ -22,6 +22,45 @@ export type RoleIdOfTeam<T extends Alignment> = (typeof TEAMS)[T][number];
 export type RoleId = (typeof TEAMS)[keyof typeof TEAMS][number];
 
 /**
+ * Describes information and dependencies for all roles
+ */
+export const ROLE_RELATIONS = {
+  servant: {
+    dependencies: [],
+    information: [],
+  },
+  merlin: {
+    dependencies: [],
+    information: TEAMS.evil.filter((role) => role !== "mordred"),
+  },
+  percival: {
+    dependencies: ["merlin", "morgana"],
+    information: ["merlin", "morgana"],
+  },
+
+  minion: {
+    dependencies: [],
+    information: TEAMS.evil.filter((role) => role !== "oberon"),
+  },
+  morgana: {
+    dependencies: ["merlin", "percival"],
+    information: TEAMS.evil.filter((role) => role !== "oberon"),
+  },
+  mordred: {
+    dependencies: [],
+    information: TEAMS.evil.filter((role) => role !== "oberon"),
+  },
+  assassin: {
+    dependencies: ["merlin"],
+    information: TEAMS.evil.filter((role) => role !== "oberon"),
+  },
+  oberon: {
+    dependencies: [],
+    information: [],
+  },
+} as const;
+
+/**
  * Describes the alignment of a role given its identifier
  */
 export type AlignmentOf<TRole extends RoleId> =
@@ -30,6 +69,18 @@ export type AlignmentOf<TRole extends RoleId> =
     : TRole extends RoleIdOfTeam<"evil">
       ? "evil"
       : Alignment;
+
+/**
+ * Describes the dependencies of a role given its identifier
+ */
+export type DependenciesOf<TRole extends RoleId> =
+  (typeof ROLE_RELATIONS)[TRole]["dependencies"];
+
+/**
+ * Describes the information a role can see given its identifier
+ */
+export type InformationOf<TRole extends RoleId> =
+  (typeof ROLE_RELATIONS)[TRole]["information"];
 
 /**
  * Describes a single role or set of roles
@@ -123,7 +174,7 @@ export class RoleSet {
 /**
  * Describes information about a role for display and logic
  */
-export class RoleData<T extends RoleId> {
+export class RoleData<TRole extends RoleId> {
   /**
    * The human-readable name of the role
    */
@@ -137,30 +188,29 @@ export class RoleData<T extends RoleId> {
   /**
    * The role's alignment
    */
-  public readonly alignment: AlignmentOf<T>;
-
-  /**
-   * The set of roles this role can see
-   */
-  public readonly information: RoleSet;
+  public readonly alignment: AlignmentOf<TRole>;
 
   /**
    * The set of roles that must be present for this role to be enabled
    */
   public readonly dependencies: RoleSet;
 
+  /**
+   * The set of roles this role can see
+   */
+  public readonly information: RoleSet;
+
   public constructor(
+    id: TRole,
     name: string,
     description: string,
-    alignment: AlignmentOf<T>,
-    information: RoleSet = RoleSet.of(),
-    dependencies: RoleSet = RoleSet.of(),
+    alignment: AlignmentOf<TRole>,
   ) {
     this.name = name;
     this.description = description;
     this.alignment = alignment;
-    this.information = information;
-    this.dependencies = dependencies;
+    this.dependencies = RoleSet.of(...ROLE_RELATIONS[id].dependencies);
+    this.information = RoleSet.of(...ROLE_RELATIONS[id].information);
   }
 
   /**
@@ -188,59 +238,58 @@ export class RoleData<T extends RoleId> {
 /**
  * Holds the properties of all roles in the game
  */
-export const ROLES: { [role in RoleId]: RoleData<role> } = {
+export const ROLES: { [TRole in RoleId]: RoleData<TRole> } = {
   servant: new RoleData(
+    "servant",
     "Servant of Arthur",
     "A loyal servant of Arthur. Does not know any other players' roles.",
     "good",
   ),
 
   merlin: new RoleData(
+    "merlin",
     "Merlin",
     "A loyal servant of Arthur. Knows the evil players (except Mordred), but must be careful not to reveal himself.",
     "good",
-    RoleSet.EVIL.andNot("mordred"),
   ),
 
   percival: new RoleData(
+    "percival",
     "Percival",
     "A loyal servant of Arthur. Sees Merlin and Morgana, but not which is which.",
     "good",
-    RoleSet.of("merlin", "morgana"),
-    RoleSet.of("merlin", "morgana"),
   ),
 
   minion: new RoleData(
+    "minion",
     "Minion of Mordred",
     "A servant of Mordred. Knows the other evil players (except Oberon).",
     "evil",
-    RoleSet.EVIL.andNot("oberon"),
   ),
 
   morgana: new RoleData(
+    "morgana",
     "Morgana",
     "A servant of Mordred. Knows the other evil players (except Oberon). Appears as Merlin to Percival.",
     "evil",
-    RoleSet.EVIL.andNot("oberon"),
-    RoleSet.of("merlin", "percival"),
   ),
 
   mordred: new RoleData(
+    "mordred",
     "Mordred",
     "The evil sorcerer. Knows the other evil players (except Oberon). Unknown to Merlin.",
     "evil",
-    RoleSet.EVIL.andNot("oberon"),
   ),
 
   assassin: new RoleData(
+    "assassin",
     "Assassin",
     "A servant of Mordred. Knows the other evil players (except Oberon). Can assassinate Merlin at the end of the game.",
     "evil",
-    RoleSet.EVIL.andNot("oberon"),
-    RoleSet.of("merlin"),
   ),
 
   oberon: new RoleData(
+    "oberon",
     "Oberon",
     "A servant of Mordred. Does not know and is unknown by the other evil players.",
     "evil",
