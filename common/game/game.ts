@@ -1,8 +1,21 @@
-import { RoleId } from "./roles.js";
+import { RoleId, RoleSet } from "./roles.js";
 
-type User = string;
+type UserId = string;
 
-type RoundPhase = "team_select" | "team_vote" | "mission" | "mission_reveal";
+type RoundConfig = { teamSize: number; reqFail: number };
+type GameConfig = {
+  roles: RoleSet;
+  rounds: RoundConfig[];
+  ladyOfTheLake: boolean;
+};
+
+type RoundPhase =
+  | "team_select"
+  | "team_vote"
+  | "mission"
+  | "mission_reveal"
+  | "lady_choice"
+  | "lady_reveal";
 type GamePhase =
   | "role_reveal"
   | `round:${RoundPhase}`
@@ -14,7 +27,7 @@ type WithVotesFailed<T> = T extends `round:${RoundPhase}`
   : unknown;
 type WithCurrentTeam<T> =
   T extends Exclude<`round:${RoundPhase}`, "round:team_select">
-    ? { currentTeam: User[] }
+    ? { currentTeam: UserId[] }
     : unknown;
 type WithVotes<T> = T extends "round:mission_reveal"
   ? { votes: { success: number; fail: number } }
@@ -22,10 +35,12 @@ type WithVotes<T> = T extends "round:mission_reveal"
 type GameState = {
   [P in GamePhase]: {
     phase: P;
-    players: User[];
-    roles: Map<User, RoleId>;
+    config: GameConfig;
+    players: UserId[];
+    roles: Map<UserId, RoleId>;
     missionResults: boolean[];
-    leader: number;
+    currentMission: number;
+    leaderIndex: number;
   } & WithVotesFailed<P> &
     WithCurrentTeam<P> &
     WithVotes<P>;
@@ -34,31 +49,31 @@ type GameState = {
 type GameStateInPhase<T extends GamePhase> = GameState & { phase: T };
 
 type UserInputByPhase = {
-  "round:team_select": User[];
+  "round:team_select": UserId[];
   "round:team_vote": boolean;
   "round:mission": boolean;
-  assassination: User;
+  assassination: UserId;
 };
 type UserInput<T extends GamePhase> = T extends keyof UserInputByPhase
   ? UserInputByPhase[T]
   : unknown;
 
-abstract class GameEvent<T extends GamePhase> {
-  abstract getTargetPlayers(state: GameStateInPhase<T>): User[];
+abstract class GameTransition<T extends GamePhase> {
+  abstract getTargetPlayers(state: GameStateInPhase<T>): UserId[];
   abstract processInteraction(
     state: GameStateInPhase<T>,
-    responses: Map<User, UserInput<T>>,
+    responses: Map<UserId, UserInput<T>>,
   ): GameState;
 }
 
-export const GAME_FLOW: { [phase in GamePhase]: GameEvent<phase> } = {
+export const GAME_FLOW: { [phase in GamePhase]: GameTransition<phase> } = {
   "round:team_select": {
-    getTargetPlayers(state: GameStateInPhase<"round:team_select">): User[] {
-      return [state.players[state.leader]];
+    getTargetPlayers(state: GameStateInPhase<"round:team_select">): UserId[] {
+      return [state.players[state.leaderIndex]];
     },
     processInteraction(
       state: GameStateInPhase<"round:team_select">,
-      responses: Map<User, User[]>,
+      responses: Map<UserId, UserId[]>,
     ): GameState {
       return {
         ...state,
@@ -68,7 +83,7 @@ export const GAME_FLOW: { [phase in GamePhase]: GameEvent<phase> } = {
     },
   },
   "round:team_vote": {
-    getTargetPlayers(state): User[] {
+    getTargetPlayers(state): UserId[] {
       return state.players;
     },
     processInteraction(state, responses): GameState {
@@ -87,21 +102,21 @@ export const GAME_FLOW: { [phase in GamePhase]: GameEvent<phase> } = {
       return {
         ...state,
         phase: "round:team_select",
-        leader: (state.leader + 1) % state.players.length,
+        leaderIndex: (state.leaderIndex + 1) % state.players.length,
         votesFailed: state.votesFailed + 1,
       };
     },
   },
   "round:mission": {
-    getTargetPlayers(state): User[] {
+    getTargetPlayers(state): UserId[] {
       return state.currentTeam;
     },
     processInteraction(state, responses): GameState {
       let success = 0,
         fail = 0;
       for (const player in state.currentTeam) {
+        // undefined assumes success
         if (responses.get(player) == false) {
-          // undefined assumes success
           fail++;
         } else {
           success++;
@@ -116,7 +131,7 @@ export const GAME_FLOW: { [phase in GamePhase]: GameEvent<phase> } = {
     },
   },
   "round:mission_reveal": {
-    getTargetPlayers(_state): User[] {
+    getTargetPlayers(_state): UserId[] {
       throw Error("not implemented");
     },
     processInteraction(_state, _responses): GameState {
@@ -124,7 +139,7 @@ export const GAME_FLOW: { [phase in GamePhase]: GameEvent<phase> } = {
     },
   },
   role_reveal: {
-    getTargetPlayers(_state): User[] {
+    getTargetPlayers(_state): UserId[] {
       throw Error("not implemented");
     },
     processInteraction(_state, _responses): GameState {
@@ -132,7 +147,7 @@ export const GAME_FLOW: { [phase in GamePhase]: GameEvent<phase> } = {
     },
   },
   assassination: {
-    getTargetPlayers(_state): User[] {
+    getTargetPlayers(_state): UserId[] {
       throw Error("not implemented");
     },
     processInteraction(_state, _responses): GameState {
@@ -140,7 +155,23 @@ export const GAME_FLOW: { [phase in GamePhase]: GameEvent<phase> } = {
     },
   },
   game_over: {
-    getTargetPlayers(_state): User[] {
+    getTargetPlayers(_state): UserId[] {
+      throw Error("not implemented");
+    },
+    processInteraction(_state, _responses): GameState {
+      throw Error("not implemented");
+    },
+  },
+  "round:lady_choice": {
+    getTargetPlayers(_state): UserId[] {
+      throw Error("not implemented");
+    },
+    processInteraction(_state, _responses): GameState {
+      throw Error("not implemented");
+    },
+  },
+  "round:lady_reveal": {
+    getTargetPlayers(_state): UserId[] {
       throw Error("not implemented");
     },
     processInteraction(_state, _responses): GameState {
