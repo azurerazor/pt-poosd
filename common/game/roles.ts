@@ -14,7 +14,7 @@ export const TEAMS = {
 /**
  * Describes the identifier of a role given a certain alignment
  */
-export type RoleIdOfTeam<T extends Alignment> = (typeof TEAMS)[T][number];
+export type RoleIdOfTeam<Team extends Alignment> = (typeof TEAMS)[Team][number];
 
 /**
  * Describes the identifier of a certain role

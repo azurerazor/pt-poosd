@@ -1,4 +1,4 @@
-import { RoleId, RoleSet } from "@common/game/roles.js";
+import { InformationOf, RoleId, ROLES, RoleSet } from "@common/game/roles.js";
 
 /**
  * The type of a unique identifier for a user in the lobby
@@ -105,9 +105,10 @@ type GameState = {
     players: UserId[];
 
     /**
-     * The roles assigned to each player
+     * The roles assigned to each player.
+     * In a client game state, this only contains the player's own role.
      */
-    roles: Map<UserId, RoleId>;
+    roles: { [key: UserId]: RoleId };
 
     /**
      * The results of missions so far
@@ -134,6 +135,56 @@ type GameState = {
 type GameStateInPhase<TPhase extends GamePhase> = GameState & { phase: TPhase };
 
 /**
+ * Describes the client-side game state, with only information visible to the given role
+ */
+type ClientGameState<TRole extends RoleId> = Omit<GameState, "roles"> & {
+  /**
+   * The role of the user
+   */
+  role: TRole;
+
+  /**
+   * The information available to the current player
+   */
+  information: {
+    /**
+     * The possible roles of all players revealed to this client
+     */
+    rolesVisible: InformationOf<TRole>[];
+
+    /**
+     * The players who have any of the roles this player can see
+     */
+    playersVisible: UserId[];
+  };
+};
+
+/**
+ * Filters the game state to only include information for a specific role
+ */
+export function filterGameState<TRole extends RoleId>(
+  state: GameState,
+  role: TRole,
+): ClientGameState<TRole> {
+  const info = ROLES[role].information;
+  const playersVisible: UserId[] = state.players.filter((player) => {
+    const playerRole = state.roles[player];
+    if (!playerRole) throw new Error(`Role not found for player: ${player}`);
+
+    return info.has(playerRole);
+  });
+
+  return {
+    ...state,
+    role,
+    information: {
+      rolesVisible: [...info],
+      playersVisible,
+    },
+  };
+}
+
+/**
  * Maps the game phase to the type of user input required for that phase
  */
 type UserInputByPhase = {
@@ -146,8 +197,8 @@ type UserInputByPhase = {
 /**
  * Describes the type of user input required for a given phase
  */
-type UserInput<T extends GamePhase> = T extends keyof UserInputByPhase
-  ? UserInputByPhase[T]
+type UserInput<TPhase extends GamePhase> = TPhase extends keyof UserInputByPhase
+  ? UserInputByPhase[TPhase]
   : unknown;
 
 /**
