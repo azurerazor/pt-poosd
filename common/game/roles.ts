@@ -11,15 +11,23 @@ export const TEAMS = {
   evil: ["minion", "morgana", "mordred", "assassin", "oberon"],
 } as const;
 
+/**
+ * Describes the identifier of a role given a certain alignment
+ */
 export type RoleIdOfTeam<T extends Alignment> = (typeof TEAMS)[T][number];
+
 /**
  * Describes the identifier of a certain role
  */
 export type RoleId = (typeof TEAMS)[keyof typeof TEAMS][number];
-export type AlignmentOf<T extends RoleId> =
-  T extends RoleIdOfTeam<"good">
+
+/**
+ * Describes the alignment of a role given its identifier
+ */
+export type AlignmentOf<TRole extends RoleId> =
+  TRole extends RoleIdOfTeam<"good">
     ? "good"
-    : T extends RoleIdOfTeam<"evil">
+    : TRole extends RoleIdOfTeam<"evil">
       ? "evil"
       : Alignment;
 
