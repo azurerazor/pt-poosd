@@ -22,6 +22,11 @@ export type RoleIdOfTeam<T extends Alignment> = (typeof TEAMS)[T][number];
 export type RoleId = (typeof TEAMS)[keyof typeof TEAMS][number];
 
 /**
+ * List of all role identifiers
+ */
+export const ROLE_IDS: RoleId[] = [...TEAMS.good, ...TEAMS.evil];
+
+/**
  * Describes information and dependencies for all roles
  */
 export const ROLE_RELATIONS = {
@@ -74,100 +79,123 @@ export type AlignmentOf<TRole extends RoleId> =
  * Describes the dependencies of a role given its identifier
  */
 export type DependenciesOf<TRole extends RoleId> =
-  (typeof ROLE_RELATIONS)[TRole]["dependencies"];
+  (typeof ROLE_RELATIONS)[TRole]["dependencies"][number];
 
 /**
  * Describes the information a role can see given its identifier
  */
 export type InformationOf<TRole extends RoleId> =
-  (typeof ROLE_RELATIONS)[TRole]["information"];
+  (typeof ROLE_RELATIONS)[TRole]["information"][number];
 
 /**
  * Describes a single role or set of roles
- *
- * We have to override set operations for proper typing
  */
-export class RoleSet {
-  public static readonly ALL: RoleSet = new RoleSet(
-    ...Object.values(TEAMS).flat(),
-  );
-  public static readonly NONE: RoleSet = new RoleSet();
-  public static readonly GOOD: RoleSet = new RoleSet(...TEAMS.good);
-  public static readonly EVIL: RoleSet = new RoleSet(...TEAMS.evil);
-
+export class RoleSet<TRole extends RoleId = RoleId> implements Iterable<TRole> {
+  /**
+   * The set of roles
+   */
   private readonly roles: ReadonlySet<RoleId>;
+
+  /**
+   * The size of the set
+   */
   public readonly size: number;
 
-  public constructor(...roles: RoleId[]) {
-    this.roles = new Set<RoleId>(roles);
+  public constructor(...roles: TRole[]) {
+    this.roles = new Set(roles);
     this.size = this.roles.size;
   }
 
   /**
-   * Creates a new RoleSet from the given roles
+   * Constructs a RoleSet from a list of roles
    */
-  public static of(...roles: RoleId[]): RoleSet {
+  public static of<TRole extends RoleId>(...roles: TRole[]): RoleSet<TRole> {
     return new RoleSet(...roles);
   }
 
   /**
-   * Gets the union of this set with the given roles or role sets
+   * Checks if the set is empty
    */
-  public or(...other: RoleId[] | RoleSet[]): RoleSet {
-    const roles = new Set(this.roles);
-    for (const r of other) {
-      if (r instanceof RoleSet) r.roles.forEach(roles.add);
-      else roles.add(r);
+  public isEmpty(): boolean {
+    return this.size === 0;
+  }
+
+  /**
+   * Checks if the set contains a set of roles
+   */
+  public has<TCheck extends RoleId>(
+    ...roles: TCheck[]
+  ): TCheck extends TRole ? true : false {
+    for (const role of roles) {
+      if (!this.roles.has(role))
+        return false as TCheck extends TRole ? true : false;
     }
-    return RoleSet.of(...Array.from(roles));
+    return true as TCheck extends TRole ? true : false;
   }
 
   /**
-   * Gets the intersection of this set with the given roles or role sets
+   * Gets the union with another RoleSet
    */
-  public and(...other: RoleId[] | RoleSet[]): RoleSet {
-    if (this.size === 0 || other.length === 0) return this;
-    if (other[0] instanceof RoleSet) {
-      return this.filter(other[0].has).and(...other.slice(1));
+  public union<TOther extends RoleId>(
+    other: RoleSet<TOther>,
+  ): RoleSet<TRole | TOther> {
+    const roles = new Set<TRole | TOther>(this.roles as ReadonlySet<TRole>);
+    for (const role of other.roles) {
+      roles.add(role as TRole | TOther);
     }
-    return RoleSet.of(...(other as RoleId[]).filter(this.has));
+    return new RoleSet(...roles);
   }
 
   /**
-   * Gets the difference of this set with the given roles or role sets
+   * Gets the intersection with another RoleSet
    */
-  public andNot(...other: RoleId[] | RoleSet[]): RoleSet {
-    const roles = new Set(this.roles);
-    for (const r of other) {
-      if (r instanceof RoleSet) r.roles.forEach(roles.delete);
-      else roles.delete(r);
+  public intersect<TOther extends RoleId>(
+    other: RoleSet<TOther>,
+  ): RoleSet<TRole & TOther> {
+    const roles = new Set<TRole & TOther>();
+    for (const role of this.roles) {
+      if (!other.has(role)) continue;
+      roles.add(role as TRole & TOther);
     }
-    return RoleSet.of(...Array.from(roles));
+    return new RoleSet(...roles);
   }
 
   /**
-   * Filters this set based on a given predicate for RoleData
+   * Filters the roles in the set based on a predicate
    */
-  public filter(predicate: (role_id: RoleId) => boolean): RoleSet {
-    const roles = new Set<RoleId>();
-    for (const role_id of this.roles) {
-      if (predicate(role_id)) roles.add(role_id);
+  public filter(predicate: (role: TRole) => boolean): RoleSet<TRole> {
+    const roles = new Set<TRole>();
+    for (const role of this.roles) {
+      if (predicate(role as TRole)) {
+        roles.add(role as TRole);
+      }
     }
-    return RoleSet.of(...Array.from(roles));
+    return new RoleSet(...roles);
   }
 
   /**
-   * Checks if the given role is in this set
+   * Enumerates roles in the set
    */
-  public has(role: RoleId): boolean {
-    return this.roles.has(role);
+  public *[Symbol.iterator](): IterableIterator<TRole> {
+    for (const role of this.roles) yield role as TRole;
   }
 
   /**
-   * Iterates over the roles in this set
+   * Maps the roles in the set to a new value
    */
-  public forEach(callback: (role_id: RoleId) => void): void {
-    this.roles.forEach(callback);
+  public map<TResult>(callback: (role: TRole) => TResult): TResult[] {
+    const result: TResult[] = [];
+    for (const role of this) {
+      result.push(callback(role as TRole));
+    }
+    return result;
+  }
+
+  /**
+   * Runs a callback for each role in the set
+   */
+  public forEach(callback: (role: TRole) => void): void {
+    this.map(callback);
   }
 }
 
@@ -175,6 +203,11 @@ export class RoleSet {
  * Describes information about a role for display and logic
  */
 export class RoleData<TRole extends RoleId> {
+  /**
+   * The role's identifier
+   */
+  public readonly id: TRole;
+
   /**
    * The human-readable name of the role
    */
@@ -193,12 +226,12 @@ export class RoleData<TRole extends RoleId> {
   /**
    * The set of roles that must be present for this role to be enabled
    */
-  public readonly dependencies: RoleSet;
+  public readonly dependencies: RoleSet<DependenciesOf<TRole>>;
 
   /**
    * The set of roles this role can see
    */
-  public readonly information: RoleSet;
+  public readonly information: RoleSet<InformationOf<TRole>>;
 
   public constructor(
     id: TRole,
@@ -206,6 +239,7 @@ export class RoleData<TRole extends RoleId> {
     description: string,
     alignment: AlignmentOf<TRole>,
   ) {
+    this.id = id;
     this.name = name;
     this.description = description;
     this.alignment = alignment;
@@ -238,7 +272,7 @@ export class RoleData<TRole extends RoleId> {
 /**
  * Holds the properties of all roles in the game
  */
-export const ROLES: { [TRole in RoleId]: RoleData<TRole> } = {
+export const ROLES: { readonly [TRole in RoleId]: RoleData<TRole> } = {
   servant: new RoleData(
     "servant",
     "Servant of Arthur",
