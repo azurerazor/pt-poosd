@@ -25,7 +25,7 @@ export const TEAMS = {
 /**
  * Describes the identifier of a certain role
  */
-export type RoleId = (typeof TEAMS)[keyof typeof TEAMS][number];
+export type RoleId = (typeof TEAMS)[Alignment][number];
 
 /**
  * Describes a single role or set of roles
