@@ -220,6 +220,18 @@ export abstract class GameTransition<TFrom extends GamePhase> {
  */
 export const GAME_FLOW: { [TFrom in GamePhase]: GameTransition<TFrom> } = {
   /**
+   * Role reveal: all players receive their role assignment + information
+   */
+  role_reveal: {
+    getTargetPlayers(_state): UserId[] {
+      throw Error("not implemented");
+    },
+    processInteraction(_state, _responses): GameState {
+      throw Error("not implemented");
+    },
+  },
+
+  /**
    * Team selection: the current leader selects a team to go on this mission
    */
   "round:team_select": {
@@ -309,9 +321,21 @@ export const GAME_FLOW: { [TFrom in GamePhase]: GameTransition<TFrom> } = {
   },
 
   /**
-   * Role reveal: all players receive their role assignment + information
+   * Lady of the Lake: the current player chooses a player whose role to see
    */
-  role_reveal: {
+  "round:lady_choice": {
+    getTargetPlayers(_state): UserId[] {
+      throw Error("not implemented");
+    },
+    processInteraction(_state, _responses): GameState {
+      throw Error("not implemented");
+    },
+  },
+
+  /**
+   * Lady of the Lake reveal: the chosen player's role is revealed to the player with the Lady
+   */
+  "round:lady_reveal": {
     getTargetPlayers(_state): UserId[] {
       throw Error("not implemented");
     },
@@ -336,30 +360,6 @@ export const GAME_FLOW: { [TFrom in GamePhase]: GameTransition<TFrom> } = {
    * Game over: the game ends and results are shown to all players
    */
   game_over: {
-    getTargetPlayers(_state): UserId[] {
-      throw Error("not implemented");
-    },
-    processInteraction(_state, _responses): GameState {
-      throw Error("not implemented");
-    },
-  },
-
-  /**
-   * Lady of the Lake: the current player chooses a player whose role to see
-   */
-  "round:lady_choice": {
-    getTargetPlayers(_state): UserId[] {
-      throw Error("not implemented");
-    },
-    processInteraction(_state, _responses): GameState {
-      throw Error("not implemented");
-    },
-  },
-
-  /**
-   * Lady of the Lake reveal: the chosen player's role is revealed to the player with the Lady
-   */
-  "round:lady_reveal": {
     getTargetPlayers(_state): UserId[] {
       throw Error("not implemented");
     },
