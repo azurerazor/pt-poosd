@@ -4,10 +4,11 @@ import express from "express";
 import http from "http";
 import mongoose from "mongoose";
 
-import { login, logout, register } from "@api/routes/auth.js";
 import get_user from "@api/routes/get_user.js";
 import history from "@api/routes/history.js";
 import stats from "@api/routes/stats.js";
+
+import auth from "@api/routes/auth.js";
 
 import "@common/game/roles.js";
 import "@common/game/game.js";
@@ -64,12 +65,7 @@ const httpServer = http.createServer(app);
 // initializeSockets(ioServer);
 // bootstrapEvents();
 
-// Auth routes
-app.post("/api/register", register);
-app.post("/api/login", login);
-app.post("/api/logout", logout);
-
-// Protected routes
+app.use("/api/auth", auth);
 app.use("/api/get_user", get_user);
 app.use("/api/stats", stats);
 app.use("/api/game_history", history);
