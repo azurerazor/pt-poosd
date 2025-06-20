@@ -1,4 +1,10 @@
-import { InformationOf, RoleId, ROLES, RoleSet } from "@common/game/roles.js";
+import {
+  Alignment,
+  InformationOf,
+  RoleId,
+  ROLES,
+  RoleSet,
+} from "@common/game/roles.js";
 
 /**
  * The type of a unique identifier for a user in the lobby
@@ -46,6 +52,7 @@ export type GameConfig = {
 export type RoundPhase =
   | "team_select"
   | "team_vote"
+  | "team_vote_reveal"
   | "mission"
   | "mission_reveal"
   | "lady_choice"
@@ -58,6 +65,7 @@ export type GamePhase =
   | "role_reveal"
   | `round:${RoundPhase}`
   | "assassination"
+  | "assassination_reveal"
   | "game_over";
 
 /**
@@ -187,20 +195,46 @@ export function filterGameState<TRole extends RoleId>(
 }
 
 /**
+ * Maps the game phase to the type of information gained at start of phase
+ */
+export type NewInfoByPhase = {
+  role_reveal: {
+    role: RoleId;
+    playerOrder: UserId[];
+    playersVisible: UserId[];
+  };
+  "round:team_vote": { proposedTeam: UserId[] };
+  "round:team_vote_reveal": { [key: UserId]: boolean };
+  "round:mission_reveal": { success: number; fail: number };
+  "round:lady_choice": { chosenPlayer: UserId };
+  "round:lady_reveal": { alignment?: Alignment };
+  assassination: { evilTeam: [UserId, RoleId][] };
+  asssassination_reveal: { assassinatedPlayer: [UserId, RoleId] };
+};
+
+/**
+ * Maps the game phase to the type of information gained at start of phase
+ */
+export type NewInfo<TPhase extends GamePhase> =
+  TPhase extends keyof NewInfoByPhase
+    ? NewInfoByPhase[TPhase]
+    : Record<string, never>;
+
+/**
  * Maps the game phase to the type of user input required for that phase
  */
 export type UserInputByPhase = {
-  "round:team_select": UserId[];
-  "round:team_vote": boolean;
-  "round:mission": boolean;
-  assassination: UserId;
+  "round:team_select": { proposedTeam: UserId[] };
+  "round:team_vote": { vote: "approve" | "reject" };
+  "round:mission": { action: "success" | "fail" };
+  assassination: { target: UserId };
 };
 
 /**
  * Describes the type of user input required for a given phase
  */
 export type UserInput<TPhase extends GamePhase> =
-  TPhase extends keyof UserInputByPhase ? UserInputByPhase[TPhase] : unknown;
+  TPhase extends keyof UserInputByPhase ? UserInputByPhase[TPhase] : never;
 
 /**
  * Describes a transition from some game state (in a specific phase) to another,
@@ -223,17 +257,15 @@ export const GAME_FLOW: { [TFrom in GamePhase]: GameTransition<TFrom> } = {
    * Team selection: the current leader selects a team to go on this mission
    */
   "round:team_select": {
-    getTargetPlayers(state: GameStateInPhase<"round:team_select">): UserId[] {
+    getTargetPlayers(state): UserId[] {
       return [state.players[state.leaderIndex]];
     },
-    processInteraction(
-      state: GameStateInPhase<"round:team_select">,
-      responses: Map<UserId, UserId[]>,
-    ): GameState {
+    processInteraction(state, responses): GameState {
       return {
         ...state,
         phase: "round:team_vote",
-        currentTeam: responses.get(this.getTargetPlayers(state)[0]) ?? [],
+        currentTeam:
+          responses.get(this.getTargetPlayers(state)[0])?.proposedTeam ?? [],
       };
     },
   },
@@ -248,7 +280,8 @@ export const GAME_FLOW: { [TFrom in GamePhase]: GameTransition<TFrom> } = {
     processInteraction(state, responses): GameState {
       let votes = 0;
       for (const player in state.players) {
-        if (responses.get(player)) {
+        // undefined assumes fail
+        if (responses.get(player)?.vote === "approve") {
           votes++;
         }
       }
@@ -279,7 +312,7 @@ export const GAME_FLOW: { [TFrom in GamePhase]: GameTransition<TFrom> } = {
         fail = 0;
       for (const player in state.currentTeam) {
         // undefined assumes success
-        if (responses.get(player) === false) {
+        if (responses.get(player)?.action === "fail") {
           fail++;
         } else {
           success++;
@@ -360,6 +393,30 @@ export const GAME_FLOW: { [TFrom in GamePhase]: GameTransition<TFrom> } = {
    * Lady of the Lake reveal: the chosen player's role is revealed to the player with the Lady
    */
   "round:lady_reveal": {
+    getTargetPlayers(_state): UserId[] {
+      throw Error("not implemented");
+    },
+    processInteraction(_state, _responses): GameState {
+      throw Error("not implemented");
+    },
+  },
+
+  /**
+   * Team Vote reveal: reveal how people voted for the team
+   */
+  "round:team_vote_reveal": {
+    getTargetPlayers(_state): UserId[] {
+      throw Error("not implemented");
+    },
+    processInteraction(_state, _responses): GameState {
+      throw Error("not implemented");
+    },
+  },
+
+  /**
+   * Assassination reveal: reveal who got assassinated
+   */
+  assassination_reveal: {
     getTargetPlayers(_state): UserId[] {
       throw Error("not implemented");
     },
